@@ -35,7 +35,7 @@ public class K9TeleOp extends LinearOpMode {
             float l_power = -gamepad1.left_stick_y;
             float r_power = -gamepad1.right_stick_y;
 
-            if (l_power >0)
+            if (l_power > 0)
                 l_power = (float)Math.pow(l_power,2);
             else
                 l_power = -(float)Math.pow(l_power,2);
