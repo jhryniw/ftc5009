@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 
 public class K9Hardware {
+
     public DcMotor leftMotor;
     public DcMotor rightMotor;
 
@@ -18,7 +19,7 @@ public class K9Hardware {
     public K9Hardware (){
     }
 
-    public void init (HardwareMap hwm){
+    public void init (HardwareMap hwm) {
         hwMap = hwm;
 
         leftMotor = hwMap.dcMotor.get("drive_left");

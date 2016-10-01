@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -14,14 +15,45 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class K9TeleOp extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
-
+    public static final float POWER_THRESHOLD = 0.05f;
     @Override
     public void runOpMode() throws InterruptedException {
+
+        // Setup the motors using K9Hardware
+        K9Hardware robot = new K9Hardware();
+        robot.init(hardwareMap);
+
         waitForStart();
 
         runtime.reset();
 
         while (opModeIsActive()){
+
+            //float a = (float)Math.pow(0.5,2); //.5^2 = 0.25
+
+            //Get joystick y values
+            float l_power = -gamepad1.left_stick_y;
+            float r_power = -gamepad1.right_stick_y;
+
+            if (l_power >0)
+                l_power = (float)Math.pow(l_power,2);
+            else
+                l_power = -(float)Math.pow(l_power,2);
+
+            if (r_power > 0)
+                r_power = (float)Math.pow(r_power,2);
+            else
+                r_power = -(float)Math.pow(r_power,2);
+
+            if (Math.abs(l_power) < POWER_THRESHOLD)
+                l_power = 0;
+            if (Math.abs(r_power) < POWER_THRESHOLD)
+                r_power = 0;
+
+            //apply values to motor speed
+            robot.leftMotor.setPower((double)l_power);
+            robot.rightMotor.setPower((double)r_power);
+
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
 
