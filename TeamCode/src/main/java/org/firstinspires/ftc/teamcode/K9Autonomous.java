@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.lang.annotation.Target;
-
 import static org.firstinspires.ftc.teamcode.K9Hardware.TICKS_PER_INCH;
 
 /**
@@ -18,7 +16,7 @@ public class K9Autonomous extends LinearOpMode {
     private K9Hardware robot = new K9Hardware();
     private ElapsedTime runtime = new ElapsedTime();
 
-    static final double DRIVE_SPEED = 0.6;
+    private final double DRIVE_SPEED = 0.6;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -35,7 +33,8 @@ public class K9Autonomous extends LinearOpMode {
         runtime.reset();
         target = robot.leftMotor.getCurrentPosition() + (int)(distance * TICKS_PER_INCH);
 
-        //TODO: Check if RUN_ENCODER is needed for getCurrentPosition to work
+        //TODO: Check if RUN_USING_ENCODER is needed for getCurrentPosition() to work
+        //Reset the encoders
         robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
