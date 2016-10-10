@@ -9,14 +9,14 @@ import static org.firstinspires.ftc.teamcode.K9Hardware.TICKS_PER_INCH;
 
 /**
  * Created by James on 2016-10-01.
+ * Test Autonomous for K9
  */
+
 @Autonomous (name = "K9Autonomous")
 public class K9Autonomous extends LinearOpMode {
 
     private K9Hardware robot = new K9Hardware();
     private ElapsedTime runtime = new ElapsedTime();
-
-    private final double DRIVE_SPEED = 0.6;
 
     @Override
     public void runOpMode() throws InterruptedException {

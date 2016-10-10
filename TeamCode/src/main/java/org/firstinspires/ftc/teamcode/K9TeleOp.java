@@ -16,6 +16,7 @@ public class K9TeleOp extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     public static final float POWER_THRESHOLD = 0.05f;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
