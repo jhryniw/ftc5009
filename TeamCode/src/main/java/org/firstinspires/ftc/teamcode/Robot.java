@@ -15,13 +15,13 @@ public class Robot {
 
     private Hardware hardware = new Hardware();
     private ElapsedTime runtime = new ElapsedTime();
-    private Callable <Boolean> opModeIsActive;
+    private Callable <Boolean> isActiveCallback;
 
     public static String name;
 
     public Robot(String robotName, Callable <Boolean> funcIsActive) {
         name = robotName;
-        opModeIsActive = funcIsActive;
+        isActiveCallback = funcIsActive;
     }
 
     public void encoderDrive (double speed, double distance, double timeoutS ) throws InterruptedException{
@@ -38,18 +38,8 @@ public class Robot {
         hardware.leftMotor.setPower(speed);
         hardware.rightMotor.setPower(speed);
 
-        boolean isActive = true;
-
-        while (isActive && hardware.leftMotor.getCurrentPosition() < target && runtime.seconds() < timeoutS) {
+        while (opModeIsActive() && hardware.leftMotor.getCurrentPosition() < target && runtime.seconds() < timeoutS) {
             //TODO: add telemetry to track position
-
-            try {
-                isActive = opModeIsActive.call();
-            }
-            catch (Exception e) {
-                isActive = false;
-            }
-
             sleep(5);
         }
 
@@ -60,5 +50,14 @@ public class Robot {
         hardware.leftMotor.setPower(0);
         hardware.rightMotor.setPower(0);
 
+    }
+
+    private boolean opModeIsActive() {
+        try {
+            return isActiveCallback.call();
+        }
+        catch (Exception e) {
+            return false;
+        }
     }
 }
