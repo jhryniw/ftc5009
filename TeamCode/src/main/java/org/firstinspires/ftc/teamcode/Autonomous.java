@@ -14,11 +14,18 @@ import java.util.concurrent.Callable;
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name="Autonomous")
 public class Autonomous extends LinearOpMode {
 
-    //private Robot robot = new Robot("placeholder", new Callable<Boolean>...return opModeIsActive);
+    private Robot robot = new Robot("proto1", new Callable<Boolean>() {
+        @Override
+        public Boolean call() throws Exception {
+            return opModeIsActive();
+        }
+    });
 
     //TODO: Define Path List
     private HashMap<String, PathBase> pathList = new HashMap<>();
     private PathBase selectedPath;
+
+    private int delay; //delay is in milliseconds
 
     @Override
     public void runOpMode() throws InterruptedException {
