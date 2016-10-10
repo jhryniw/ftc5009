@@ -22,13 +22,16 @@ public class Autonomous extends LinearOpMode {
     });
 
     //TODO: Define Path List
-    private HashMap<String, PathBase> pathList = new HashMap<>();
+    private HashMap<String, PathBase> pathList = new HashMap<>( );
     private PathBase selectedPath;
 
     private int delay; //delay is in milliseconds
 
     @Override
     public void runOpMode() throws InterruptedException {
+        //Register paths
+        pathList.put("Blue Forward To Centre", new ForwardToCentre(robot, Alliance.BLUE, new Coordinate(0, 0)));
+
         //Run configuration
 
         //Select Path
