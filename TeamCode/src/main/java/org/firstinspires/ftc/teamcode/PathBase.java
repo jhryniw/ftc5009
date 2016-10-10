@@ -13,13 +13,15 @@ enum Alliance {
 
 public abstract class PathBase {
 
-    private Alliance alliance;
-    private Coordinate startLocation;
+    protected Alliance alliance;
+    protected Coordinate startLocation;
+    protected Robot robot;
 
-    public PathBase(Alliance a, Coordinate startLoc) {
+    public PathBase(Robot r, Alliance a, Coordinate startLoc) {
         alliance = a;
         startLocation = startLoc;
+        robot = r;
     }
 
-    abstract void run();
+    abstract void run() throws InterruptedException;
 }
