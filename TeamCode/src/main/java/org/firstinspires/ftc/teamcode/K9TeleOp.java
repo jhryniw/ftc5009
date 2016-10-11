@@ -30,8 +30,6 @@ public class K9TeleOp extends LinearOpMode {
 
         while (opModeIsActive()){
 
-            //float a = (float)Math.pow(0.5,2); //.5^2 = 0.25
-
             //Get joystick y values
             float l_power = -gamepad1.left_stick_y;
             float r_power = -gamepad1.right_stick_y;

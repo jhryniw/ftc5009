@@ -46,10 +46,28 @@ public class Robot {
         stop();
     }
 
+    public void pivot (int degree, double power) throws InterruptedException {
+        //convert degree into ticks
+
+        // set the power on the motors in opposite directions
+
+        if (degree < 0) {
+            power = -power;
+        }
+
+        hardware.leftMotor.setPower(power);
+        hardware.rightMotor.setPower(-power);
+
+        //loop
+
+        // stop
+        stop();
+
+    }
+
     public void stop(){
         hardware.leftMotor.setPower(0);
         hardware.rightMotor.setPower(0);
-
     }
 
     private boolean opModeIsActive() {
