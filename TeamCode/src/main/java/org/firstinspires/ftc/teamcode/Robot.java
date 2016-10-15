@@ -47,8 +47,12 @@ public class Robot {
         hw.leftMotor.setPower(speed);
         hw.rightMotor.setPower(speed);
 
-        while (opModeCallbacks.opModeIsActive() && hw.leftMotor.getCurrentPosition() < target) {
+        int position = hw.leftMotor.getCurrentPosition();
+        while (opModeCallbacks.opModeIsActive() && position < target) {
+            position = hw.leftMotor.getCurrentPosition();
+
             //TODO: add telemetry to track position
+            opModeCallbacks.addData("Encoder", "Current position: %d", position);
             sleep(10);
         }
 

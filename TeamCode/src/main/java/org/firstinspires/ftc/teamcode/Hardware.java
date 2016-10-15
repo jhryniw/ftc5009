@@ -20,7 +20,7 @@ public class Hardware {
 
     private HardwareMap hwMap;
     public static float WHEEL_BASE = 13.5f;
-    private static double TICKS_PER_MOTOR_REV = 1440;
+    private static double TICKS_PER_MOTOR_REV = 1120;
     private static double DRIVE_GEAR_RATIO = 1.0;
     private static double WHEEL_DIAMETER = 4.0;
 

@@ -33,13 +33,14 @@ public class Autonomous extends LinearOpMode {
         }
 
         //Register paths
-        pathList.put("Ball Knocker", new BallKnocker(robot, Alliance.NA, new Coordinate(0, 0)));
+        //pathList.put("Ball Knocker", new BallKnocker(robot, Alliance.NA, new Coordinate(0, 0)));
+        pathList.put("Beacons", new Beacons(robot, Alliance.NA, new Coordinate(0, 0)));
 
         //Run configuration
 
         //Select Path
         Set<String> strPathList = pathList.keySet();
-        selectedPath = pathList.get("Ball Knocker");
+        selectedPath = pathList.get("Beacons");
 
         waitForStart();
 

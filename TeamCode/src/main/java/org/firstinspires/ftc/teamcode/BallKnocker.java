@@ -13,6 +13,6 @@ public class BallKnocker extends PathBase {
 
     @Override
     void run() throws InterruptedException {
-        robot.encoderDrive(0.5, 86);
+        robot.encoderDrive(0.5, 82);
     }
 }
