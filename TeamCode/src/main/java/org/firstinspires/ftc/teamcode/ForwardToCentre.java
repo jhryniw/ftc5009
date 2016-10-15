@@ -12,6 +12,10 @@ public class ForwardToCentre extends PathBase {
 
     @Override
     public void run() throws InterruptedException {
-        robot.encoderDrive(0.9, 72, 9);
+       if(alliance == Alliance.RED) {
+           robot.encoderDrive(0.9, 72, 9);
+       }
+       else { //alliance == Alliance.BLUE
+       }
     }
 }

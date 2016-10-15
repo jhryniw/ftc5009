@@ -31,12 +31,13 @@ public class Autonomous extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         //Register paths
         pathList.put("Blue Forward To Centre", new ForwardToCentre(robot, Alliance.BLUE, new Coordinate(0, 0)));
+        pathList.put("Ball Knocker", new BallKnocker(robot, Alliance.NA, new Coordinate(0, 0)));
 
         //Run configuration
 
         //Select Path
         Set<String> strPathList = pathList.keySet();
-        selectedPath = pathList.get("path");
+        selectedPath = pathList.get("Ball Knocker");
 
         waitForStart();
 
