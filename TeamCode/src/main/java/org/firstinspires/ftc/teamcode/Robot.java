@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.concurrent.Callable;
 
 import static java.lang.Thread.sleep;
+import static org.firstinspires.ftc.teamcode.Hardware.WHEEL_BASE;
 
 /**
  * Created by s on 09/10/2016.
@@ -46,12 +47,16 @@ public class Robot {
         stop();
     }
 
-    public void pivot (int degree, double power) throws InterruptedException {
+    public void pivot (int deg, double power) throws InterruptedException {
         //convert degree into ticks
+        int target = (int)(deg / 360 * Math.PI * WHEEL_BASE);
+
+        //Reset the encoders
+        hardware.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hardware.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // set the power on the motors in opposite directions
-
-        if (degree < 0) {
+        if (deg < 0) {
             power = -power;
         }
 
@@ -59,6 +64,9 @@ public class Robot {
         hardware.rightMotor.setPower(-power);
 
         //loop
+        while (opModeIsActive() && hardware.leftMotor.getCurrentPosition() < target) {
+            sleep(10);
+        }
 
         // stop
         stop();
