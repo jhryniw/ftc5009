@@ -30,16 +30,13 @@ public class Robot {
     public void encoderDrive (double speed, double distance) throws InterruptedException{
         int target;
 
-        runtime.reset();
         target = (int)(distance * Hardware.TICKS_PER_INCH);
 
-        //TODO: Check if RUN_USING_ENCODER is needed for getCurrentPosition() to work
         //Reset the encoders
-
         hw.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hw.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        //opModeCallbacks.idle();
+        opModeCallbacks.idle();
 
         hw.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hw.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -51,7 +48,6 @@ public class Robot {
         while (opModeCallbacks.opModeIsActive() && position < target) {
             position = hw.leftMotor.getCurrentPosition();
 
-            //TODO: add telemetry to track position
             opModeCallbacks.addData("Encoder", "Current position: %d", position);
             sleep(10);
         }
@@ -67,6 +63,11 @@ public class Robot {
         hw.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hw.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        opModeCallbacks.idle();
+
+        hw.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hw.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         // set the power on the motors in opposite directions
         if (deg < 0) {
             power = -power;
@@ -76,7 +77,12 @@ public class Robot {
         hw.rightMotor.setPower(-power);
 
         //loop
-        while (opModeCallbacks.opModeIsActive() && hw.leftMotor.getCurrentPosition() < target) {
+        int position = hw.leftMotor.getCurrentPosition();
+        while (opModeCallbacks.opModeIsActive() && position < target) {
+            //TODO: Take the average of both the left and right encoders
+            position = hw.leftMotor.getCurrentPosition();
+
+            opModeCallbacks.addData("Encoder", "Current position: %d", position);
             sleep(10);
         }
 
@@ -84,7 +90,7 @@ public class Robot {
         stop();
     }
 
-    public void stop(){
+    public void stop() {
         hw.leftMotor.setPower(0);
         hw.rightMotor.setPower(0);
     }
