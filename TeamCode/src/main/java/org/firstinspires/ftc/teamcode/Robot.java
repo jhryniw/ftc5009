@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.concurrent.Callable;
@@ -14,34 +15,41 @@ import static org.firstinspires.ftc.teamcode.Hardware.WHEEL_BASE;
 
 public class Robot {
 
-    private Hardware hardware = new Hardware();
+    private Hardware hw = new Hardware();
     private ElapsedTime runtime = new ElapsedTime();
-    private Callable <Boolean> isActiveCallback;
+    private OpModeCallbacks opModeCallbacks;
 
     public static String name;
 
-    public Robot(String robotName, Callable <Boolean> funcIsActive) {
+    public Robot(String robotName, HardwareMap hwMap, OpModeCallbacks callbacks) {
         name = robotName;
-        isActiveCallback = funcIsActive;
+        opModeCallbacks = callbacks;
+        hw.init(hwMap);
     }
 
-    public void encoderDrive (double speed, double distance, double timeoutS ) throws InterruptedException{
+    public void encoderDrive (double speed, double distance) throws InterruptedException{
         int target;
 
         runtime.reset();
-        target = hardware.leftMotor.getCurrentPosition() + (int)(distance * hardware.TICKS_PER_INCH);
+        target = (int)(distance * Hardware.TICKS_PER_INCH);
 
         //TODO: Check if RUN_USING_ENCODER is needed for getCurrentPosition() to work
         //Reset the encoders
-        hardware.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hardware.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        hardware.leftMotor.setPower(speed);
-        hardware.rightMotor.setPower(speed);
+        hw.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hw.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        while (opModeIsActive() && hardware.leftMotor.getCurrentPosition() < target && runtime.seconds() < timeoutS) {
+        //opModeCallbacks.idle();
+
+        hw.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hw.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        hw.leftMotor.setPower(speed);
+        hw.rightMotor.setPower(speed);
+
+        while (opModeCallbacks.opModeIsActive() && hw.leftMotor.getCurrentPosition() < target) {
             //TODO: add telemetry to track position
-            sleep(5);
+            sleep(10);
         }
 
         stop();
@@ -52,38 +60,28 @@ public class Robot {
         int target = (int)(deg / 360 * Math.PI * WHEEL_BASE);
 
         //Reset the encoders
-        hardware.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hardware.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hw.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hw.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // set the power on the motors in opposite directions
         if (deg < 0) {
             power = -power;
         }
 
-        hardware.leftMotor.setPower(power);
-        hardware.rightMotor.setPower(-power);
+        hw.leftMotor.setPower(power);
+        hw.rightMotor.setPower(-power);
 
         //loop
-        while (opModeIsActive() && hardware.leftMotor.getCurrentPosition() < target) {
+        while (opModeCallbacks.opModeIsActive() && hw.leftMotor.getCurrentPosition() < target) {
             sleep(10);
         }
 
-        // stop
+        // stop the motors
         stop();
-
     }
 
     public void stop(){
-        hardware.leftMotor.setPower(0);
-        hardware.rightMotor.setPower(0);
-    }
-
-    private boolean opModeIsActive() {
-        try {
-            return isActiveCallback.call();
-        }
-        catch (Exception e) {
-            return false;
-        }
+        hw.leftMotor.setPower(0);
+        hw.rightMotor.setPower(0);
     }
 }

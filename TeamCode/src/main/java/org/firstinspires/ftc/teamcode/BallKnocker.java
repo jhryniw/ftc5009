@@ -4,7 +4,7 @@ package org.firstinspires.ftc.teamcode;
  * Created by Vicki on 2016-10-15.
  */
 
-public class BallKnocker extends PathBase{
+public class BallKnocker extends PathBase {
 
 
     public BallKnocker(Robot r, Alliance a, Coordinate startLoc) {
@@ -13,7 +13,6 @@ public class BallKnocker extends PathBase{
 
     @Override
     void run() throws InterruptedException {
-
-        robot.encoderDrive(0.5, 86, 500);
+        robot.encoderDrive(0.5, 86);
     }
 }

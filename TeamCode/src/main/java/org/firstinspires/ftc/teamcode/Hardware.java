@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import java.util.List;
+
 /**
  * Created by James on 2016-09-26.
  * Stores Basic K9 Hardware Mapping
@@ -30,8 +32,16 @@ public class Hardware {
     public void init (HardwareMap hwm) {
         hwMap = hwm;
 
-        leftMotor = hwMap.dcMotor.get("drive_left");
-        rightMotor = hwMap.dcMotor.get("drive_right");
+        try {
+            leftMotor = hwMap.dcMotor.get("drive_left");
+            rightMotor = hwMap.dcMotor.get("drive_right");
+        }
+        catch (NullPointerException e) {
+            throw new NullPointerException("Error: a motor did not initialize properly. Check the configuration!");
+        }
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftMotor.setPower(0);
