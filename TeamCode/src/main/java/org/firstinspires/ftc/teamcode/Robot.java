@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.concurrent.Callable;
 
 import static java.lang.Thread.sleep;
-import static org.firstinspires.ftc.teamcode.Hardware.WHEEL_BASE;
 
 /**
  * Created by s on 09/10/2016.
@@ -28,9 +27,8 @@ public class Robot {
     }
 
     public void encoderDrive (double speed, double distance) throws InterruptedException{
-        int target;
 
-        target = (int)(distance * Hardware.TICKS_PER_INCH);
+        int target = (int)Math.abs(distance * Hardware.TICKS_PER_INCH);
 
         //Reset the encoders
         hw.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -45,10 +43,12 @@ public class Robot {
         hw.rightMotor.setPower(speed);
 
         int position = hw.leftMotor.getCurrentPosition();
-        while (opModeCallbacks.opModeIsActive() && position < target) {
+        while (opModeCallbacks.opModeIsActive() && Math.abs(position) < target) {
             position = hw.leftMotor.getCurrentPosition();
 
-            opModeCallbacks.addData("Encoder", "Current position: %d", position);
+            opModeCallbacks.addData("EncoderTarget", "%d", target);
+            opModeCallbacks.addData("EncoderPosition", "%d", position);
+            opModeCallbacks.updateTelemetry();
             sleep(10);
         }
 
@@ -57,7 +57,7 @@ public class Robot {
 
     public void pivot (int deg, double power) throws InterruptedException {
         //convert degree into ticks
-        int target = (int)(deg / 360 * Math.PI * WHEEL_BASE);
+        int target = (int)((Math.abs(deg) / 360.0) * Math.PI * Hardware.WHEEL_BASE * Hardware.TICKS_PER_INCH);
 
         //Reset the encoders
         hw.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -78,16 +78,22 @@ public class Robot {
 
         //loop
         int position = hw.leftMotor.getCurrentPosition();
-        while (opModeCallbacks.opModeIsActive() && position < target) {
+        opModeCallbacks.addData("EncoderTarget", "%d", target);
+        opModeCallbacks.addData("EncoderPosition", "%d", position);
+        opModeCallbacks.updateTelemetry();
+        while (opModeCallbacks.opModeIsActive() && Math.abs(position) < target) {
             //TODO: Take the average of both the left and right encoders
             position = hw.leftMotor.getCurrentPosition();
 
-            opModeCallbacks.addData("Encoder", "Current position: %d", position);
+            opModeCallbacks.addData("EncoderTarget", "%d", target);
+            opModeCallbacks.addData("EncoderPosition", "%d", position);
+            opModeCallbacks.updateTelemetry();
             sleep(10);
         }
 
         // stop the motors
         stop();
+        sleep(1000);
     }
 
     public void stop() {

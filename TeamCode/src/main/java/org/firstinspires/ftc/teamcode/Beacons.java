@@ -13,9 +13,9 @@ public class Beacons extends PathBase {
         @Override
         void run() throws InterruptedException {
             robot.encoderDrive(0.5, 12);
-            robot.pivot(45, 0.5);
+            robot.pivot(45, 0.3);
             robot.encoderDrive(0.5, 30);
-            robot.pivot(-45, 0.5);
+            robot.pivot(-45, 0.3);
             robot.encoderDrive(0.5, 67);
         }
 }

@@ -8,4 +8,5 @@ public interface OpModeCallbacks {
     void idle() throws InterruptedException;
     boolean opModeIsActive();
     void addData(String caption, String format, Object... args);
+    void updateTelemetry();
 }

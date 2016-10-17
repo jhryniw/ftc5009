@@ -24,16 +24,11 @@ public class Autonomous extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        //Initialize hardware
-        try {
-            robot = new Robot("proto1", hardwareMap, getCallbacks(this));
-        }
-        catch (Exception e) {
-            telemetry.addData("Status", "Robot threw an error");
-        }
+        //Initialize robot/hardware
+        robot = new Robot("proto1", hardwareMap, getCallbacks(this));
 
         //Register paths
-        //pathList.put("Ball Knocker", new BallKnocker(robot, Alliance.NA, new Coordinate(0, 0)));
+        pathList.put("Ball Knocker", new BallKnocker(robot, Alliance.NA, new Coordinate(0, 0)));
         pathList.put("Beacons", new Beacons(robot, Alliance.NA, new Coordinate(0, 0)));
 
         //Run configuration
@@ -41,6 +36,11 @@ public class Autonomous extends LinearOpMode {
         //Select Path
         Set<String> strPathList = pathList.keySet();
         selectedPath = pathList.get("Beacons");
+
+        telemetry.addLine("Status");
+        telemetry.addLine("EncoderTarget");
+        telemetry.addLine("Encoder");
+        updateTelemetry(telemetry);
 
         waitForStart();
 
@@ -64,7 +64,11 @@ public class Autonomous extends LinearOpMode {
             @Override
             public void addData(String caption, String format, Object... args) {
                 telemetry.addData(caption, format, args);
-                updateTelemetry(telemetry);
+            }
+
+            @Override
+            public void updateTelemetry() {
+                opMode.updateTelemetry(telemetry);
             }
         };
     }
