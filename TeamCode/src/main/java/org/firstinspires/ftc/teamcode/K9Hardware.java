@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class K9Hardware {
 
+    public DcMotor chickenfingers;
     public DcMotor leftMotor;
     public DcMotor rightMotor;
 

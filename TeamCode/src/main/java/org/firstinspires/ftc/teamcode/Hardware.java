@@ -2,11 +2,10 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import java.util.List;
 
 /**
  * Created by James on 2016-09-26.
@@ -17,6 +16,8 @@ public class Hardware {
 
     public DcMotor leftMotor;
     public DcMotor rightMotor;
+    public ColorSensor sensorRGB;
+    public DcMotor chickenMotor;
 
     private HardwareMap hwMap;
     public static float WHEEL_BASE = 13.5f;
@@ -35,6 +36,8 @@ public class Hardware {
         try {
             leftMotor = hwMap.dcMotor.get("drive_left");
             rightMotor = hwMap.dcMotor.get("drive_right");
+            //sensorRGB = hwMap.colorSensor.get("dim");
+            chickenMotor = hwMap.dcMotor.get("chicken_fingers");
         }
         catch (NullPointerException e) {
             throw new NullPointerException("Error: a motor did not initialize properly. Check the configuration!");
@@ -46,5 +49,6 @@ public class Hardware {
 
         leftMotor.setPower(0);
         rightMotor.setPower(0);
+        chickenMotor.setPower(0);
     }
 }

@@ -27,6 +27,7 @@ public class K9TeleOp extends LinearOpMode {
         waitForStart();
 
         runtime.reset();
+        //float chicken_power = 0.0f;
 
         while (opModeIsActive()){
 
@@ -34,6 +35,13 @@ public class K9TeleOp extends LinearOpMode {
             float l_power = -gamepad1.left_stick_y;
             float r_power = -gamepad1.right_stick_y;
 
+            /*if (gamepad1.a)
+                float chicken_power = 0.5f;
+            else if (gamepad1.y)
+                float chicken_power = -0.5f;
+            else
+                float chicken_power = 0.0f;
+            */
             if (l_power > 0)
                 l_power = (float)Math.pow(l_power,2);
             else
@@ -52,6 +60,7 @@ public class K9TeleOp extends LinearOpMode {
             //apply values to motor speed
             robot.leftMotor.setPower((double)l_power);
             robot.rightMotor.setPower((double)r_power);
+            //robot.chickenfingers.setPower((double)chicken_power);
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();

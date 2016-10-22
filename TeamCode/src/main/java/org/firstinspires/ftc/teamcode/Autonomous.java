@@ -31,12 +31,13 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Ball Knocker", new BallKnocker(robot, Alliance.NA, new Coordinate(0, 0)));
         pathList.put("Beacons", new Beacons(robot, Alliance.NA, new Coordinate(0, 0)));
         pathList.put( "Red Beacons", new RedBeacons(robot, Alliance.RED, new Coordinate(0, 0)));
+        pathList.put( "Corner Goal", new CornerGoal(robot, Alliance.BLUE, new Coordinate(0, 0)));
 
         //Run configuration
 
         //Select Path
         Set<String> strPathList = pathList.keySet();
-        selectedPath = pathList.get("Red Beacons");
+        selectedPath = pathList.get("Corner Goal");
 
         telemetry.addLine("Status");
         telemetry.addLine("EncoderTarget");
