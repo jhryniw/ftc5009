@@ -102,6 +102,13 @@ public class Robot {
         sleep(time);
     }
 
+    public void ballshooter ( double speed, long time ) throws InterruptedException {
+
+        hw.shooterMotor.setPower(speed);
+        sleep(time);
+
+    }
+
     public void stop() {
         hw.leftMotor.setPower(0);
         hw.rightMotor.setPower(0);

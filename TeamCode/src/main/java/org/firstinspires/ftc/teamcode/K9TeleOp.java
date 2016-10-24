@@ -16,6 +16,8 @@ public class K9TeleOp extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     public static final float POWER_THRESHOLD = 0.05f;
+    public static final float CHICKEN_POWER = 0.5f;
+    public static final float SHOOTER_POWER = 0.9f;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -27,7 +29,6 @@ public class K9TeleOp extends LinearOpMode {
         waitForStart();
 
         runtime.reset();
-        //float chicken_power = 0.0f;
 
         while (opModeIsActive()){
 
@@ -35,13 +36,16 @@ public class K9TeleOp extends LinearOpMode {
             float l_power = -gamepad1.left_stick_y;
             float r_power = -gamepad1.right_stick_y;
 
-            /*if (gamepad1.a)
-                float chicken_power = 0.5f;
+            if (gamepad1.a)
+                robot.chickenfingers.setPower((double) CHICKEN_POWER);
             else if (gamepad1.y)
-                float chicken_power = -0.5f;
+                robot.chickenfingers.setPower((double) -CHICKEN_POWER);
             else
-                float chicken_power = 0.0f;
-            */
+                robot.chickenfingers.setPower(0);
+
+            if (gamepad1.b)
+
+
             if (l_power > 0)
                 l_power = (float)Math.pow(l_power,2);
             else

@@ -18,6 +18,8 @@ public class Hardware {
     public DcMotor rightMotor;
     public ColorSensor sensorRGB;
     public DcMotor chickenMotor;
+    public DcMotor shooterMotor;
+
 
     private HardwareMap hwMap;
     public static float WHEEL_BASE = 13.5f;
@@ -38,6 +40,8 @@ public class Hardware {
             rightMotor = hwMap.dcMotor.get("drive_right");
             //sensorRGB = hwMap.colorSensor.get("dim");
             chickenMotor = hwMap.dcMotor.get("chicken_fingers");
+            shooterMotor = hwMap.dcMotor.get( "shooter_motor");
+
         }
         catch (NullPointerException e) {
             throw new NullPointerException("Error: a motor did not initialize properly. Check the configuration!");
@@ -50,5 +54,7 @@ public class Hardware {
         leftMotor.setPower(0);
         rightMotor.setPower(0);
         chickenMotor.setPower(0);
+        shooterMotor.setPower(0);
+
     }
 }
