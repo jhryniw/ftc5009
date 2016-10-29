@@ -32,7 +32,9 @@ public class K9Hardware {
         leftMotor = hwMap.dcMotor.get("drive_left");
         rightMotor = hwMap.dcMotor.get("drive_right");
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        chickenfingers = hwMap.dcMotor.get("chicken_fingers");
 
+        chickenfingers.setPower(0);
         leftMotor.setPower(0);
         rightMotor.setPower(0);
     }

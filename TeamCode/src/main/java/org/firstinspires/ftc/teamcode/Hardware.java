@@ -40,7 +40,7 @@ public class Hardware {
             rightMotor = hwMap.dcMotor.get("drive_right");
             //sensorRGB = hwMap.colorSensor.get("dim");
             chickenMotor = hwMap.dcMotor.get("chicken_fingers");
-            shooterMotor = hwMap.dcMotor.get( "shooter_motor");
+            //shooterMotor = hwMap.dcMotor.get( "shooter_motor");
 
         }
         catch (NullPointerException e) {
@@ -54,7 +54,7 @@ public class Hardware {
         leftMotor.setPower(0);
         rightMotor.setPower(0);
         chickenMotor.setPower(0);
-        shooterMotor.setPower(0);
+        //shooterMotor.setPower(0);
 
     }
 }

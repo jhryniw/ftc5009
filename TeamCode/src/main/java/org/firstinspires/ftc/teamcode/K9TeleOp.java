@@ -17,33 +17,54 @@ public class K9TeleOp extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     public static final float POWER_THRESHOLD = 0.05f;
     public static final float CHICKEN_POWER = 0.5f;
-    public static final float SHOOTER_POWER = 0.9f;
+    private int chicken_state = 0;
+
+    //public static final float SHOOTER_POWER = 0.9f;
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        waitForStart();
 
         // Setup the motors using K9Hardware
         K9Hardware robot = new K9Hardware();
         robot.init(hardwareMap);
 
-        waitForStart();
-
         runtime.reset();
 
-        while (opModeIsActive()){
+        while (opModeIsActive()) {
 
             //Get joystick y values
             float l_power = -gamepad1.left_stick_y;
             float r_power = -gamepad1.right_stick_y;
+            boolean chicken_power = gamepad1.a;
+            float chicken_speed = 90;
 
-            if (gamepad1.a)
-                robot.chickenfingers.setPower((double) CHICKEN_POWER);
-            else if (gamepad1.y)
-                robot.chickenfingers.setPower((double) -CHICKEN_POWER);
-            else
-                robot.chickenfingers.setPower(0);
 
-            if (gamepad1.b)
+            if (gamepad1.a) {
+
+                if(chicken_state != 1) {
+                    robot.chickenfingers.setPower((double) CHICKEN_POWER);
+                    chicken_state = 1;
+                }
+                else {
+                    robot.chickenfingers.setPower(0);
+                    chicken_state = 0;
+                }
+
+            }
+            else if (gamepad1.y) {
+
+                if (chicken_state != -1) {
+                    robot.chickenfingers.setPower((double) -CHICKEN_POWER);
+                    chicken_state = -1;
+                }
+                else {
+                    robot.chickenfingers.setPower(0);
+                    chicken_state = 0;
+                }
+
+            }
 
 
             if (l_power > 0)
@@ -62,14 +83,14 @@ public class K9TeleOp extends LinearOpMode {
                 r_power = 0;
 
             //apply values to motor speed
-            robot.leftMotor.setPower((double)l_power);
-            robot.rightMotor.setPower((double)r_power);
-            //robot.chickenfingers.setPower((double)chicken_power);
+            /*robot.leftMotor.setPower((double)l_power);
+            robot.rightMotor.setPower((double)r_power);*/
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
 
             idle();
+
         }
     }
 }
