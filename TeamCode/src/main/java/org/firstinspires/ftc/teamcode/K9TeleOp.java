@@ -18,8 +18,9 @@ public class K9TeleOp extends LinearOpMode {
     public static final float POWER_THRESHOLD = 0.05f;
     public static final float CHICKEN_POWER = 0.5f;
     private int chicken_state = 0;
-
-    //public static final float SHOOTER_POWER = 0.9f;
+    public static final float SHOOTER_POWER = 0.9f;
+    private  int shooter_state = 0;
+    private boolean is_clicked = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -39,7 +40,23 @@ public class K9TeleOp extends LinearOpMode {
             float r_power = -gamepad1.right_stick_y;
             boolean chicken_power = gamepad1.a;
             float chicken_speed = 90;
+            float shooter_power = gamepad1.right_trigger;
 
+
+            //fix the debound error
+           /* if (gamepad1.right_trigger > 0.5 && !is_clicked) {
+                is_clicked = true;
+                if(shooter_state !=1) {
+                    robot.shooter.setPower((double) SHOOTER_POWER);
+                    shooter_state = 1;
+                }
+                else {
+                    robot.shooter.setPower(0);
+                    shooter_state = 0;
+                }
+            } else if (gamepad1.right_trigger < 0.5 && is_clicked){
+                is_clicked = false;
+            } */
 
             if (gamepad1.a) {
 

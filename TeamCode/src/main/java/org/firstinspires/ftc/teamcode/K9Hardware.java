@@ -14,6 +14,7 @@ public class K9Hardware {
     public DcMotor chickenfingers;
     public DcMotor leftMotor;
     public DcMotor rightMotor;
+    public DcMotor shooter;
 
 
     private HardwareMap hwMap;
@@ -33,9 +34,11 @@ public class K9Hardware {
         rightMotor = hwMap.dcMotor.get("drive_right");
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         chickenfingers = hwMap.dcMotor.get("chicken_fingers");
+        shooter = hwMap.dcMotor.get("shooter");
 
         chickenfingers.setPower(0);
         leftMotor.setPower(0);
         rightMotor.setPower(0);
+        shooter.setPower(0);
     }
 }
