@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by James on 2016-09-26.
@@ -15,6 +16,8 @@ public class K9Hardware {
     public DcMotor leftMotor;
     public DcMotor rightMotor;
     public DcMotor shooter;
+    public Servo crazy_servo;
+
 
 
     private HardwareMap hwMap;
@@ -32,13 +35,15 @@ public class K9Hardware {
 
         leftMotor = hwMap.dcMotor.get("drive_left");
         rightMotor = hwMap.dcMotor.get("drive_right");
-        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         chickenfingers = hwMap.dcMotor.get("chicken_fingers");
         shooter = hwMap.dcMotor.get("shooter");
+        crazy_servo = hwMap.servo.get( "crazy_servo");
 
         chickenfingers.setPower(0);
         leftMotor.setPower(0);
         rightMotor.setPower(0);
         shooter.setPower(0);
+        crazy_servo.setPosition(0);
     }
 }
