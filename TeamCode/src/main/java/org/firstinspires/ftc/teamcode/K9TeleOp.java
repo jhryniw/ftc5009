@@ -20,7 +20,8 @@ public class K9TeleOp extends LinearOpMode {
     private int chicken_state = 0;
     public static final float SHOOTER_POWER = 0.9f;
     private  int shooter_state = 0;
-    private boolean is_clicked = false;
+    private boolean chicken_is_clicked = false;
+    private boolean r2_is_clicked = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -44,8 +45,8 @@ public class K9TeleOp extends LinearOpMode {
 
 
             //fix the debound error
-           /* if (gamepad1.right_trigger > 0.5 && !is_clicked) {
-                is_clicked = true;
+           if (gamepad1.right_trigger > 0.5 && !r2_is_clicked) {
+               r2_is_clicked = true;
                 if(shooter_state !=1) {
                     robot.shooter.setPower((double) SHOOTER_POWER);
                     shooter_state = 1;
@@ -54,12 +55,12 @@ public class K9TeleOp extends LinearOpMode {
                     robot.shooter.setPower(0);
                     shooter_state = 0;
                 }
-            } else if (gamepad1.right_trigger < 0.5 && is_clicked){
-                is_clicked = false;
-            } */
+            } else if (gamepad1.right_trigger < 0.5 && r2_is_clicked){
+               r2_is_clicked = false;
+            }
 
-            if (gamepad1.a) {
-
+            if (gamepad1.a && !chicken_is_clicked) {
+                chicken_is_clicked = true;
                 if(chicken_state != 1) {
                     robot.chickenfingers.setPower((double) CHICKEN_POWER);
                     chicken_state = 1;
@@ -68,10 +69,9 @@ public class K9TeleOp extends LinearOpMode {
                     robot.chickenfingers.setPower(0);
                     chicken_state = 0;
                 }
-
             }
-            else if (gamepad1.y) {
-
+            else if (gamepad1.y && !chicken_is_clicked) {
+                chicken_is_clicked = true;
                 if (chicken_state != -1) {
                     robot.chickenfingers.setPower((double) -CHICKEN_POWER);
                     chicken_state = -1;
@@ -80,7 +80,9 @@ public class K9TeleOp extends LinearOpMode {
                     robot.chickenfingers.setPower(0);
                     chicken_state = 0;
                 }
-
+            }
+            else if (!gamepad1.a && !gamepad1.y && chicken_is_clicked) {
+                chicken_is_clicked = false;
             }
 
 
