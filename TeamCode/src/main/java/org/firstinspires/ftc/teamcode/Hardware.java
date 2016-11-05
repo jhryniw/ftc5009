@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by James on 2016-09-26.
@@ -19,7 +20,7 @@ public class Hardware {
     public ColorSensor sensorRGB;
     public DcMotor chickenMotor;
     public DcMotor shooterMotor;
-
+    public Servo clickerServo;
 
     private HardwareMap hwMap;
     public static float WHEEL_BASE = 13.5f;
@@ -40,8 +41,8 @@ public class Hardware {
             rightMotor = hwMap.dcMotor.get("drive_right");
             //sensorRGB = hwMap.colorSensor.get("dim");
             chickenMotor = hwMap.dcMotor.get("chicken_fingers");
-            shooterMotor = hwMap.dcMotor.get( "shooter_motor");
-
+            shooterMotor = hwMap.dcMotor.get( "shooter");
+            clickerServo = hwMap.servo.get("clicker_servo");
         }
         catch (NullPointerException e) {
             throw new NullPointerException("Error: a motor did not initialize properly. Check the configuration!");
@@ -55,6 +56,6 @@ public class Hardware {
         rightMotor.setPower(0);
         chickenMotor.setPower(0);
         shooterMotor.setPower(0);
-
+        clickerServo.setPosition(0);
     }
 }
