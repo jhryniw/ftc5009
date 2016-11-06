@@ -22,7 +22,6 @@ public class K9TeleOp extends LinearOpMode {
     private  int shooter_state = 0;
     private boolean chicken_is_clicked = false;
     private boolean r2_is_clicked = false;
-    private double pos = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -89,14 +88,11 @@ public class K9TeleOp extends LinearOpMode {
 
            //handle servo
             if (gamepad1.x) {
-                pos += 0.5;
-                robot.crazy_servo.setPosition(pos);
+                robot.crazy_servo.setPosition(robot.crazy_servo.getPosition() + 0.5);
+                robot.crazy_servo.setPosition(0);
             }
             else if (gamepad1.b) {
-                pos -= 0.5;
-                robot.crazy_servo.setPosition(pos);
-            }
-            else {
+                robot.crazy_servo.setPosition(robot.crazy_servo.getPosition() - 0.5);
                 robot.crazy_servo.setPosition(0);
             }
 
