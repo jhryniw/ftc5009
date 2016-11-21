@@ -127,7 +127,7 @@ public class Robot {
         double dir = cur_speed/Math.abs(cur_speed);
         for (int i = (int)Math.abs(cur_speed); i >= 0; i += increment) {
             hw.leftMotor.setPower(i*dir);
-            hw.leftMotor.setPower(i*dir);
+            hw.rightMotor.setPower(i*dir);
             sleep(1000);
         }
     }
