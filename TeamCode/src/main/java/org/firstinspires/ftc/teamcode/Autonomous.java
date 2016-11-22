@@ -38,7 +38,7 @@ public class Autonomous extends LinearOpMode {
 
         //Select Path
         Set<String> strPathList = pathList.keySet();
-        selectedPath = pathList.get("Ball Shooter");
+        selectedPath = pathList.get("Red Beacons");
 
         telemetry.addLine("Status");
         telemetry.addLine("EncoderTarget");
