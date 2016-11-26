@@ -90,21 +90,24 @@ public class K9TeleOp extends LinearOpMode {
            //handle servo bounce erroruu2[';2qjknjknqq12    221qq2q2Q22Q2qQQQqQ1Q2qq2QQ22           Qjv2q222QQ[';[''
             if (gamepad1.x && servo_is_clicked == 0) {
                 servo_is_clicked = 1;
-                //robot.crazy_servo.setPosition(0.9);
+                robot.crazy_servo.setPosition(0.9);
                 //robot.crazy_servo.setPosition(robot.crazy_servo.getPosition() + 0.5);
                 //robot.crazy_servo.setPosition(0.5);
             }
             else if (gamepad1.b && servo_is_clicked == 0) {
                 servo_is_clicked = -1;
-                //robot.crazy_servo.setPosition(0.1);
+                robot.crazy_servo.setPosition(0.1);
                 //robot.crazy_servo.setPosition(robot.crazy_servo.getPosition() - 0.5);
                 //robot.crazy_servo.setPosition(0.5);
             }
-            else if (( gamepad1.x && servo_is_clicked == 1) || (gamepad1.b && servo_is_clicked == -1)); {
+            else if(!(gamepad1.b || gamepad1.x) ){
                 servo_is_clicked = 0;
-                //robot.crazy_servo.setPosition(0.5);
-
             }
+            /*else if ((gamepad1.x && servo_is_clicked == 1) || (gamepad1.b && servo_is_clicked == -1)); {
+                servo_is_clicked = 0;
+                robot.crazy_servo.setPosition(0.5);
+
+            }*/
 
             if (l_power > 0)
                 l_power = (float)Math.pow(l_power,2);
