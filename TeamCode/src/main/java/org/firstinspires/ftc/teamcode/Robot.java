@@ -26,26 +26,23 @@ public class Robot {
         hw.init(hwMap);
     }
 
+    private double DECELERATION_DISTANCE = 6 * Hardware.TICKS_PER_INCH;
+    private double ACCELERATION_DISTANCE = 2 * Hardware.TICKS_PER_INCH;
+
     public void encoderDrive (double speed, double distance) throws InterruptedException{
 
         int target = (int)Math.abs(distance * Hardware.TICKS_PER_INCH);
 
         //Reset the encoders
-        hw.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hw.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        resetEncoders();
 
-        opModeCallbacks.idle();
-
-        hw.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hw.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        int ticker = acceleration(0.01, speed);
+        acceleration (0.01, speed, 1000);
 
         hw.leftMotor.setPower(speed);
         hw.rightMotor.setPower(speed);
 
         int position = hw.leftMotor.getCurrentPosition();
-        while (opModeCallbacks.opModeIsActive() && Math.abs(position) < (target-Math.abs(ticker))) {
+        while (opModeCallbacks.opModeIsActive() && Math.abs(position) < target - DECELERATION_DISTANCE) {
             position = hw.leftMotor.getCurrentPosition();
 
             opModeCallbacks.addData("EncoderTarget", "%d", target);
@@ -54,7 +51,7 @@ public class Robot {
             sleep(10);
         }
 
-        deceleration(-0.01,speed);
+        deceleration(0.01, speed, 500, target);
 
         stop();
     }
@@ -63,14 +60,7 @@ public class Robot {
         //convert degree into ticks
         int target = (int)((Math.abs(deg) / 360.0) * Math.PI * Hardware.WHEEL_BASE * Hardware.TICKS_PER_INCH);
 
-        //Reset the encoders
-        hw.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hw.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        opModeCallbacks.idle();
-
-        hw.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hw.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        resetEncoders();
 
         // set the power on the motors in opposite directions
         if (deg < 0) {
@@ -82,9 +72,7 @@ public class Robot {
 
         //loop
         int position = hw.leftMotor.getCurrentPosition();
-        opModeCallbacks.addData("EncoderTarget", "%d", target);
-        opModeCallbacks.addData("EncoderPosition", "%d", position);
-        opModeCallbacks.updateTelemetry();
+
         while (opModeCallbacks.opModeIsActive() && Math.abs(position) < target) {
             //TODO: Take the average of both the left and right encoders
             position = hw.leftMotor.getCurrentPosition();
@@ -97,43 +85,67 @@ public class Robot {
 
         // stop the motors
         stop();
-        sleep(1000);
+        sleep(200);
     }
 
     public void ballgrabber ( double speed, long time ) throws InterruptedException {
-
         hw.chickenMotor.setPower(speed);
         sleep(time);
     }
 
     public void ballshooter ( double speed, long time ) throws InterruptedException {
-
         hw.shooterMotor.setPower(speed);
         sleep(time);
-
     }
 
-    private int acceleration(double increment, double maxspeed) throws InterruptedException{
-        double dir = maxspeed/Math.abs(maxspeed);
-        for (int i = 0; i <= Math.abs(maxspeed); i += increment) {
-            hw.leftMotor.setPower(i*dir);
-            hw.rightMotor.setPower(i*dir);
-            sleep(1000);
+    private double MIN_SPEED = 0.2;
+
+    private int acceleration (double increment, double max_speed, int ms_time) throws InterruptedException {
+
+        if (max_speed < MIN_SPEED) {
+            return -1;
         }
+
+        double dir = max_speed/Math.abs(max_speed);
+        long increment_time = (long) (ms_time / ((Math.abs(max_speed) - MIN_SPEED)/increment));
+
+        for (double i = MIN_SPEED; i <= Math.abs(max_speed); i += increment) {
+            hw.leftMotor.setPower(i * dir);
+            hw.rightMotor.setPower(i * dir);
+            sleep(increment_time);
+        }
+
+        hw.leftMotor.setPower(max_speed);
+        hw.rightMotor.setPower(max_speed);
+
         return hw.leftMotor.getCurrentPosition();
     }
 
-    private void deceleration (double increment, double cur_speed) throws InterruptedException{
+    private void deceleration (double decrement, double cur_speed, int ms_time, int target) throws InterruptedException {
+
         double dir = cur_speed/Math.abs(cur_speed);
-        for (int i = (int)Math.abs(cur_speed); i >= 0; i += increment) {
-            hw.leftMotor.setPower(i*dir);
-            hw.rightMotor.setPower(i*dir);
-            sleep(1000);
+        long decrement_time = (long) (ms_time / ((Math.abs(cur_speed) - MIN_SPEED) / decrement));
+
+        for (double i = Math.abs(cur_speed); i >= MIN_SPEED && Math.abs(hw.leftMotor.getCurrentPosition()) < target; i -= decrement) {
+            hw.leftMotor.setPower(i * dir);
+            hw.rightMotor.setPower(i * dir);
+            sleep(decrement_time);
         }
+
+        stop();
     }
 
+    private void resetEncoders() {
+        //Reset the encoders
+        hw.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hw.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-    public void stop() {
+        //Return mode back to run with encoders
+        hw.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hw.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    private void stop() {
         hw.leftMotor.setPower(0);
         hw.rightMotor.setPower(0);
     }

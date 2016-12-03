@@ -38,12 +38,12 @@ public class K9Hardware {
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         chickenfingers = hwMap.dcMotor.get("chicken_fingers");
         shooter = hwMap.dcMotor.get("shooter");
-        crazy_servo = hwMap.servo.get( "crazy_servo");
+        crazy_servo = hwMap.servo.get("crazy_servo");
 
         chickenfingers.setPower(0);
         leftMotor.setPower(0);
         rightMotor.setPower(0);
         shooter.setPower(0);
-        crazy_servo.setPosition(0);
+        crazy_servo.setPosition(1);
     }
 }
