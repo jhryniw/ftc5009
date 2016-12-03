@@ -18,6 +18,8 @@ public class K9Hardware {
     public DcMotor shooter;
     public Servo crazy_servo;
 
+
+
     private HardwareMap hwMap;
     private static double TICKS_PER_MOTOR_REV = 1440;
     private static double DRIVE_GEAR_RATIO = 1.0;
@@ -33,10 +35,10 @@ public class K9Hardware {
 
         leftMotor = hwMap.dcMotor.get("drive_left");
         rightMotor = hwMap.dcMotor.get("drive_right");
-        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         chickenfingers = hwMap.dcMotor.get("chicken_fingers");
         shooter = hwMap.dcMotor.get("shooter");
-        crazy_servo = hwMap.servo.get("crazy_servo");
+        crazy_servo = hwMap.servo.get( "crazy_servo");
 
         chickenfingers.setPower(0);
         leftMotor.setPower(0);
