@@ -26,8 +26,8 @@ public class Robot {
         hw.init(hwMap);
     }
 
-    private double DECELERATION_DISTANCE = 5*Hardware.TICKS_PER_INCH;
-    private double ACCELERATION_DISTANCE = 5*Hardware.TICKS_PER_INCH;
+    private double DECELERATION_DISTANCE = 2*Hardware.TICKS_PER_INCH;
+    private double ACCELERATION_DISTANCE = 2*Hardware.TICKS_PER_INCH;
 
     public void encoderDrive (double speed, double distance) throws InterruptedException{
 
@@ -57,7 +57,7 @@ public class Robot {
             sleep(10);
         }
 
-        deceleration(0.01, speed, target);
+        deceleration(0.01, speed);
 
         stop();
     }
@@ -80,15 +80,19 @@ public class Robot {
             power = -power;
         }
 
+        //Calling acceleration
+        acceleration(0.01, power);
+
         hw.leftMotor.setPower(power);
         hw.rightMotor.setPower(-power);
+
 
         //loop
         int position = hw.leftMotor.getCurrentPosition();
         opModeCallbacks.addData("EncoderTarget", "%d", target);
         opModeCallbacks.addData("EncoderPosition", "%d", position);
         opModeCallbacks.updateTelemetry();
-        while (opModeCallbacks.opModeIsActive() && Math.abs(position) < target) {
+        while (opModeCallbacks.opModeIsActive() && Math.abs(position) < target/2) {
             //TODO: Take the average of both the left and right encoders
             position = hw.leftMotor.getCurrentPosition();
 
@@ -97,6 +101,8 @@ public class Robot {
             opModeCallbacks.updateTelemetry();
             sleep(10);
         }
+
+        deceleration(0.01, power);
 
         // stop the motors
         stop();
@@ -120,14 +126,15 @@ public class Robot {
 
     private int acceleration (double increment, double max_speed) throws InterruptedException {
 
-
         if (max_speed < MIN_SPEED) {
             return -1;
         }
 
-        long increment_time = (long) (ACCELERATION_DISTANCE/((Math.abs(max_speed) - MIN_SPEED)/increment));
-
         double dir = max_speed/Math.abs(max_speed);
+        long increment_time = (long) (DECELERATION_DISTANCE/ ((Math.abs(max_speed) - MIN_SPEED)/increment));
+
+
+
         for (double i = MIN_SPEED; i <= Math.abs(max_speed); i += increment) {
             hw.leftMotor.setPower(i * dir);
             hw.rightMotor.setPower(i * dir);
@@ -140,9 +147,9 @@ public class Robot {
         return hw.leftMotor.getCurrentPosition();
     }
 
-    private void deceleration (double decrement, double cur_speed, int target) throws InterruptedException {
-        double dir = cur_speed/Math.abs(cur_speed);
+    private void deceleration (double decrement, double cur_speed) throws InterruptedException {
 
+        double dir = cur_speed/Math.abs(cur_speed);
         long decrement_time = (long) (DECELERATION_DISTANCE/ ((Math.abs(cur_speed) - MIN_SPEED)/decrement));
 
         for (double i = Math.abs(cur_speed); i >= MIN_SPEED; i -= decrement) {
@@ -150,8 +157,6 @@ public class Robot {
             hw.rightMotor.setPower(i * dir);
             sleep(decrement_time);
         }
-
-        //while(hw.leftMotor.getCurrentPosition() < target) {}
 
         stop();
     }
