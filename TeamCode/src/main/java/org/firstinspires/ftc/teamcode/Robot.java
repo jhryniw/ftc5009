@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -24,7 +28,14 @@ public class Robot {
         name = robotName;
         opModeCallbacks = callbacks;
         hw.init(hwMap);
+
+        // turn the LED on in the beginning, just so user will know that the sensor is active.
+        enableLed();
     }
+
+    /*
+     * Robot Driving Functionality
+     */
 
     private double DECELERATION_DISTANCE = 6 * Hardware.TICKS_PER_INCH;
     private double ACCELERATION_DISTANCE = 2 * Hardware.TICKS_PER_INCH;
@@ -149,4 +160,37 @@ public class Robot {
         hw.leftMotor.setPower(0);
         hw.rightMotor.setPower(0);
     }
+
+    /*
+     * Color Sensor Functionality
+     */
+    public float[] getRgb() {
+        float[] rgb = {hw.colorSensor.red(), hw.colorSensor.green(), hw.colorSensor.green()};
+        return rgb;
+    }
+
+    public float[] getHsv() {
+        float[] hsvValues = {0f, 0f, 0f};
+        Color.RGBToHSV((hw.colorSensor.red() * 255) / 800, (hw.colorSensor.green() * 255) / 800, (hw.colorSensor.blue() * 255) / 800, hsvValues);
+        return hsvValues;
+    }
+
+    /*
+     * LED Functionality
+     */
+    public void enableLed() {
+        if(!hw.bLedOn)
+            toggleLed();
+    }
+
+    public void disableLed() {
+        if(hw.bLedOn)
+            toggleLed();
+    }
+
+    public void toggleLed() {
+        hw.bLedOn = !hw.bLedOn;
+        hw.cdim.setDigitalChannelState(Hardware.LED_CHANNEL, hw.bLedOn);
+    }
+
 }

@@ -22,7 +22,6 @@ public class ColorSensors extends LinearOpMode {
   ColorSensor sensorRGB;
   DeviceInterfaceModule cdim;
 
-  //
   // we assume that the LED pin of the RGB sensor is connected to
   // digital port 5 (zero indexed).
   static final int LED_CHANNEL = 5;

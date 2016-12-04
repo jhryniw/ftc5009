@@ -2,9 +2,13 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -15,12 +19,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Hardware {
 
+    //Motors
     public DcMotor leftMotor;
     public DcMotor rightMotor;
-    public ColorSensor sensorRGB;
     public DcMotor chickenMotor;
     public DcMotor shooterMotor;
 
+    //Color Sensor + LED
+    public DeviceInterfaceModule cdim;
+    public ColorSensor colorSensor;
+    public boolean bLedOn = true;
+    public static final int LED_CHANNEL = 5; // we assume that the LED pin of the RGB sensor is connected to digital port 5 (zero indexed).
 
     private HardwareMap hwMap;
     public static float WHEEL_BASE = 13.5f;
@@ -39,10 +48,8 @@ public class Hardware {
         try {
             leftMotor = hwMap.dcMotor.get("drive_left");
             rightMotor = hwMap.dcMotor.get("drive_right");
-            //sensorRGB = hwMap.colorSensor.get("dim");
             chickenMotor = hwMap.dcMotor.get("chicken_fingers");
             shooterMotor = hwMap.dcMotor.get( "shooter");
-
         }
         catch (NullPointerException e) {
             throw new NullPointerException("Error: a motor did not initialize properly. Check the configuration!");
@@ -57,5 +64,9 @@ public class Hardware {
         chickenMotor.setPower(0);
         shooterMotor.setPower(0);
 
+        //ColorSensor setup
+        cdim = hwMap.deviceInterfaceModule.get("dim");
+        cdim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
+        colorSensor = hwMap.colorSensor.get("color");
     }
 }
