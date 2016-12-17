@@ -1,6 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.widget.SeekBar;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -24,6 +30,8 @@ public class Autonomous extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        buildConfigDialog();
+
         //Initialize robot/hardware
         robot = new Robot("proto1", hardwareMap, getCallbacks(this));
 
@@ -35,6 +43,7 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Ball Shooter", new BallShooter (robot, Alliance.NA, new Coordinate(0, 0)));
 
         //Run configuration
+
 
         //Select Path
         Set<String> strPathList = pathList.keySet();
@@ -76,5 +85,44 @@ public class Autonomous extends LinearOpMode {
                 opMode.updateTelemetry(telemetry);
             }
         };
+    }
+
+    private void buildConfigDialog() {
+
+        FtcRobotControllerActivity ftcActivity = (FtcRobotControllerActivity) hardwareMap.appContext;
+        final AlertDialog.Builder builder = new AlertDialog.Builder(ftcActivity);
+
+        SeekBar delayBar = new SeekBar(ftcActivity);
+        delayBar.setMax(300);
+
+        delayBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
+                delay = i * 100;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        // 2. Chain together various setter methods to set the dialog characteristics
+        builder .setTitle("Configuration")
+                .setMessage("Delay:")
+                .setView(delayBar);
+
+        ftcActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
     }
 }
