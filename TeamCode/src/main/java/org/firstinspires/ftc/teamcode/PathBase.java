@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 /**
  * Base Class for Path Implementation
  * Created by James on 2016-10-09.
@@ -11,6 +13,7 @@ enum Alliance {
     NA
 }
 
+//TODO: get LinearOpMode functionality by extending LinearOpMode here
 public abstract class PathBase {
 
     protected Alliance alliance;

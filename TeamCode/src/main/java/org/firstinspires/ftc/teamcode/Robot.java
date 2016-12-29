@@ -39,6 +39,7 @@ public class Robot {
 
     private double DECELERATION_DISTANCE = 6 * Hardware.TICKS_PER_INCH;
     private double ACCELERATION_DISTANCE = 2 * Hardware.TICKS_PER_INCH;
+    private double MIN_SPEED = 0.2;
 
     public void encoderDrive (double speed, double distance) throws InterruptedException{
 
@@ -99,6 +100,10 @@ public class Robot {
         sleep(200);
     }
 
+    public void moveToTarget(int x, int z) {
+
+    }
+
     public void ballgrabber ( double speed, long time ) throws InterruptedException {
         hw.chickenMotor.setPower(speed);
         sleep(time);
@@ -109,7 +114,31 @@ public class Robot {
         sleep(time);
     }
 
-    private double MIN_SPEED = 0.2;
+    /**
+     * @param linear - desired linear velocity in inches/s
+     * @param angular - desired angular velocity in rad/s
+     */
+    private void setSpeed(double linear, double angular) {
+        double left_speed = (linear - (Hardware.WHEEL_BASE / 2) * angular) / Hardware.WHEEL_DIAMETER; //rounds per second
+        double right_speed = (linear + (Hardware.WHEEL_BASE / 2) * angular) / Hardware.WHEEL_DIAMETER; //rounds per second
+
+        double left_power = Hardware.ROUNDS_PER_MINUTE / 60 / left_speed;
+        double right_power = Hardware.ROUNDS_PER_MINUTE / 60 / right_speed;
+
+        //Scale the power to our range if it is exceeded
+        if (left_power > 1 || left_power < -1) {
+            right_power = right_power / Math.abs(left_power);
+            left_power = Math.signum(left_power);
+        }
+
+        if (right_power > 1 || right_power < -1) {
+            left_power = left_power / Math.abs(left_power);
+            right_power = Math.signum(right_power);
+        }
+
+        hw.leftMotor.setPower(left_power);
+        hw.rightMotor.setPower(right_power);
+    }
 
     private int acceleration (double increment, double max_speed, int ms_time) throws InterruptedException {
 

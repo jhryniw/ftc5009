@@ -32,10 +32,12 @@ public class Hardware {
     public static final int LED_CHANNEL = 5; // we assume that the LED pin of the RGB sensor is connected to digital port 5 (zero indexed).
 
     private HardwareMap hwMap;
-    public static float WHEEL_BASE = 13.5f;
+    public static double WHEEL_BASE = 13.5;
+    public static double WHEEL_DIAMETER = 4.0;
+    public static int ROUNDS_PER_MINUTE = 160;
     private static double TICKS_PER_MOTOR_REV = 1120;
     private static double DRIVE_GEAR_RATIO = 1.0;
-    private static double WHEEL_DIAMETER = 4.0;
+
 
     public static double TICKS_PER_INCH = (TICKS_PER_MOTOR_REV * DRIVE_GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
 
@@ -49,7 +51,7 @@ public class Hardware {
             leftMotor = hwMap.dcMotor.get("drive_left");
             rightMotor = hwMap.dcMotor.get("drive_right");
             chickenMotor = hwMap.dcMotor.get("chicken_fingers");
-            shooterMotor = hwMap.dcMotor.get( "shooter");
+            shooterMotor = hwMap.dcMotor.get("shooter");
         }
         catch (NullPointerException e) {
             throw new NullPointerException("Error: a motor did not initialize properly. Check the configuration!");

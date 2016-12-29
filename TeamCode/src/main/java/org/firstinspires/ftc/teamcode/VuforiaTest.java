@@ -28,6 +28,7 @@ public class VuforiaTest extends LinearOpMode {
 
     private static float MM_PER_INCH = 25.4f;
 
+    //TODO: Check that axes match for all images!
     private OpenGLMatrix wheelsPosition = OpenGLMatrix.translation(142 * MM_PER_INCH, 5 * MM_PER_INCH, 58.5f * MM_PER_INCH)
                                                       .multiplied(Orientation.getRotationMatrix(AxesReference.EXTRINSIC, AxesOrder.YXY, AngleUnit.DEGREES, -90, 0, 0)); //90 degrees in y
 
@@ -64,7 +65,7 @@ public class VuforiaTest extends LinearOpMode {
         beacons.get(3).setName("Gears");
         beacons.get(3).setLocation(gearsPosition);
 
-        applyPhoneInformation(beacons);
+        beacons = applyPhoneInformation(beacons);
 
         waitForStart();
 
@@ -96,11 +97,13 @@ public class VuforiaTest extends LinearOpMode {
         }
     }
 
-    private void applyPhoneInformation(VuforiaTrackables trackables) {
+    private VuforiaTrackables applyPhoneInformation(VuforiaTrackables trackables) {
         for (VuforiaTrackable t : trackables) {
             VuforiaTrackableDefaultListener listener = (VuforiaTrackableDefaultListener) t.getListener();
             listener.setPhoneInformation(phoneOffset, VuforiaLocalizer.CameraDirection.BACK);
             t.setListener(listener);
         }
+
+        return trackables;
     }
 }
