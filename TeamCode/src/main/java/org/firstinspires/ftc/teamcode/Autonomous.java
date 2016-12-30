@@ -2,7 +2,16 @@ package org.firstinspires.ftc.teamcode;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
+import android.widget.TextView;
+import android.view.View;
+import android.os.Bundle;
+import android.widget.ToggleButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+
+import org.firstinspires.ftc.teamcode.R;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -10,6 +19,7 @@ import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity
 
 import java.util.HashMap;
 import java.util.Set;
+
 import java.util.concurrent.Callable;
 
 /**
@@ -27,6 +37,7 @@ public class Autonomous extends LinearOpMode {
     private PathBase selectedPath;
 
     private int delay; //delay is in milliseconds
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -89,16 +100,26 @@ public class Autonomous extends LinearOpMode {
 
     private void buildConfigDialog() {
 
-        FtcRobotControllerActivity ftcActivity = (FtcRobotControllerActivity) hardwareMap.appContext;
+        final FtcRobotControllerActivity ftcActivity = (FtcRobotControllerActivity) hardwareMap.appContext;
         final AlertDialog.Builder builder = new AlertDialog.Builder(ftcActivity);
 
-        SeekBar delayBar = new SeekBar(ftcActivity);
+        LayoutInflater inflater = ftcActivity.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_configuration, null);
+
+        builder .setTitle("Configuration")
+                .setView(dialogView);
+
+        final TextView txtDelayBar = (TextView) dialogView.findViewById(R.id.txtDelayBar);
+        SeekBar delayBar = (SeekBar) dialogView.findViewById(R.id.delayBar);
         delayBar.setMax(300);
 
         delayBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
                 delay = i * 100;
+                txtDelayBar.setText("Delay: " + delay + "ms");
+
             }
 
             @Override
@@ -110,13 +131,23 @@ public class Autonomous extends LinearOpMode {
             public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
+
+            ToggleButton toggle = (ToggleButton) ftcActivity.findViewById(R.id.toggleButton1);
+            toggle.OnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+
+                    }
+                    else {
+
+                    }
+                }
+                public void
+            }
+
         });
 
         // 2. Chain together various setter methods to set the dialog characteristics
-        builder .setTitle("Configuration")
-                .setMessage("Delay:")
-                .setView(delayBar);
-
         ftcActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {

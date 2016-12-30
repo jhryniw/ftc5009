@@ -18,9 +18,9 @@ import static java.lang.Thread.sleep;
 
 public class Robot {
 
-    private Hardware hw = new Hardware();
+    Hardware hw = new Hardware();
     private ElapsedTime runtime = new ElapsedTime();
-    private OpModeCallbacks opModeCallbacks;
+    OpModeCallbacks opModeCallbacks;
 
     public static String name;
 
@@ -29,13 +29,13 @@ public class Robot {
         opModeCallbacks = callbacks;
         hw.init(hwMap);
 
-        // turn the LED on in the beginning, just so user will know that the sensor is active.
+        //turn the LED on in the beginning, just so user will know that the sensor is active.
         enableLed();
     }
 
-    /*
-     * Robot Driving Functionality
-     */
+
+     //Robot Driving Functionality
+
 
     private double DECELERATION_DISTANCE = 6 * Hardware.TICKS_PER_INCH;
     private double ACCELERATION_DISTANCE = 2 * Hardware.TICKS_PER_INCH;
@@ -190,9 +190,9 @@ public class Robot {
         hw.rightMotor.setPower(0);
     }
 
-    /*
-     * Color Sensor Functionality
-     */
+
+    //Color Sensor Functionality
+
     public float[] getRgb() {
         float[] rgb = {hw.colorSensor.red(), hw.colorSensor.green(), hw.colorSensor.green()};
         return rgb;
@@ -202,11 +202,11 @@ public class Robot {
         float[] hsvValues = {0f, 0f, 0f};
         Color.RGBToHSV((hw.colorSensor.red() * 255) / 800, (hw.colorSensor.green() * 255) / 800, (hw.colorSensor.blue() * 255) / 800, hsvValues);
         return hsvValues;
-    }
+        }
 
-    /*
-     * LED Functionality
-     */
+
+      //LED Functionality
+
     public void enableLed() {
         if(!hw.bLedOn)
             toggleLed();
