@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.widget.CompoundButton;
+import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.view.View;
@@ -37,7 +39,7 @@ public class Autonomous extends LinearOpMode {
     private PathBase selectedPath;
 
     private int delay; //delay is in milliseconds
-
+    private boolean configured = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -52,25 +54,29 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Red Beacons", new RedBeacons(robot, Alliance.RED, new Coordinate(0, 0)));
         pathList.put("Corner Goal", new CornerGoal(robot, Alliance.BLUE, new Coordinate(0, 0)));
         pathList.put("Ball Shooter", new BallShooter (robot, Alliance.NA, new Coordinate(0, 0)));
+        pathList.put("Target Test", new PDTest(robot, Alliance.NA, new Coordinate(0, 0)));
 
         //Run configuration
 
 
         //Select Path
         Set<String> strPathList = pathList.keySet();
-        selectedPath = pathList.get("Beacons");
-
-        telemetry.addLine("Status");
-        telemetry.addLine("EncoderTarget");
-        telemetry.addLine("Encoder");
-        updateTelemetry(telemetry);
+        selectedPath = pathList.get("Target Test");
 
         waitForStart();
 
+        robot.launchLocator();
+
         //Run selected path
         telemetry.addData("Status", "Running the path!");
-        selectedPath.run();
-        idle();
+
+        try {
+            selectedPath.run();
+            while(opModeIsActive()) { idle(); }
+        }
+        catch (InterruptedException e) {
+            robot.haltLocator();
+        }
     }
 
 
@@ -107,7 +113,14 @@ public class Autonomous extends LinearOpMode {
         View dialogView = inflater.inflate(R.layout.dialog_configuration, null);
 
         builder .setTitle("Configuration")
-                .setView(dialogView);
+                .setView(dialogView)
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        configured = true;
+                        dialog.dismiss();
+                    }
+                });
 
         final TextView txtDelayBar = (TextView) dialogView.findViewById(R.id.txtDelayBar);
         SeekBar delayBar = (SeekBar) dialogView.findViewById(R.id.delayBar);
@@ -130,19 +143,6 @@ public class Autonomous extends LinearOpMode {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
-            }
-
-            ToggleButton toggle = (ToggleButton) ftcActivity.findViewById(R.id.toggleButton1);
-            toggle.OnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                public void onCheckedChanged (CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
-
-                    }
-                    else {
-
-                    }
-                }
-                public void
             }
 
         });

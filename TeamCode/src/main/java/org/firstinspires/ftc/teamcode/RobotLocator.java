@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Path;
+import android.content.Context;
 import android.os.AsyncTask;
 
-import com.qualcomm.robotcore.eventloop.opmode.*;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.vuforia.HINT;
 import com.vuforia.Vuforia;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import org.firstinspires.ftc.teamcode.R;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -25,8 +25,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Created by James on 2016-12-10.
  */
 
-@Autonomous (name="VuforiaTest", group="vuforia")
-public class VuforiaTest extends LinearOpMode {
+public class RobotLocator {
 
     private static float MM_PER_INCH = 25.4f;
 
@@ -49,11 +48,12 @@ public class VuforiaTest extends LinearOpMode {
 
     private OpenGLMatrix phoneOffset = OpenGLMatrix.translation(-5 * MM_PER_INCH, 9.5f * MM_PER_INCH, 2.25f * MM_PER_INCH);
 
-    @Override
-    public void runOpMode() throws InterruptedException {
+    public RobotLocator() {}
+
+    public void init(Context ctx) {
         VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
         params.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        params.vuforiaLicenseKey = hardwareMap.appContext.getString(R.string.vuforia_license_key); //"AW5ADSz/////AAAAGZwQUUhq3k+GnK7vAfcImu4iQkhXG40fIHzKKwouEq4vAAtcpPlheUJOnrPCeHmsgF4SBZmierGuoSVWmgjQ/yCUKnJWTAt8CpVBSJWV3uP0FoI61JtCC/0JBK5ehCITvHlGzWtMQyyl4yb7qIXjAKZeiDI4ztBPwODBpJLOvASrNSYWD+Wo+UdILBdIfMmisTg3gKSFeGnV5YQmmZKIh8Ikzjh5/GrT4yWsmHZdIpZF2JFQA3V8wSqSCuKIi/CQGarB+k24MH8l/+dcXt8PxlW16cjUHjT86KlDhLfioUTcWUYIRR1CE/BtX8zUnV5FUimQXsiBRn3DZHGQQ+jJW/omsEhWe2ApwIrbsdp56KJh";
+        params.vuforiaLicenseKey = ctx.getString(R.string.vuforia_license_key); //"AW5ADSz/////AAAAGZwQUUhq3k+GnK7vAfcImu4iQkhXG40fIHzKKwouEq4vAAtcpPlheUJOnrPCeHmsgF4SBZmierGuoSVWmgjQ/yCUKnJWTAt8CpVBSJWV3uP0FoI61JtCC/0JBK5ehCITvHlGzWtMQyyl4yb7qIXjAKZeiDI4ztBPwODBpJLOvASrNSYWD+Wo+UdILBdIfMmisTg3gKSFeGnV5YQmmZKIh8Ikzjh5/GrT4yWsmHZdIpZF2JFQA3V8wSqSCuKIi/CQGarB+k24MH8l/+dcXt8PxlW16cjUHjT86KlDhLfioUTcWUYIRR1CE/BtX8zUnV5FUimQXsiBRn3DZHGQQ+jJW/omsEhWe2ApwIrbsdp56KJh";
         params.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
 
         VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(params);
@@ -74,18 +74,35 @@ public class VuforiaTest extends LinearOpMode {
         beacons.get(3).setLocation(gearsPosition);
 
         beacons = applyPhoneInformation(beacons);
+    }
 
-        waitForStart();
+    public VectorF getRobotLocation() {
+        return robotLocation;
+    }
 
-        fetcher.execute();
+    public float[] getRobotLocationXZ() {
+        return new float[] { robotLocation.get(0), robotLocation.get(2) };
+    }
 
-        while(opModeIsActive()) {
-            telemetry.addData("Status:", isTracking ? "Tracking" : "Not Tracking");
-            telemetry.addData("Robot location:", robotLocation.toString());
+    private void setLocation(VectorF location) {
+        robotLocation = location;
+    }
 
-            telemetry.update();
-            idle();
-        }
+    public boolean isTracking() {
+        return this.isTracking;
+    }
+    public void setTracking(boolean tracking) {
+        isTracking = tracking;
+    }
+
+    public void launch() {
+        beacons.activate();
+        fetcher.execute(beacons);
+    }
+
+    public void halt() {
+        fetcher.cancel(false);
+        beacons.deactivate();
     }
 
     private VuforiaTrackables applyPhoneInformation(VuforiaTrackables trackables) {
@@ -98,17 +115,15 @@ public class VuforiaTest extends LinearOpMode {
         return trackables;
     }
 
-    private class LocationFetcher extends AsyncTask<Void, Void, Void> {
+    private class LocationFetcher extends AsyncTask<VuforiaTrackables, Void, Void> {
 
         @Override
-        protected Void doInBackground(Void[] params) {
+        protected Void doInBackground(VuforiaTrackables[] params) {
 
-            beacons.activate();
-
-            while(opModeIsActive()) {
+            while(!this.isCancelled()) {
                 boolean tracking = false;
 
-                for (VuforiaTrackable b : beacons) {
+                for (VuforiaTrackable b : params[0]) {
                     VuforiaTrackableDefaultListener listener = ((VuforiaTrackableDefaultListener) b.getListener());
                     OpenGLMatrix update = listener.getUpdatedRobotLocation();
 
@@ -117,19 +132,12 @@ public class VuforiaTest extends LinearOpMode {
                     }
 
                     if (update != null) {
-                        robotLocation = update.getTranslation().multiplied(1f / MM_PER_INCH);
+                        setLocation(update.getTranslation().multiplied(1f / MM_PER_INCH));
                         break;
                     }
                 }
 
-                isTracking = tracking;
-
-                try {
-                    idle();
-                }
-                catch (InterruptedException e) {
-                    this.cancel(true);
-                }
+                setTracking(tracking);
             }
 
             return null;

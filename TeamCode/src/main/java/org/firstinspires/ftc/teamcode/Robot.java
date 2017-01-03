@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+
 import java.util.concurrent.Callable;
 
 import static java.lang.Thread.sleep;
@@ -18,30 +20,35 @@ import static java.lang.Thread.sleep;
 
 public class Robot {
 
-    Hardware hw = new Hardware();
+    private Hardware hw = new Hardware();
+    private RobotLocator locator = new RobotLocator();
     private ElapsedTime runtime = new ElapsedTime();
-    OpModeCallbacks opModeCallbacks;
+    private OpModeCallbacks opModeCallbacks;
 
     public static String name;
+
+    private static double P = 2;
+    private static double D = 50;
 
     public Robot(String robotName, HardwareMap hwMap, OpModeCallbacks callbacks) {
         name = robotName;
         opModeCallbacks = callbacks;
         hw.init(hwMap);
+        locator.init(hwMap.appContext);
 
-        //turn the LED on in the beginning, just so user will know that the sensor is active.
+        // turn the LED on in the beginning, just so user will know that the sensor is active.
         enableLed();
     }
 
-
-     //Robot Driving Functionality
-
+    /*
+     * Robot Driving Functionality
+     */
 
     private double DECELERATION_DISTANCE = 6 * Hardware.TICKS_PER_INCH;
     private double ACCELERATION_DISTANCE = 2 * Hardware.TICKS_PER_INCH;
     private double MIN_SPEED = 0.2;
 
-    public void encoderDrive (double speed, double distance) throws InterruptedException{
+    public void encoderDrive (double speed, double distance) throws InterruptedException {
 
         int target = (int)Math.abs(distance * Hardware.TICKS_PER_INCH);
 
@@ -100,8 +107,61 @@ public class Robot {
         sleep(200);
     }
 
-    public void moveToTarget(int x, int z) {
+    public void testLoop() throws InterruptedException {
+        while(opModeCallbacks.opModeIsActive()) {
+            opModeCallbacks.addData("Status", locator.isTracking() ? "Tracking" : "Not Tracking");
+            opModeCallbacks.addData("Robot location", locator.getRobotLocation().toString());
 
+            opModeCallbacks.updateTelemetry();
+            opModeCallbacks.idle();
+        }
+    }
+
+    public void launchLocator() {
+        locator.launch();
+    }
+
+    public void haltLocator() {
+        locator.halt();
+    }
+
+    public void moveToTarget(int x, int z, double speed) throws InterruptedException {
+
+        float[] start = locator.getRobotLocationXZ();
+        float[] goal = { x, z };
+
+        double u = 0;
+        double dx = goal[0] - start[0];
+        double dz = goal[1] - start[1];
+        double last_error = 0;
+        double error = 0;
+        double diff_error = 0;
+
+        while (u < 1) {
+            float[] location = locator.getRobotLocationXZ();
+
+            double rx = location[0] - start[0];
+            double rz = location[1] - start[1];
+
+            u  = (rx * dx + rz * dz) / (dx * dx + dz * dz);
+            error = (rz * dx - rx * dz) / Math.sqrt(dx * dx + dz * dz);
+
+            diff_error = error - last_error;
+            last_error = error;
+
+            double steer = error * P - diff_error * D;
+
+            setSpeed(speed, steer);
+
+            opModeCallbacks.addData("Status:", "%s", locator.isTracking() ? "Tracking" : "Not Tracking");
+            opModeCallbacks.addData("Position:", "{ %.2f, %.2f }", location[0], location[1]);
+            opModeCallbacks.addData("Speed:", "{ %.2f, %.2f }", speed, steer);
+            opModeCallbacks.addData("Goal:", "{ %.2f, %.2f }", goal[0], goal[1]);
+            opModeCallbacks.updateTelemetry();
+            opModeCallbacks.idle();
+        }
+
+        stop();
     }
 
     public void ballgrabber ( double speed, long time ) throws InterruptedException {
@@ -190,9 +250,9 @@ public class Robot {
         hw.rightMotor.setPower(0);
     }
 
-
-    //Color Sensor Functionality
-
+    /*
+     * Color Sensor Functionality
+     */
     public float[] getRgb() {
         float[] rgb = {hw.colorSensor.red(), hw.colorSensor.green(), hw.colorSensor.green()};
         return rgb;
@@ -202,11 +262,11 @@ public class Robot {
         float[] hsvValues = {0f, 0f, 0f};
         Color.RGBToHSV((hw.colorSensor.red() * 255) / 800, (hw.colorSensor.green() * 255) / 800, (hw.colorSensor.blue() * 255) / 800, hsvValues);
         return hsvValues;
-        }
+    }
 
-
-      //LED Functionality
-
+    /*
+     * LED Functionality
+     */
     public void enableLed() {
         if(!hw.bLedOn)
             toggleLed();

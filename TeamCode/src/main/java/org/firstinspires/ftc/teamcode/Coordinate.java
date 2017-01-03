@@ -5,11 +5,11 @@ package org.firstinspires.ftc.teamcode;
  */
 
 public class Coordinate {
-    public int x;
-    public int y;
+    public double x;
+    public double z;
 
-    public Coordinate(int ix, int iy) {
+    public Coordinate(double ix, double iz) {
         x = ix;
-        y = iy;
+        z = iz;
     }
 }
