@@ -7,7 +7,7 @@ package org.firstinspires.ftc.teamcode;
 public class Beacons extends PathBase {
 
     public Beacons(Robot r, Alliance a, Coordinate startLoc) {
-        super(r, a, startLoc);
+        super(r, a, startLoc, "Beacons");
     }
 
     @Override

@@ -6,7 +6,7 @@ package org.firstinspires.ftc.teamcode;
 
 public class RedBeacons extends PathBase {
 
-        public RedBeacons(Robot r, Alliance a, Coordinate startLoc) { super(r, a, startLoc); }
+        public RedBeacons(Robot r, Alliance a, Coordinate startLoc) { super(r, a, startLoc, "Red Beacons"); }
 
     @Override
     void run() throws InterruptedException {

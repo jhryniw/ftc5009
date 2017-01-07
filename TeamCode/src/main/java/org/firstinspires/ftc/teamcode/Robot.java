@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 
 import java.util.concurrent.Callable;
@@ -126,7 +127,20 @@ public class Robot {
         locator.halt();
     }
 
-    public void moveToTarget(int x, int z, double speed) throws InterruptedException {
+    public void moveToTargetEncoder(int x, int z,int o, double speed) throws InterruptedException {
+
+        float[] start = locator.getRobotLocationXZ();
+        float[] goal = {x, z};
+        double dx = goal[0] - start[0];
+        double dz = goal[1] - start[1];
+        double d = Math.sqrt(dx * dx + dz * dz);
+        double theta = Math.acos((dx * Math.cos(o) + dz * Math.sin(o)) / d);
+
+        pivot( (int) theta, speed);
+        encoderDrive(speed, d);
+
+    }
+    public void moveToTarget(int x, int z,  double speed) throws InterruptedException {
 
         float[] start = locator.getRobotLocationXZ();
         float[] goal = { x, z };
