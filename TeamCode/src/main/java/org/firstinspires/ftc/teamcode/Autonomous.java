@@ -4,9 +4,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.view.View;
 import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.view.View;
 import android.os.Bundle;
@@ -19,7 +23,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import java.util.concurrent.Callable;
@@ -39,11 +45,11 @@ public class Autonomous extends LinearOpMode {
     private PathBase selectedPath;
 
     private int delay; //delay is in milliseconds
+    private Alliance alliance = Alliance.BLUE;
     private boolean configured = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        buildConfigDialog();
 
         //Initialize robot/hardware
         robot = new Robot("proto1", hardwareMap, getCallbacks(this));
@@ -57,7 +63,9 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Target Test", new PDTest(robot, Alliance.NA, new Coordinate(0, 0)));
 
         //Run configuration
+        buildConfigDialog();
 
+        while(!configured) {idle();}
 
         //Select Path
         Set<String> strPathList = pathList.keySet();
@@ -118,6 +126,9 @@ public class Autonomous extends LinearOpMode {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         configured = true;
+
+                        //Edit shared preferences
+
                         dialog.dismiss();
                     }
                 });
@@ -132,7 +143,6 @@ public class Autonomous extends LinearOpMode {
             public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
                 delay = i * 100;
                 txtDelayBar.setText("Delay: " + delay + "ms");
-
             }
 
             @Override
@@ -145,6 +155,38 @@ public class Autonomous extends LinearOpMode {
 
             }
 
+        });
+
+        ToggleButton btnAlliance = (ToggleButton) dialogView.findViewById(R.id.btnAlliance);
+        btnAlliance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToggleButton btn = (ToggleButton) v;
+                if(btn.isChecked()) {
+                    alliance = Alliance.BLUE;
+                }
+                else {
+                    alliance = Alliance.RED;
+                }
+            }
+        });
+
+        final List<String> pathNames = new ArrayList<String>(pathList.keySet());
+        ArrayAdapter<String> pathAdapter = new ArrayAdapter<String>(dialogView.getContext(), android.R.layout.simple_spinner_item, pathNames);
+
+        Spinner list = (Spinner) dialogView.findViewById(R.id.pathList);
+        list.setAdapter(pathAdapter);
+
+        list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedPath = pathList.get(pathNames.get(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
         });
 
         // 2. Chain together various setter methods to set the dialog characteristics
