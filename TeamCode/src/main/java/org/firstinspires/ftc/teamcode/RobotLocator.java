@@ -21,6 +21,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.util.Timer;
+
 /**
  * Created by James on 2016-12-10.
  */
@@ -34,6 +36,7 @@ public class RobotLocator {
     private LocationFetcher fetcher = new LocationFetcher();
 
     private boolean isTracking = false;
+    private int fps = 0;
 
     //TODO: Check that axes match for all images!
     private OpenGLMatrix wheelsPosition = OpenGLMatrix.translation(142 * MM_PER_INCH, 5 * MM_PER_INCH, 58.5f * MM_PER_INCH)
@@ -95,6 +98,9 @@ public class RobotLocator {
         isTracking = tracking;
     }
 
+    public int getFps() { return fps; }
+    public void setFps(int rate) { fps = rate; }
+
     public void launch() {
         beacons.activate();
         fetcher.execute(beacons);
@@ -117,6 +123,9 @@ public class RobotLocator {
 
     private class LocationFetcher extends AsyncTask<VuforiaTrackables, Void, Void> {
 
+        long start = System.currentTimeMillis();
+        int cycles = 0;
+
         @Override
         protected Void doInBackground(VuforiaTrackables[] params) {
 
@@ -138,6 +147,13 @@ public class RobotLocator {
                 }
 
                 setTracking(tracking);
+
+                Thread.yield();
+                cycles++;
+                long duration = System.currentTimeMillis() - start;
+
+                int avg_rate = (int) (cycles * 1000 / duration);
+                setFps(avg_rate);
             }
 
             return null;

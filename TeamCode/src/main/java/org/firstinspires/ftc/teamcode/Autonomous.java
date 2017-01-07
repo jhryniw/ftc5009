@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -40,9 +43,9 @@ public class Autonomous extends LinearOpMode {
 
     private Robot robot;
 
-    //TODO: Define Path List
     private HashMap<String, PathBase> pathList = new HashMap<>();
     private PathBase selectedPath;
+    private SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(hardwareMap.appContext);
 
     private int delay; //delay is in milliseconds
     private Alliance alliance = Alliance.BLUE;
@@ -61,6 +64,11 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Corner Goal", new CornerGoal(robot, Alliance.BLUE, new Coordinate(0, 0)));
         pathList.put("Ball Shooter", new BallShooter (robot, Alliance.NA, new Coordinate(0, 0)));
         pathList.put("Target Test", new PDTest(robot, Alliance.NA, new Coordinate(0, 0)));
+
+        //Initialize config parameters
+        delay = prefs.getInt("DELAY_KEY", 0);
+        alliance = prefs.getString("ALLIANCE_KEY", "BLUE").equals("BLUE") ? Alliance.BLUE : Alliance.RED;
+        selectedPath = pathList.get(prefs.getString("PATH_KEY", pathList.keySet().toArray()[0].toString()));
 
         //Run configuration
         buildConfigDialog();
@@ -127,15 +135,18 @@ public class Autonomous extends LinearOpMode {
                     public void onClick(DialogInterface dialog, int which) {
                         configured = true;
 
-                        //Edit shared preferences
+                        SharedPreferences.Editor editor = prefs.edit();
 
                         dialog.dismiss();
                     }
                 });
 
         final TextView txtDelayBar = (TextView) dialogView.findViewById(R.id.txtDelayBar);
+        txtDelayBar.setText("Delay: " + delay + "ms");
+
         SeekBar delayBar = (SeekBar) dialogView.findViewById(R.id.delayBar);
         delayBar.setMax(300);
+        delayBar.setProgress(delay / 100);
 
         delayBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -158,6 +169,7 @@ public class Autonomous extends LinearOpMode {
         });
 
         ToggleButton btnAlliance = (ToggleButton) dialogView.findViewById(R.id.btnAlliance);
+        btnAlliance.setChecked(alliance == Alliance.BLUE);
         btnAlliance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -176,6 +188,7 @@ public class Autonomous extends LinearOpMode {
 
         Spinner list = (Spinner) dialogView.findViewById(R.id.pathList);
         list.setAdapter(pathAdapter);
+        list.setSelection(pathList.);
 
         list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

@@ -111,6 +111,7 @@ public class Robot {
         while(opModeCallbacks.opModeIsActive()) {
             opModeCallbacks.addData("Status", locator.isTracking() ? "Tracking" : "Not Tracking");
             opModeCallbacks.addData("Robot location", locator.getRobotLocation().toString());
+            opModeCallbacks.addData("Rate", Integer.toString(locator.getFps()));
 
             opModeCallbacks.updateTelemetry();
             opModeCallbacks.idle();
