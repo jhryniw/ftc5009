@@ -44,6 +44,7 @@ public class Autonomous extends LinearOpMode {
     private Robot robot;
 
     private HashMap<String, PathBase> pathList = new HashMap<>();
+    private List<String> pathNames;
     private PathBase selectedPath;
     private SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(hardwareMap.appContext);
 
@@ -65,6 +66,8 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Ball Shooter", new BallShooter (robot, Alliance.NA, new Coordinate(0, 0)));
         pathList.put("Target Test", new PDTest(robot, Alliance.NA, new Coordinate(0, 0)));
 
+        pathNames = new ArrayList<String>(pathList.keySet());
+
         //Initialize config parameters
         delay = prefs.getInt("DELAY_KEY", 0);
         alliance = prefs.getString("ALLIANCE_KEY", "BLUE").equals("BLUE") ? Alliance.BLUE : Alliance.RED;
@@ -74,10 +77,6 @@ public class Autonomous extends LinearOpMode {
         buildConfigDialog();
 
         while(!configured) {idle();}
-
-        //Select Path
-        Set<String> strPathList = pathList.keySet();
-        selectedPath = pathList.get("Target Test");
 
         waitForStart();
 
@@ -120,6 +119,17 @@ public class Autonomous extends LinearOpMode {
         };
     }
 
+    private int getPathPosition(String key) {
+        if (pathList.containsKey(key)) {
+            for (int i = 0; i < pathNames.size(); i++) {
+                if(pathNames.get(i).equals(key))
+                    return i;
+            }
+        }
+
+        return -1;
+    }
+
     private void buildConfigDialog() {
 
         final FtcRobotControllerActivity ftcActivity = (FtcRobotControllerActivity) hardwareMap.appContext;
@@ -136,6 +146,9 @@ public class Autonomous extends LinearOpMode {
                         configured = true;
 
                         SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt("DELAY_KEY", delay);
+                        editor.putString("ALLIANCE_KEY", alliance == Alliance.BLUE ? "BLUE" : "RED");
+                        editor.putString("PATH_KEY", selectedPath.name);
 
                         dialog.dismiss();
                     }
@@ -183,12 +196,11 @@ public class Autonomous extends LinearOpMode {
             }
         });
 
-        final List<String> pathNames = new ArrayList<String>(pathList.keySet());
         ArrayAdapter<String> pathAdapter = new ArrayAdapter<String>(dialogView.getContext(), android.R.layout.simple_spinner_item, pathNames);
 
         Spinner list = (Spinner) dialogView.findViewById(R.id.pathList);
         list.setAdapter(pathAdapter);
-        //list.setSelection(pathList.);
+        list.setSelection(getPathPosition(selectedPath.name));
 
         list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
