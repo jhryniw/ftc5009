@@ -188,7 +188,7 @@ public class Autonomous extends LinearOpMode {
 
         Spinner list = (Spinner) dialogView.findViewById(R.id.pathList);
         list.setAdapter(pathAdapter);
-        list.setSelection(pathList.);
+        //list.setSelection(pathList.);
 
         list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
