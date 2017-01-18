@@ -24,6 +24,11 @@ public class Hardware {
     public DcMotor rightMotor;
     public DcMotor chickenMotor;
     public DcMotor shooterMotor;
+    public DcMotor liftMotor;
+
+    //Servos
+    public Servo leftClaw;
+    public Servo rightClaw;
 
     //Color Sensor + LED
     public DeviceInterfaceModule cdim;
@@ -52,6 +57,10 @@ public class Hardware {
             rightMotor = hwMap.dcMotor.get("drive_right");
             chickenMotor = hwMap.dcMotor.get("chicken_fingers");
             shooterMotor = hwMap.dcMotor.get("shooter");
+            liftMotor = hwMap.dcMotor.get("lift");
+
+            leftClaw = hwMap.servo.get("left_claw");
+            rightClaw = hwMap.servo.get("right_claw");
         }
         catch (NullPointerException e) {
             throw new NullPointerException("Error: a motor did not initialize properly. Check the configuration!");
@@ -66,9 +75,17 @@ public class Hardware {
         chickenMotor.setPower(0);
         shooterMotor.setPower(0);
 
+        leftClaw.scaleRange(0.5, 0.95);
+        rightClaw.scaleRange(0.05, 0.5);
+
+        //leftClaw.setDirection(Servo.Direction.REVERSE);
+
+        leftClaw.setPosition(1);
+        rightClaw.setPosition(0);
+
         //ColorSensor setup
-        cdim = hwMap.deviceInterfaceModule.get("dim");
+        /*cdim = hwMap.deviceInterfaceModule.get("dim");
         cdim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
-        colorSensor = hwMap.colorSensor.get("color");
+        colorSensor = hwMap.colorSensor.get("color");*/
     }
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Debug;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -22,19 +23,22 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by James on 2016-12-10.
  */
 
-public class RobotLocator {
+public class RobotLocator extends AsyncTask<Void, Void, Void> {
 
     private static float MM_PER_INCH = 25.4f;
+    private static int FPS = 30;
+    private static int MS_CYCLE_TIME = (int) (1000 / FPS);
 
     private VectorF robotLocation = new VectorF(0, 0, 0);
     private VuforiaTrackables beacons;
-    private LocationFetcher fetcher = new LocationFetcher();
 
+    private long last_cycle;
     private boolean isTracking = false;
     private int fps = 0;
 
@@ -50,8 +54,6 @@ public class RobotLocator {
     private OpenGLMatrix gearsPosition = OpenGLMatrix.translation(59 * MM_PER_INCH, 5 * MM_PER_INCH, 142 * MM_PER_INCH);
 
     private OpenGLMatrix phoneOffset = OpenGLMatrix.translation(-5 * MM_PER_INCH, 9.5f * MM_PER_INCH, 2.25f * MM_PER_INCH);
-
-    public RobotLocator() {}
 
     public void init(Context ctx) {
         VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
@@ -77,38 +79,33 @@ public class RobotLocator {
         beacons.get(3).setLocation(gearsPosition);
 
         beacons = applyPhoneInformation(beacons);
+
+        beacons.activate();
     }
 
     public VectorF getRobotLocation() {
+        updateLocation();
         return robotLocation;
     }
 
     public float[] getRobotLocationXZ() {
+        updateLocation();
         return new float[] { robotLocation.get(0), robotLocation.get(2) };
-    }
-
-    private void setLocation(VectorF location) {
-        robotLocation = location;
     }
 
     public boolean isTracking() {
         return this.isTracking;
     }
-    public void setTracking(boolean tracking) {
-        isTracking = tracking;
-    }
 
     public int getFps() { return fps; }
-    public void setFps(int rate) { fps = rate; }
 
     public void launch() {
-        beacons.activate();
-        fetcher.execute(beacons);
+        //this.execute();
     }
 
     public void halt() {
-        fetcher.cancel(false);
-        beacons.deactivate();
+        //this.cancel(true);
+        //isTracking = false;S
     }
 
     private VuforiaTrackables applyPhoneInformation(VuforiaTrackables trackables) {
@@ -121,42 +118,76 @@ public class RobotLocator {
         return trackables;
     }
 
-    private class LocationFetcher extends AsyncTask<VuforiaTrackables, Void, Void> {
+    private void updateLocation() {
 
-        long start = System.currentTimeMillis();
-        int cycles = 0;
+        try {
+            boolean tracking = false;
 
-        @Override
-        protected Void doInBackground(VuforiaTrackables[] params) {
+            for (VuforiaTrackable b : beacons) {
+                VuforiaTrackableDefaultListener listener = ((VuforiaTrackableDefaultListener) b.getListener());
+                OpenGLMatrix update = listener.getUpdatedRobotLocation();
 
-            while(!this.isCancelled()) {
-                boolean tracking = false;
-
-                for (VuforiaTrackable b : params[0]) {
-                    VuforiaTrackableDefaultListener listener = ((VuforiaTrackableDefaultListener) b.getListener());
-                    OpenGLMatrix update = listener.getUpdatedRobotLocation();
-
-                    if(listener.getPose() != null) {
-                        tracking = true;
-                    }
-
-                    if (update != null) {
-                        setLocation(update.getTranslation().multiplied(1f / MM_PER_INCH));
-                        break;
-                    }
+                if (listener.getPose() != null) {
+                    tracking = true;
                 }
 
-                setTracking(tracking);
-
-                Thread.yield();
-                cycles++;
-                long duration = System.currentTimeMillis() - start;
-
-                int avg_rate = (int) (cycles * 1000 / duration);
-                setFps(avg_rate);
+                if (update != null) {
+                    robotLocation = update.getTranslation().multiplied(1f / MM_PER_INCH);
+                    break;
+                }
             }
 
-            return null;
+            isTracking = tracking;
         }
+        catch (Exception e) {
+
+        }
+    }
+
+    @Override
+    protected Void doInBackground(Void... params) {
+        Debug.waitForDebugger();
+        last_cycle = System.currentTimeMillis();
+
+        try {
+            boolean tracking = false;
+
+            for (VuforiaTrackable b : beacons) {
+                VuforiaTrackableDefaultListener listener = ((VuforiaTrackableDefaultListener) b.getListener());
+                OpenGLMatrix update = listener.getUpdatedRobotLocation();
+
+                if (listener.getPose() != null) {
+                    tracking = true;
+                }
+
+                if (update != null) {
+                    robotLocation = update.getTranslation().multiplied(1f / MM_PER_INCH);
+                    break;
+                }
+            }
+
+            isTracking = tracking;
+
+            long duration = System.currentTimeMillis() - last_cycle;
+
+            if (duration < MS_CYCLE_TIME) {
+                fps = FPS;
+                Thread.sleep(MS_CYCLE_TIME - duration);
+            }
+            else{
+                fps = (int) (1000 / duration);
+            }
+
+            last_cycle = System.currentTimeMillis();
+        }
+        catch(InterruptedException e) {
+            halt();
+        }
+        catch (Exception e) {
+            halt();
+            launch();
+        }
+
+        return null;
     }
 }

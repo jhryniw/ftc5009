@@ -46,7 +46,7 @@ public class Autonomous extends LinearOpMode {
     private HashMap<String, PathBase> pathList = new HashMap<>();
     private List<String> pathNames;
     private PathBase selectedPath;
-    private SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(hardwareMap.appContext);
+    private SharedPreferences prefs;
 
     private int delay; //delay is in milliseconds
     private Alliance alliance = Alliance.BLUE;
@@ -69,6 +69,7 @@ public class Autonomous extends LinearOpMode {
         pathNames = new ArrayList<String>(pathList.keySet());
 
         //Initialize config parameters
+        prefs = PreferenceManager.getDefaultSharedPreferences(hardwareMap.appContext);
         delay = prefs.getInt("DELAY_KEY", 0);
         alliance = prefs.getString("ALLIANCE_KEY", "BLUE").equals("BLUE") ? Alliance.BLUE : Alliance.RED;
         selectedPath = pathList.get(prefs.getString("PATH_KEY", pathList.keySet().toArray()[0].toString()));
@@ -83,8 +84,6 @@ public class Autonomous extends LinearOpMode {
         robot.launchLocator();
 
         //Run selected path
-        telemetry.addData("Status", "Running the path!");
-
         try {
             selectedPath.run();
             while(opModeIsActive()) { idle(); }
@@ -149,6 +148,7 @@ public class Autonomous extends LinearOpMode {
                         editor.putInt("DELAY_KEY", delay);
                         editor.putString("ALLIANCE_KEY", alliance == Alliance.BLUE ? "BLUE" : "RED");
                         editor.putString("PATH_KEY", selectedPath.name);
+                        editor.apply();
 
                         dialog.dismiss();
                     }
