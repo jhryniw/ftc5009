@@ -1,25 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Created by James on 2016-09-26.
  * Basic TeleOp Program for K9
  */
-@Disabled
-@TeleOp(name="K9TeleOp", group = "TeleOp")
-public class K9TeleOp extends LinearOpMode {
+
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOp", group = "TeleOp")
+public class TeleOp extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     public static final float POWER_THRESHOLD = 0.05f;
     public static final float CHICKEN_POWER = 0.5f;
     private int chicken_state = 0;
-    public static final float SHOOTER_POWER = 0.9f;
+    public static final float SHOOTER_POWER = 1f;
     private  int shooter_state = 0;
     private boolean chicken_is_clicked = false;
     private boolean r2_is_clicked = false;
@@ -31,16 +27,27 @@ public class K9TeleOp extends LinearOpMode {
         waitForStart();
 
         // Setup the motors using K9Hardware
-        K9Hardware robot = new K9Hardware();
+        Hardware robot = new Hardware();
         robot.init(hardwareMap);
 
         runtime.reset();
 
         while (opModeIsActive()) {
 
-            //Get joystick y values
-            float l_power = -gamepad1.left_stick_y;
-            float r_power = -gamepad1.right_stick_y;
+            double ts_cycle = runtime.milliseconds();
+
+            //Lift
+            //TODO: Make servos go outwards when the lift is raised
+            if(gamepad1.left_bumper) {
+                robot.liftMotor.setPower(1);
+            }
+            else if (gamepad1.left_trigger > 0) {
+                robot.liftMotor.setPower(-1);
+            }
+            else
+                robot.liftMotor.setPower(0);
+
+            /*
             boolean chicken_power = gamepad1.a;
             float chicken_speed = 90;
             float shooter_power = gamepad1.right_trigger;
@@ -88,7 +95,7 @@ public class K9TeleOp extends LinearOpMode {
                 chicken_is_clicked = false;
             }
 
-           //handle servo bounce erroruu2[';2qjknjknqq12    221qq2q2Q22Q2qQQQqQ1Q2qq2QQ22           Qjv2q222QQ[';[''
+           //handle servo bounce error
             if (gamepad1.x && servo_is_clicked == 0) {
                 servo_is_clicked = 1;
                 robot.crazy_servo.setPosition(0.9);
@@ -110,15 +117,42 @@ public class K9TeleOp extends LinearOpMode {
 
             }*/
 
-            if (l_power > 0)
-                l_power = (float)Math.pow(l_power,2);
-            else if (l_power < 0)
-                l_power = -(float)Math.pow(l_power,2);
+            if(gamepad1.dpad_up) {
 
-            if (r_power > 0)
-                r_power = (float)Math.pow(r_power,2);
-            else if (r_power < 0)
-                r_power = -(float)Math.pow(r_power,2);
+                double leftPos = robot.leftClaw.getPosition() - 0.05;
+                double rightPos = robot.rightClaw.getPosition() + 0.05;
+
+                if(leftPos < 0)
+                    robot.leftClaw.setPosition(0);
+                else
+                    robot.leftClaw.setPosition(leftPos);
+
+                if(rightPos > 1)
+                    robot.rightClaw.setPosition(1);
+                else
+                    robot.rightClaw.setPosition(rightPos);
+            }
+            else if (gamepad1.dpad_down) {
+                double leftPos = robot.leftClaw.getPosition() + 0.05;
+                double rightPos = robot.rightClaw.getPosition() - 0.05;
+
+                if(leftPos > 1)
+                    robot.leftClaw.setPosition(1);
+                else
+                    robot.leftClaw.setPosition(leftPos);
+
+                if(rightPos < 0)
+                    robot.rightClaw.setPosition(0);
+                else
+                    robot.rightClaw.setPosition(rightPos);
+            }
+
+            //Get joystick y values
+            double l_power = -gamepad1.left_stick_y;
+            double r_power = -gamepad1.right_stick_y;
+
+            l_power = Math.signum(l_power) * l_power * l_power;
+            r_power = Math.signum(r_power) * r_power * r_power;
 
             if (Math.abs(l_power) < POWER_THRESHOLD)
                 l_power = 0;
@@ -126,14 +160,15 @@ public class K9TeleOp extends LinearOpMode {
                 r_power = 0;
 
             //apply values to motor speed
-            robot.leftMotor.setPower((double)l_power);
-            robot.rightMotor.setPower((double)r_power);
+            robot.leftMotor.setPower(l_power);
+            robot.rightMotor.setPower(r_power);
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Claws", "Left: %.2f Right %.2f", robot.leftClaw.getPosition(), robot.rightClaw.getPosition());
+            telemetry.addData("Left", "Bumper: %s Trigger: %.2f", String.valueOf(gamepad1.left_bumper), gamepad1.left_trigger);
             telemetry.update();
 
             idle();
-
         }
     }
 }

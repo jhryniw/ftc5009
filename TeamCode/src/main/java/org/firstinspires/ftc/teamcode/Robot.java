@@ -8,6 +8,9 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+
 import java.util.concurrent.Callable;
 
 import static java.lang.Thread.sleep;
@@ -19,15 +22,21 @@ import static java.lang.Thread.sleep;
 public class Robot {
 
     private Hardware hw = new Hardware();
+    private RobotLocator locator = new RobotLocator();
     private ElapsedTime runtime = new ElapsedTime();
     private OpModeCallbacks opModeCallbacks;
 
     public static String name;
 
+    private static double MAX_POWER = 0.6;
+    private static double P = 0.2;
+    private static double D = 8;
+
     public Robot(String robotName, HardwareMap hwMap, OpModeCallbacks callbacks) {
         name = robotName;
         opModeCallbacks = callbacks;
         hw.init(hwMap);
+        locator.init(hwMap.appContext);
 
         // turn the LED on in the beginning, just so user will know that the sensor is active.
         enableLed();
@@ -39,8 +48,9 @@ public class Robot {
 
     private double DECELERATION_DISTANCE = 6 * Hardware.TICKS_PER_INCH;
     private double ACCELERATION_DISTANCE = 2 * Hardware.TICKS_PER_INCH;
+    private double MIN_SPEED = 0.2;
 
-    public void encoderDrive (double speed, double distance) throws InterruptedException{
+    public void encoderDrive (double speed, double distance) throws InterruptedException {
 
         int target = (int)Math.abs(distance * Hardware.TICKS_PER_INCH);
 
@@ -99,6 +109,107 @@ public class Robot {
         sleep(200);
     }
 
+    public void testLoop() throws InterruptedException {
+        while(opModeCallbacks.opModeIsActive()) {
+            opModeCallbacks.addData("Status", locator.isTracking() ? "Tracking" : "Not Tracking");
+            opModeCallbacks.addData("Robot location", locator.getRobotLocation().toString());
+            opModeCallbacks.addData("Rate", Integer.toString(locator.getFps()));
+
+            opModeCallbacks.updateTelemetry();
+            opModeCallbacks.idle();
+        }
+    }
+
+    public void launchLocator() {
+        locator.launch();
+    }
+
+    public void haltLocator() {
+        locator.halt();
+    }
+
+    public void moveToTargetEncoder(int x, int z,int o, double speed) throws InterruptedException {
+
+        while(!locator.isTracking()) {
+            locator.getRobotLocation();
+            opModeCallbacks.idle();
+        }
+
+        float[] start = locator.getRobotLocationXZ();
+        float[] goal = {x, z};
+        double dx = goal[0] - start[0];
+        double dz = goal[1] - start[1];
+        double d = Math.sqrt(dx * dx + dz * dz);
+        double theta = Math.toDegrees(Math.acos((dx * Math.cos(o) + dz * Math.sin(o)) / d));
+
+        opModeCallbacks.addData("Distance", Double.toString(d));
+        opModeCallbacks.addData("Theta", Double.toString(theta));
+        opModeCallbacks.updateTelemetry();
+
+        Thread.sleep(3000);
+        //pivot( (int) theta, -speed);
+        //encoderDrive(-speed, d);
+
+    }
+
+    public void moveToTarget(int x, int z,  double speed) throws InterruptedException {
+
+        float[] start = locator.getRobotLocationXZ();
+        float[] goal = { x, z };
+
+        double u = 0;
+        double dx = goal[0] - start[0];
+        double dz = goal[1] - start[1];
+        double e = Math.sqrt(dx * dx + dz + dz);
+        double last_error = 0;
+        double error = 0;
+        double diff_error = 0;
+
+        while (e > 1 && opModeCallbacks.opModeIsActive()) {
+            float[] location = locator.getRobotLocationXZ();
+
+            double rx = location[0] - start[0];
+            double rz = location[1] - start[1];
+
+            if(rx == 0) {
+                rx = 0.01;
+            }
+            if(rz == 0) {
+                rz = 0.01;
+            }
+
+            double ex = goal[0] - location[0];
+            double ez = goal[1] - location[1];
+
+            e = Math.sqrt(ex * ex + ez * ez);
+
+            //u  = (rx * dx + rz * dz) / (dx * dx + dz * dz);
+            error = (rz * dx - rx * dz) / Math.sqrt(dx * dx + dz * dz);
+            //double blah = (rx * dx + rz * dz) / (Math.sqrt(rx * rx + rz * rz) * Math.sqrt(dx * dx + dz * dz));
+            //error = Math.toDegrees(Math.acos(blah));
+
+            diff_error = error - last_error;
+            last_error = error;
+
+            double steer = error * P - diff_error * D;
+
+            setSpeed(-speed, steer);
+
+            opModeCallbacks.addData("Status:", "%s", locator.isTracking() ? "Tracking" : "Not Tracking");
+            opModeCallbacks.addData("Robot location", locator.getRobotLocation().toString());
+            opModeCallbacks.addData("Errors", "{ %.2f, %.2f, %.2f }", e, error, diff_error);
+            opModeCallbacks.addData("Position:", "{ %.2f, %.2f }", location[0], location[1]);
+            opModeCallbacks.addData("Speed:", "{ %.2f, %.2f }", speed, steer);
+            opModeCallbacks.addData("Goal:", "%.2f { %.2f, %.2f }", u, goal[0], goal[1]);
+            opModeCallbacks.addData("Rate", Integer.toString(locator.getFps()));
+            opModeCallbacks.updateTelemetry();
+
+            opModeCallbacks.idle();
+        }
+
+        stop();
+    }
+
     public void ballgrabber ( double speed, long time ) throws InterruptedException {
         hw.chickenMotor.setPower(speed);
         sleep(time);
@@ -109,7 +220,38 @@ public class Robot {
         sleep(time);
     }
 
-    private double MIN_SPEED = 0.2;
+    /**
+     * @param linear - desired linear velocity in inches/s
+     * @param angular - desired angular velocity in rad/s
+     */
+    private void setSpeed(double linear, double angular) {
+        double left_speed = (linear - (Hardware.WHEEL_BASE / 2) * angular) / Hardware.WHEEL_DIAMETER; //rounds per second
+        double right_speed = (linear + (Hardware.WHEEL_BASE / 2) * angular) / Hardware.WHEEL_DIAMETER; //rounds per second
+
+        double left_power = left_speed * 60 / Hardware.ROUNDS_PER_MINUTE;
+        double right_power = right_speed * 60 / Hardware.ROUNDS_PER_MINUTE;
+
+        //Scale the power to our range if it is exceeded
+        if (Math.abs(left_power) > MAX_POWER) {
+            right_power = right_power / Math.abs(left_power) * MAX_POWER;
+            left_power = Math.signum(left_power) * MAX_POWER;
+        }
+
+        if (Math.abs(right_power) > MAX_POWER) {
+            left_power = left_power / Math.abs(right_power) * MAX_POWER;
+            right_power = Math.signum(right_power) * MAX_POWER;
+        }
+
+        opModeCallbacks.addData("Power:", "{ %.2f, %.2f }", left_power, right_power);
+
+        try {
+            hw.leftMotor.setPower(left_power);
+            hw.rightMotor.setPower(right_power);
+        }
+        catch (IllegalArgumentException e) {
+            return;
+        }
+    }
 
     private int acceleration (double increment, double max_speed, int ms_time) throws InterruptedException {
 

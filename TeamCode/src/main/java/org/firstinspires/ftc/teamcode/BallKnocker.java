@@ -8,7 +8,7 @@ public class BallKnocker extends PathBase {
 
 
     public BallKnocker(Robot r, Alliance a, Coordinate startLoc) {
-        super(r, a, startLoc);
+        super(r, a, startLoc, "Ball Knocker");
     }
 
     @Override

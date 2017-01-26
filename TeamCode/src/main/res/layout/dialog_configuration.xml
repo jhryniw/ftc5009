@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:id="@+id/dialog_configuration">
+
+
+    <TextView
+        android:text="Delay: 0ms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtDelayBar"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp"/>
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/delayBar"
+        android:layout_marginBottom="30sp"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30sp">
+
+        <TextView
+            android:text="Alliance: "
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/txtAlliance"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:gravity="start|center_vertical"
+            android:layout_marginRight="20dp"/>
+
+        <ToggleButton
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textOn="Blue"
+            android:textOff="Red"
+            android:checked="true"
+            android:textStyle="bold"
+            android:layout_width="166dp"
+            android:textSize="24sp"
+            android:id="@+id/btnAlliance"
+            android:background="@drawable/alliance_button"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <TextView
+        android:text="Path: "
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtPath"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp"/>
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pathList" />
+
+
+</LinearLayout>

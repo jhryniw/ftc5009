@@ -7,7 +7,7 @@ package org.firstinspires.ftc.teamcode;
 public class BallShooter extends PathBase {
 
     public BallShooter(Robot r, Alliance a, Coordinate startLoc) {
-        super(r, a, startLoc);
+        super(r, a, startLoc, "Ball Shooter");
     }
 
     @Override

@@ -1,0 +1,18 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="@android:style/Theme.Holo.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <!--TODO: Use color picker to get actual colors-->
+    <color name="FtcRed">#FF0000</color>
+    <color name="FtcDarkRed">#AAFF0000</color>
+    <color name="FtcRedAccent">#AA3333</color>
+    <color name="FtcLightRed">#E67777</color>
+
+    <color name="FtcBlue">#0000FF</color>
+    <color name="FtcDarkBlue">#AA0000FF</color>
+    <color name="FtcBlueAccent">#3333AA</color>
+    <color name="FtcLightBlue">#7777E6</color>
+</resources>

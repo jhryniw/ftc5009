@@ -24,6 +24,11 @@ public class Hardware {
     public DcMotor rightMotor;
     public DcMotor chickenMotor;
     public DcMotor shooterMotor;
+    public DcMotor liftMotor;
+
+    //Servos
+    public Servo leftClaw;
+    public Servo rightClaw;
 
     //Color Sensor + LED
     public DeviceInterfaceModule cdim;
@@ -32,10 +37,12 @@ public class Hardware {
     public static final int LED_CHANNEL = 5; // we assume that the LED pin of the RGB sensor is connected to digital port 5 (zero indexed).
 
     private HardwareMap hwMap;
-    public static float WHEEL_BASE = 13.5f;
+    public static double WHEEL_BASE = 13.5;
+    public static double WHEEL_DIAMETER = 4.0;
+    public static int ROUNDS_PER_MINUTE = 160;
     private static double TICKS_PER_MOTOR_REV = 1120;
     private static double DRIVE_GEAR_RATIO = 1.0;
-    private static double WHEEL_DIAMETER = 4.0;
+
 
     public static double TICKS_PER_INCH = (TICKS_PER_MOTOR_REV * DRIVE_GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
 
@@ -49,7 +56,11 @@ public class Hardware {
             leftMotor = hwMap.dcMotor.get("drive_left");
             rightMotor = hwMap.dcMotor.get("drive_right");
             chickenMotor = hwMap.dcMotor.get("chicken_fingers");
-            shooterMotor = hwMap.dcMotor.get( "shooter");
+            shooterMotor = hwMap.dcMotor.get("shooter");
+            liftMotor = hwMap.dcMotor.get("lift");
+
+            leftClaw = hwMap.servo.get("left_claw");
+            rightClaw = hwMap.servo.get("right_claw");
         }
         catch (NullPointerException e) {
             throw new NullPointerException("Error: a motor did not initialize properly. Check the configuration!");
@@ -64,9 +75,17 @@ public class Hardware {
         chickenMotor.setPower(0);
         shooterMotor.setPower(0);
 
+        leftClaw.scaleRange(0.5, 0.95);
+        rightClaw.scaleRange(0.05, 0.5);
+
+        //leftClaw.setDirection(Servo.Direction.REVERSE);
+
+        leftClaw.setPosition(1);
+        rightClaw.setPosition(0);
+
         //ColorSensor setup
-        cdim = hwMap.deviceInterfaceModule.get("dim");
+        /*cdim = hwMap.deviceInterfaceModule.get("dim");
         cdim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
-        colorSensor = hwMap.colorSensor.get("color");
+        colorSensor = hwMap.colorSensor.get("color");*/
     }
 }
