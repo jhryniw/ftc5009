@@ -81,11 +81,11 @@ public class Hardware {
         rightClaw.scaleRange(0.05, 0.95);
         feeder.scaleRange(0.05 , 0.95);
 
-        //leftClaw.setDirection(Servo.Direction.REVERSE);// comment it out
+        //leftClaw.setDirection(Servo.Direction.REVERSE);
 
         leftClaw.setPosition(1);
         rightClaw.setPosition(0);
-        feeder.setPosition(0);
+        feeder.setPosition(1);
 
         //ColorSensor setup
         /*cdim = hwMap.deviceInterfaceModule.get("dim");

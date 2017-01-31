@@ -38,10 +38,10 @@ public class TeleOp extends LinearOpMode {
 
             //Lift
             //TODO: Make servos go outwards when the lift is raised
-            if(gamepad1.left_bumper) {
+            if(gamepad1.right_trigger > 0.5) {
                 robot.liftMotor.setPower(1);
             }
-            else if (gamepad1.left_trigger > 0) {
+            else if (gamepad1.left_trigger > 0.5) {
                 robot.liftMotor.setPower(-1);
             }
             else
@@ -51,7 +51,7 @@ public class TeleOp extends LinearOpMode {
             float chicken_speed = 90;
             float shooter_power = gamepad1.right_trigger;
 
-            if (gamepad1.a && !chicken_is_clicked) {
+            if (gamepad2.a && !chicken_is_clicked) {
                 chicken_is_clicked = true;
                 if (chicken_state != 1) {
                     robot.chickenMotor.setPower((double) CHICKEN_POWER);
@@ -62,7 +62,7 @@ public class TeleOp extends LinearOpMode {
                     chicken_state = 0;
                 }
             }
-            else if (gamepad1.y && !chicken_is_clicked) {
+            else if (gamepad2.y && !chicken_is_clicked) {
                 chicken_is_clicked = true;
                 if (chicken_state!= -1) {
                     robot.chickenMotor.setPower((double) -CHICKEN_POWER);
@@ -73,7 +73,7 @@ public class TeleOp extends LinearOpMode {
                     chicken_state = 0;
                 }
             }
-            else if (!gamepad1.a &&!gamepad1.y &&chicken_is_clicked) {
+            else if (!gamepad2.a &&!gamepad2.y &&chicken_is_clicked) {
                 chicken_is_clicked = false;
             }
 
@@ -83,8 +83,8 @@ public class TeleOp extends LinearOpMode {
             float shooter_power = gamepad1.right_trigger;
 */
 
-            //fix the debound error
-            if (gamepad1.right_trigger > 0.5 && !r2_is_clicked) {
+            //Shooter
+            if (gamepad2.right_trigger > 0.5 && !r2_is_clicked) {
                 r2_is_clicked = true;
                 if(shooter_state !=1) {
                     robot.shooterMotor.setPower((double) SHOOTER_POWER);
@@ -94,7 +94,7 @@ public class TeleOp extends LinearOpMode {
                     robot.shooterMotor.setPower(0);
                     shooter_state = 0;
                 }
-            } else if (gamepad1.right_trigger < 0.5 && r2_is_clicked){
+            } else if (gamepad2.right_trigger < 0.5 && r2_is_clicked){
                r2_is_clicked = false;
             }
             /*
@@ -148,14 +148,15 @@ public class TeleOp extends LinearOpMode {
 
             }*/
 
-            if(gamepad2.right_trigger > 0.5) {
+            //Feeder
+            if(gamepad2.dpad_up) {
                 double feedPos = robot.feeder.getPosition() + 0.05;
                 if (feedPos > 1) {
                     robot.feeder.setPosition(1);
                 } else
                     robot.feeder.setPosition(feedPos);
             }
-            if(gamepad2.left_trigger > 0.5) {
+            if(gamepad2.dpad_down) {
                 double feedPos = robot.feeder.getPosition() - 0.05;
                 if (feedPos < 0) {
                     robot.feeder.setPosition(0);
@@ -216,7 +217,7 @@ public class TeleOp extends LinearOpMode {
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Claws", "Left: %.2f Right %.2f", robot.leftClaw.getPosition(), robot.rightClaw.getPosition());
-            telemetry.addData("Left", "Bumper: %s Trigger: %.2f", String.valueOf(gamepad1.left_bumper), gamepad1.left_trigger);
+            telemetry.addData("Left", "Bumper: %s Trigger: %.2f", String.valueOf(gamepad1.right_trigger), gamepad1.left_trigger);
             telemetry.update();
 
             idle();
