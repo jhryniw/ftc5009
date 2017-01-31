@@ -219,6 +219,10 @@ public class Robot {
         hw.shooterMotor.setPower(speed);
         sleep(time);
     }
+    public void feeder (float position, long time) throws InterruptedException {
+        hw.feeder.setPosition(position);
+        sleep(time);
+    }
 
     /**
      * @param linear - desired linear velocity in inches/s

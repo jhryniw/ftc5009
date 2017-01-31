@@ -37,7 +37,6 @@ public class TeleOp extends LinearOpMode {
             double ts_cycle = runtime.milliseconds();
 
             //Lift
-            //TODO: Make servos go outwards when the lift is raised
             if(gamepad1.right_trigger > 0.5) {
                 robot.liftMotor.setPower(1);
             }
@@ -165,7 +164,7 @@ public class TeleOp extends LinearOpMode {
             }
 
 
-             if(gamepad1.dpad_up) {
+             if(gamepad1.y) {
 
                 double leftPos = robot.leftClaw.getPosition() - 0.05;
                 double rightPos = robot.rightClaw.getPosition() + 0.05;
@@ -182,7 +181,7 @@ public class TeleOp extends LinearOpMode {
                 else
                     robot.rightClaw.setPosition(rightPos);
             }
-            else if (gamepad1.dpad_down) {
+            else if (gamepad1.a) {
                 double leftPos = robot.leftClaw.getPosition() + 0.05;
                 double rightPos = robot.rightClaw.getPosition() - 0.05;
 
@@ -214,6 +213,31 @@ public class TeleOp extends LinearOpMode {
             //apply values to motor speed
             robot.leftMotor.setPower(l_power);
             robot.rightMotor.setPower(r_power);
+
+            //slow mode NOT WORKING
+            if (gamepad1.dpad_up) {
+               robot.leftMotor.setPower(0.5);
+               robot.rightMotor.setPower(0.5);
+           }
+
+            if (gamepad1.dpad_down) {
+                robot.leftMotor.setPower(-0.5);
+                robot.rightMotor.setPower(-0.5);
+            }
+
+            if (gamepad1.dpad_right) {
+                robot.leftMotor.setPower(0.5);
+                robot.rightMotor.setPower(-0.5);
+            }
+            if (gamepad1.dpad_left) {
+                robot.leftMotor.setPower(-0.5);
+                robot.rightMotor.setPower(0.5);
+            }
+
+        if (!gamepad1.dpad_up && !gamepad1.dpad_down && !gamepad1.dpad_right && !gamepad1.dpad_left ) {
+            robot.leftMotor.setPower(l_power);
+            robot.rightMotor.setPower(r_power);
+        }
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Claws", "Left: %.2f Right %.2f", robot.leftClaw.getPosition(), robot.rightClaw.getPosition());

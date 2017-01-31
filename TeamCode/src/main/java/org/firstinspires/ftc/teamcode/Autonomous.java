@@ -65,6 +65,7 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Corner Goal", new CornerGoal(robot, Alliance.BLUE, new Coordinate(0, 0)));
         pathList.put("Ball Shooter", new BallShooter (robot, Alliance.NA, new Coordinate(0, 0)));
         pathList.put("Target Test", new PDTest(robot, Alliance.NA, new Coordinate(0, 0)));
+        pathList.put("Feeder Auto", new FeederAuto(robot, Alliance.NA, new Coordinate(0, 0)));
 
         pathNames = new ArrayList<String>(pathList.keySet());
 
