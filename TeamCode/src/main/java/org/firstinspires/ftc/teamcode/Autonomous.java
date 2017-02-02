@@ -197,7 +197,7 @@ public class Autonomous extends LinearOpMode {
             }
         });
 
-        ArrayAdapter<String> pathAdapter = new ArrayAdapter<String>(dialogView.getContext(), android.R.layout.simple_spinner_item, pathNames);
+        ArrayAdapter<String> pathAdapter = new ArrayAdapter<String>(dialogView.getContext(), R.layout.path_spinner, pathNames);
 
         Spinner list = (Spinner) dialogView.findViewById(R.id.pathList);
         list.setAdapter(pathAdapter);
