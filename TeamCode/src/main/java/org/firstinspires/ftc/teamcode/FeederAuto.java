@@ -16,7 +16,7 @@ public class FeederAuto extends PathBase {
     @Override
     void run() throws InterruptedException {
         robot.encoderDrive(-0.5, 8); //backward
-        robot.ballshooter(1.0, 500);
+        robot.ballshooter(1.0, 100);
         robot.feeder(0, 700); //down feed
         robot.feeder(1, 1000); //up feed
         robot.feeder(0, 1000); //down feed
