@@ -210,34 +210,30 @@ public class TeleOp extends LinearOpMode {
             if (Math.abs(r_power) < POWER_THRESHOLD)
                 r_power = 0;
 
+
+            //slow mode
+            if (gamepad1.dpad_up) {
+               l_power = 0.2;
+               r_power = 0.2;
+           }
+
+            else if (gamepad1.dpad_down) {
+                l_power = -0.2;
+                r_power = -0.2;
+            }
+
+            else if (gamepad1.dpad_right) {
+                l_power = 0.2;
+                r_power = -0.2;
+            }
+            else if (gamepad1.dpad_left) {
+                l_power = -0.2;
+                r_power = 0.2;
+            }
+
             //apply values to motor speed
             robot.leftMotor.setPower(l_power);
             robot.rightMotor.setPower(r_power);
-
-            //slow mode NOT WORKING
-            if (gamepad1.dpad_up) {
-               robot.leftMotor.setPower(0.5);
-               robot.rightMotor.setPower(0.5);
-           }
-
-            if (gamepad1.dpad_down) {
-                robot.leftMotor.setPower(-0.5);
-                robot.rightMotor.setPower(-0.5);
-            }
-
-            if (gamepad1.dpad_right) {
-                robot.leftMotor.setPower(0.5);
-                robot.rightMotor.setPower(-0.5);
-            }
-            if (gamepad1.dpad_left) {
-                robot.leftMotor.setPower(-0.5);
-                robot.rightMotor.setPower(0.5);
-            }
-
-        if (!gamepad1.dpad_up && !gamepad1.dpad_down && !gamepad1.dpad_right && !gamepad1.dpad_left ) {
-            robot.leftMotor.setPower(l_power);
-            robot.rightMotor.setPower(r_power);
-        }
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Claws", "Left: %.2f Right %.2f", robot.leftClaw.getPosition(), robot.rightClaw.getPosition());

@@ -20,7 +20,7 @@ public class FeederAuto extends PathBase {
         robot.feeder(0, 700); //down feed
         robot.feeder(1, 1000); //up feed
         robot.feeder(0, 1000); //down feed
-        robot.feeder(1, 500); //up feed
+        robot.feeder(1, 1000); //up feed
         robot.feeder(0 ,1000); //down feed
         robot.feeder(1 , 500); //up feed
         robot.ballshooter(0, 0);
