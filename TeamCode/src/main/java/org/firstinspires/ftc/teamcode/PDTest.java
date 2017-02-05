@@ -7,8 +7,8 @@ package org.firstinspires.ftc.teamcode;
 
 public class PDTest extends PathBase {
 
-    public PDTest(Robot r, Alliance a, Coordinate startLoc) {
-        super(r, a, startLoc, "Target Test");
+    public PDTest(Robot r, Coordinate startLoc) {
+        super(r, startLoc, "Target Test");
     }
 
     @Override
