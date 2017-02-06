@@ -29,6 +29,7 @@ public class Hardware {
     //Servos
     public Servo leftClaw;
     public Servo rightClaw;
+    public Servo feeder;
 
     //Color Sensor + LED
     public DeviceInterfaceModule cdim;
@@ -61,6 +62,7 @@ public class Hardware {
 
             leftClaw = hwMap.servo.get("left_claw");
             rightClaw = hwMap.servo.get("right_claw");
+            feeder = hwMap.servo.get("feeder");
         }
         catch (NullPointerException e) {
             throw new NullPointerException("Error: a motor did not initialize properly. Check the configuration!");
@@ -75,13 +77,15 @@ public class Hardware {
         chickenMotor.setPower(0);
         shooterMotor.setPower(0);
 
-        leftClaw.scaleRange(0.5, 0.95);
-        rightClaw.scaleRange(0.05, 0.5);
+        leftClaw.scaleRange(0.05, 0.95);
+        rightClaw.scaleRange(0.05, 0.95);
+        feeder.scaleRange(0.05 , 0.95);
 
         //leftClaw.setDirection(Servo.Direction.REVERSE);
 
         leftClaw.setPosition(1);
         rightClaw.setPosition(0);
+        feeder.setPosition(1);
 
         //ColorSensor setup
         /*cdim = hwMap.deviceInterfaceModule.get("dim");

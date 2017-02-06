@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
+import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -51,19 +52,25 @@ public class Robot {
     private double MIN_SPEED = 0.2;
 
     public void encoderDrive (double speed, double distance) throws InterruptedException {
-
+        boolean accelerationEnabled = false;
         int target = (int)Math.abs(distance * Hardware.TICKS_PER_INCH);
+
+        if(target > ACCELERATION_DISTANCE + DECELERATION_DISTANCE) {
+            accelerationEnabled = true;
+            target -= DECELERATION_DISTANCE;
+        }
 
         //Reset the encoders
         resetEncoders();
 
-        acceleration (0.01, speed, 1000);
+        if(accelerationEnabled)
+            acceleration (0.01, speed, 1000);
 
         hw.leftMotor.setPower(speed);
         hw.rightMotor.setPower(speed);
 
         int position = hw.leftMotor.getCurrentPosition();
-        while (opModeCallbacks.opModeIsActive() && Math.abs(position) < target - DECELERATION_DISTANCE) {
+        while (opModeCallbacks.opModeIsActive() && Math.abs(position) < target) {
             position = hw.leftMotor.getCurrentPosition();
 
             opModeCallbacks.addData("EncoderTarget", "%d", target);
@@ -72,7 +79,8 @@ public class Robot {
             sleep(10);
         }
 
-        deceleration(0.01, speed, 500, target);
+        if(accelerationEnabled)
+            deceleration(0.01, speed, 500, target);
 
         stop();
     }
@@ -140,13 +148,17 @@ public class Robot {
         double dx = goal[0] - start[0];
         double dz = goal[1] - start[1];
         double d = Math.sqrt(dx * dx + dz * dz);
-        double theta = Math.toDegrees(Math.acos((dx * Math.cos(o) + dz * Math.sin(o)) / d));
+        int theta = (int) Math.toDegrees(Math.acos((dx * Math.cos(o) + dz * Math.sin(o)) / d));
 
+        //Log.d("FTC5009", "moveToTargetEncoder: ");
         opModeCallbacks.addData("Distance", Double.toString(d));
         opModeCallbacks.addData("Theta", Double.toString(theta));
         opModeCallbacks.updateTelemetry();
 
-        Thread.sleep(3000);
+        encoderDrive(speed, d);
+        pivot(theta, speed);
+
+        //Thread.sleep(3000);
         //pivot( (int) theta, -speed);
         //encoderDrive(-speed, d);
 
@@ -217,6 +229,10 @@ public class Robot {
 
     public void ballshooter ( double speed, long time ) throws InterruptedException {
         hw.shooterMotor.setPower(speed);
+        sleep(time);
+    }
+    public void feeder (float position, long time) throws InterruptedException {
+        hw.feeder.setPosition(position);
         sleep(time);
     }
 

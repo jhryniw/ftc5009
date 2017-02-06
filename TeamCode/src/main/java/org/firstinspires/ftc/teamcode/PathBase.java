@@ -15,11 +15,15 @@ public abstract class PathBase {
     protected Coordinate startLocation;
     protected Robot robot;
 
-    public PathBase(Robot r, Alliance a, Coordinate startLoc, String name) {
-        alliance = a;
+    public PathBase(Robot r, Coordinate startLoc, String name) {
+        alliance = Alliance.NA;
         startLocation = startLoc;
         robot = r;
         this.name = name;
+    }
+
+    public void setAlliance(Alliance a) {
+        alliance = a;
     }
 
     abstract void run() throws InterruptedException;

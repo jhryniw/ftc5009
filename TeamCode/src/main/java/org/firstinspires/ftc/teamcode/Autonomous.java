@@ -59,12 +59,13 @@ public class Autonomous extends LinearOpMode {
         robot = new Robot("proto1", hardwareMap, getCallbacks(this));
 
         //Register paths
-        pathList.put("Ball Knocker", new BallKnocker(robot, Alliance.NA, new Coordinate(0, 0)));
-        pathList.put("Beacons", new Beacons(robot, Alliance.NA, new Coordinate(0, 0)));
-        pathList.put("Red Beacons", new RedBeacons(robot, Alliance.RED, new Coordinate(0, 0)));
-        pathList.put("Corner Goal", new CornerGoal(robot, Alliance.BLUE, new Coordinate(0, 0)));
-        pathList.put("Ball Shooter", new BallShooter (robot, Alliance.NA, new Coordinate(0, 0)));
-        pathList.put("Target Test", new PDTest(robot, Alliance.NA, new Coordinate(0, 0)));
+        pathList.put("Ball Knocker", new BallKnocker(robot, new Coordinate(0, 0)));
+        pathList.put("Beacons", new Beacons(robot, new Coordinate(0, 0)));
+        pathList.put("Corner Goal", new CornerGoal(robot, new Coordinate(0, 0)));
+        pathList.put("Ball Shooter", new BallShooter (robot, new Coordinate(0, 0)));
+        pathList.put("Target Test", new PDTest(robot, new Coordinate(0, 0)));
+        pathList.put("Feeder Auto", new FeederAuto(robot, new Coordinate(0, 0)));
+        pathList.put("Feeder Auto2", new FeederAuto2(robot, new Coordinate(0, 0)));
 
         pathNames = new ArrayList<String>(pathList.keySet());
 
@@ -78,6 +79,7 @@ public class Autonomous extends LinearOpMode {
         buildConfigDialog();
 
         while(!configured) {idle();}
+        selectedPath.setAlliance(alliance);
 
         waitForStart();
 
@@ -196,7 +198,7 @@ public class Autonomous extends LinearOpMode {
             }
         });
 
-        ArrayAdapter<String> pathAdapter = new ArrayAdapter<String>(dialogView.getContext(), android.R.layout.simple_spinner_item, pathNames);
+        ArrayAdapter<String> pathAdapter = new ArrayAdapter<String>(dialogView.getContext(), R.layout.path_spinner, pathNames);
 
         Spinner list = (Spinner) dialogView.findViewById(R.id.pathList);
         list.setAdapter(pathAdapter);

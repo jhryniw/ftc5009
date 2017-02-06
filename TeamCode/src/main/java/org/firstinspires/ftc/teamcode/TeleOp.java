@@ -19,7 +19,7 @@ public class TeleOp extends LinearOpMode {
     private  int shooter_state = 0;
     private boolean chicken_is_clicked = false;
     private boolean r2_is_clicked = false;
-    private int servo_is_clicked = 0;
+    private boolean servo_is_clicked = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -37,57 +37,87 @@ public class TeleOp extends LinearOpMode {
             double ts_cycle = runtime.milliseconds();
 
             //Lift
-            //TODO: Make servos go outwards when the lift is raised
-            if(gamepad1.left_bumper) {
+            if(gamepad1.right_trigger > 0.5) {
                 robot.liftMotor.setPower(1);
             }
-            else if (gamepad1.left_trigger > 0) {
+            else if (gamepad1.left_trigger > 0.5) {
                 robot.liftMotor.setPower(-1);
             }
             else
                 robot.liftMotor.setPower(0);
 
-            /*
             boolean chicken_power = gamepad1.a;
             float chicken_speed = 90;
             float shooter_power = gamepad1.right_trigger;
 
+            if (gamepad2.a && !chicken_is_clicked) {
+                chicken_is_clicked = true;
+                if (chicken_state != 1) {
+                    robot.chickenMotor.setPower((double) CHICKEN_POWER);
+                    chicken_state = 1;
+                }
+                else {
+                    robot.chickenMotor.setPower(0);
+                    chicken_state = 0;
+                }
+            }
+            else if (gamepad2.y && !chicken_is_clicked) {
+                chicken_is_clicked = true;
+                if (chicken_state!= -1) {
+                    robot.chickenMotor.setPower((double) -CHICKEN_POWER);
+                    chicken_state = -1;
+                }
+                else {
+                    robot.chickenMotor.setPower(0);
+                    chicken_state = 0;
+                }
+            }
+            else if (!gamepad2.a &&!gamepad2.y &&chicken_is_clicked) {
+                chicken_is_clicked = false;
+            }
 
-            //fix the debound error
-           if (gamepad1.right_trigger > 0.5 && !r2_is_clicked) {
-               r2_is_clicked = true;
+            /*
+            boolean chicken_power = gamepad1.a;
+            float chicken_speed = 90;
+            float shooter_power = gamepad1.right_trigger;
+*/
+
+            //Shooter
+            if (gamepad2.right_trigger > 0.5 && !r2_is_clicked) {
+                r2_is_clicked = true;
                 if(shooter_state !=1) {
-                    robot.shooter.setPower((double) SHOOTER_POWER);
+                    robot.shooterMotor.setPower((double) SHOOTER_POWER);
                     shooter_state = 1;
                 }
                 else {
-                    robot.shooter.setPower(0);
+                    robot.shooterMotor.setPower(0);
                     shooter_state = 0;
                 }
-            } else if (gamepad1.right_trigger < 0.5 && r2_is_clicked){
+            } else if (gamepad2.right_trigger < 0.5 && r2_is_clicked){
                r2_is_clicked = false;
             }
+            /*
 
             //handle chicken fingers
             if (gamepad1.a && !chicken_is_clicked) {
                 chicken_is_clicked = true;
                 if(chicken_state != 1) {
-                    robot.chickenfingers.setPower((double) CHICKEN_POWER);
+                    robot.chickenMotor.setPower((double) CHICKEN_POWER);
                     chicken_state = 1;
                 }
                 else {
-                    robot.chickenfingers.setPower(0);
+                    robot.chickenMotor.setPower(0);
                     chicken_state = 0;
                 }
             }
             else if (gamepad1.y && !chicken_is_clicked) {
                 chicken_is_clicked = true;
                 if (chicken_state != -1) {
-                    robot.chickenfingers.setPower((double) -CHICKEN_POWER);
+                    robot.chickenMotor.setPower((double) -CHICKEN_POWER);
                     chicken_state = -1;
                 }
                 else {
-                    robot.chickenfingers.setPower(0);
+                    robot.chickenMotor.setPower(0);
                     chicken_state = 0;
                 }
             }
@@ -117,30 +147,51 @@ public class TeleOp extends LinearOpMode {
 
             }*/
 
-            if(gamepad1.dpad_up) {
+            //Feeder
+            if(gamepad2.dpad_up) {
+                double feedPos = robot.feeder.getPosition() + 0.05;
+                if (feedPos > 1) {
+                    robot.feeder.setPosition(1);
+                } else
+                    robot.feeder.setPosition(feedPos);
+            }
+            if(gamepad2.dpad_down) {
+                double feedPos = robot.feeder.getPosition() - 0.05;
+                if (feedPos < 0) {
+                    robot.feeder.setPosition(0);
+                } else
+                    robot.feeder.setPosition(feedPos);
+            }
+
+
+             if(gamepad1.y) {
 
                 double leftPos = robot.leftClaw.getPosition() - 0.05;
                 double rightPos = robot.rightClaw.getPosition() + 0.05;
 
+                //outward
                 if(leftPos < 0)
                     robot.leftClaw.setPosition(0);
                 else
                     robot.leftClaw.setPosition(leftPos);
 
+                //inward
                 if(rightPos > 1)
                     robot.rightClaw.setPosition(1);
                 else
                     robot.rightClaw.setPosition(rightPos);
             }
-            else if (gamepad1.dpad_down) {
+            else if (gamepad1.a) {
                 double leftPos = robot.leftClaw.getPosition() + 0.05;
                 double rightPos = robot.rightClaw.getPosition() - 0.05;
 
+                //inward
                 if(leftPos > 1)
                     robot.leftClaw.setPosition(1);
                 else
                     robot.leftClaw.setPosition(leftPos);
 
+                //outward
                 if(rightPos < 0)
                     robot.rightClaw.setPosition(0);
                 else
@@ -159,13 +210,34 @@ public class TeleOp extends LinearOpMode {
             if (Math.abs(r_power) < POWER_THRESHOLD)
                 r_power = 0;
 
+
+            //slow mode
+            if (gamepad1.dpad_up) {
+               l_power = 0.2;
+               r_power = 0.2;
+           }
+
+            else if (gamepad1.dpad_down) {
+                l_power = -0.2;
+                r_power = -0.2;
+            }
+
+            else if (gamepad1.dpad_right) {
+                l_power = 0.2;
+                r_power = -0.2;
+            }
+            else if (gamepad1.dpad_left) {
+                l_power = -0.2;
+                r_power = 0.2;
+            }
+
             //apply values to motor speed
             robot.leftMotor.setPower(l_power);
             robot.rightMotor.setPower(r_power);
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Claws", "Left: %.2f Right %.2f", robot.leftClaw.getPosition(), robot.rightClaw.getPosition());
-            telemetry.addData("Left", "Bumper: %s Trigger: %.2f", String.valueOf(gamepad1.left_bumper), gamepad1.left_trigger);
+            telemetry.addData("Left", "Bumper: %s Trigger: %.2f", String.valueOf(gamepad1.right_trigger), gamepad1.left_trigger);
             telemetry.update();
 
             idle();

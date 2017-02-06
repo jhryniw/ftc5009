@@ -6,8 +6,8 @@ package org.firstinspires.ftc.teamcode;
 
 public class CornerGoal extends PathBase {
 
-    public CornerGoal(Robot r, Alliance a, Coordinate startLoc) {
-        super(r, a, startLoc, "Corner Goal");
+    public CornerGoal(Robot r, Coordinate startLoc) {
+        super(r, startLoc, "Corner Goal");
     }
 
     @Override

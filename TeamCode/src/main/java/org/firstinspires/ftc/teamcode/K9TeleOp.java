@@ -88,7 +88,7 @@ public class K9TeleOp extends LinearOpMode {
                 chicken_is_clicked = false;
             }
 
-           //handle servo bounce erroruu2[';2qjknjknqq12    221qq2q2Q22Q2qQQQqQ1Q2qq2QQ22           Qjv2q222QQ[';[''
+           //handle servo bounce
             if (gamepad1.x && servo_is_clicked == 0) {
                 servo_is_clicked = 1;
                 robot.crazy_servo.setPosition(0.9);
