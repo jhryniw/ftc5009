@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Looper;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -51,6 +52,10 @@ public class Autonomous extends LinearOpMode {
     private int delay; //delay is in milliseconds
     private Alliance alliance = Alliance.BLUE;
     private boolean configured = false;
+
+    Autonomous() {
+        super();
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {

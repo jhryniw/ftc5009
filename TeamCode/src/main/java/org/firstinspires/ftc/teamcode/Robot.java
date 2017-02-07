@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
-import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -150,7 +149,6 @@ public class Robot {
         double d = Math.sqrt(dx * dx + dz * dz);
         int theta = (int) Math.toDegrees(Math.acos((dx * Math.cos(o) + dz * Math.sin(o)) / d));
 
-        //Log.d("FTC5009", "moveToTargetEncoder: ");
         opModeCallbacks.addData("Distance", Double.toString(d));
         opModeCallbacks.addData("Theta", Double.toString(theta));
         opModeCallbacks.updateTelemetry();

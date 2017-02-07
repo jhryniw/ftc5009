@@ -9,7 +9,6 @@ import java.util.Vector;
  * Created by Vicki on 2017-01-31.
  */
 
-@Autonomous (name = "FeederAuto")
 public class FeederAuto extends PathBase {
 
     public FeederAuto(Robot r, Coordinate startLoc) {
