@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.app.Activity;
 import android.graphics.Color;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -26,6 +27,8 @@ public class Robot {
     private ElapsedTime runtime = new ElapsedTime();
     private OpModeCallbacks opModeCallbacks;
 
+    public BeaconClassifier beaconClassifier;
+
     public static String name;
 
     private static double MAX_POWER = 0.6;
@@ -38,6 +41,7 @@ public class Robot {
         hw.init(hwMap);
         locator.init(hwMap.appContext);
 
+        beaconClassifier = new BeaconClassifier((Activity) hwMap.appContext, 0);
         // turn the LED on in the beginning, just so user will know that the sensor is active.
         enableLed();
     }
