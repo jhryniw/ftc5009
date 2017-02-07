@@ -13,9 +13,7 @@ public class PDTest extends PathBase {
 
     @Override
     void run() throws InterruptedException {
-        robot.moveToTargetEncoder(116, 60, 90, 0.5);
 
-        robot.moveToTarget(116, 60, 0.5);
         //robot.testLoop();
     }
 }

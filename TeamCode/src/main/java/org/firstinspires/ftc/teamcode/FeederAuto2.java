@@ -8,8 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  */
 
 
-@Autonomous (name = "FeederAuto2")
-    public class FeederAuto2 extends PathBase {
+public class FeederAuto2 extends PathBase {
 
     public FeederAuto2(Robot r, Coordinate startLoc) { super(r, startLoc, "Feeder Auto2"); }
 

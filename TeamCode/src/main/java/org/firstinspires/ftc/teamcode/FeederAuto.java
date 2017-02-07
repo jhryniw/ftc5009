@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+import java.util.Vector;
+
 /**
  * Created by Vicki on 2017-01-31.
  */
 
-@Autonomous (name = "FeederAuto")
 public class FeederAuto extends PathBase {
 
     public FeederAuto(Robot r, Coordinate startLoc) {
@@ -30,10 +32,6 @@ public class FeederAuto extends PathBase {
                 robot.pivot(60, 0.2); //pivot
                 robot.encoderDrive(-0.8, 50);
                 robot.pivot(57, 0.2);
-                robot.encoderDrive(0.5, 20);
-                robot.pivot(-45, 0.5);
-                robot.pivot(45, 0.3);
-                robot.encoderDrive(0.3, 4);
                 break;
 
             case RED:
@@ -50,12 +48,30 @@ public class FeederAuto extends PathBase {
                 robot.pivot(-60, 0.2); //pivot
                 robot.encoderDrive(-0.8, 50);
                 robot.pivot(-50, 0.2);
-                robot.encoderDrive(0.5, 25);
+                robot.encoderDrive(0.5, 10);
+                break;
+        }
+
+
+        switch (alliance) {
+            case BLUE:
+                robot.encoderDrive(0.5, 29);
+                robot.pivot(-45, 0.5);
+                robot.pivot(45, 0.3);
+                robot.encoderDrive(0.3, 4);
+                break;
+            case RED:
+                robot.encoderDrive(0.5, 29);
                 robot.pivot(45, 0.5);
                 robot.pivot(-45, 0.3);
                 robot.encoderDrive(0.3, 4);
-                break;
+
+
         }
+
+
     }
+
+
 }
 
