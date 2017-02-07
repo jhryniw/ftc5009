@@ -30,7 +30,7 @@ public class OpenCVTest extends LinearOpMode {
 
         waitForStart();
 
-        //beaconClassifier.setPreviewVisibility(SurfaceView.VISIBLE);
+        beaconClassifier.setPreviewVisibility(SurfaceView.VISIBLE);
         Alliance[] result = beaconClassifier.classify();
         if(result == BeaconClassifier.CLASSIFICATION_ERROR) {
             telemetry.addData("OpenCV", "Error...");

@@ -36,6 +36,7 @@ class BeaconClassifier implements CameraBridgeViewBase.CvCameraViewListener2 {
     private JavaCameraView mCameraView;
     private BaseLoaderCallback mLoaderCallback;
     private SynchronousQueue<Mat> mFrameQueue = new SynchronousQueue<>();
+    private BeaconMatcher mBeaconMatcher;
 
     private boolean mOpenCvInitialized = false, mCameraEnabled = false;
 
@@ -57,7 +58,10 @@ class BeaconClassifier implements CameraBridgeViewBase.CvCameraViewListener2 {
                     {
                         Log.i("OpenCV", "OpenCV loaded successfully");
                         mOpenCvInitialized = true;
-                        //mCameraView.enableView();
+
+                        mBeaconMatcher = new BeaconMatcher(mActivity, 120, 90);
+                        mCameraView.connectCamera(480, 640);
+                        mCameraView.enableView();
                     } break;
                     default:
                     {
@@ -117,7 +121,9 @@ class BeaconClassifier implements CameraBridgeViewBase.CvCameraViewListener2 {
                 return CLASSIFICATION_ERROR;
             }
 
-            Alliance[] result = filterMethod(frame);
+            //Alliance[] result = filterMethod(frame);
+            Alliance[] result = BeaconMatcher.beaconTypeToArray(mBeaconMatcher.searchForMatch(frame));
+
             lResult = result[0];
             rResult = result[1];
 
@@ -199,7 +205,7 @@ class BeaconClassifier implements CameraBridgeViewBase.CvCameraViewListener2 {
 
             cameraPreviewLayout.addView(mCameraView);
 
-            mCameraView.setVisibility(SurfaceView.GONE);
+            //mCameraView.setVisibility(SurfaceView.GONE);
             mCameraView.setCvCameraViewListener(listener);
             mCameraView.enableFpsMeter();
             mCameraView.setMaxFrameSize(960, 720);
