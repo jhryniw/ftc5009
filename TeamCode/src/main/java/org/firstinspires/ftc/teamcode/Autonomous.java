@@ -86,6 +86,8 @@ public class Autonomous extends LinearOpMode {
         while(!configured) {idle();}
         selectedPath.setAlliance(alliance);
 
+        robot.beaconclassifierinit(hardwareMap);
+
         waitForStart();
 
         robot.launchLocator();

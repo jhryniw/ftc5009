@@ -37,10 +37,11 @@ public class TeleOp extends LinearOpMode {
             double ts_cycle = runtime.milliseconds();
 
             //Lift
-            if(gamepad1.right_trigger > 0.5) {
+
+            if(gamepad2.right_trigger > 0.5) {
                 robot.liftMotor.setPower(1);
             }
-            else if (gamepad1.left_trigger > 0.5) {
+            else if (gamepad2.left_trigger > 0.5) {
                 robot.liftMotor.setPower(-1);
             }
             else
@@ -83,7 +84,7 @@ public class TeleOp extends LinearOpMode {
 */
 
             //Shooter
-            if (gamepad2.right_trigger > 0.5 && !r2_is_clicked) {
+            if (gamepad2.b && !r2_is_clicked) {
                 r2_is_clicked = true;
                 if(shooter_state !=1) {
                     robot.shooterMotor.setPower((double) SHOOTER_POWER);
@@ -93,7 +94,7 @@ public class TeleOp extends LinearOpMode {
                     robot.shooterMotor.setPower(0);
                     shooter_state = 0;
                 }
-            } else if (gamepad2.right_trigger < 0.5 && r2_is_clicked){
+            } else if (gamepad2.b && r2_is_clicked){
                r2_is_clicked = false;
             }
             /*
@@ -148,14 +149,14 @@ public class TeleOp extends LinearOpMode {
             }*/
 
             //Feeder
-            if(gamepad2.dpad_up) {
+            if(gamepad1.y) {
                 double feedPos = robot.feeder.getPosition() + 0.05;
                 if (feedPos > 1) {
                     robot.feeder.setPosition(1);
                 } else
                     robot.feeder.setPosition(feedPos);
             }
-            if(gamepad2.dpad_down) {
+            if(gamepad1.a) {
                 double feedPos = robot.feeder.getPosition() - 0.05;
                 if (feedPos < 0) {
                     robot.feeder.setPosition(0);
@@ -164,7 +165,7 @@ public class TeleOp extends LinearOpMode {
             }
 
 
-             if(gamepad1.y) {
+             if(gamepad2.dpad_up) {
 
                 double leftPos = robot.leftClaw.getPosition() - 0.05;
                 double rightPos = robot.rightClaw.getPosition() + 0.05;
@@ -181,7 +182,7 @@ public class TeleOp extends LinearOpMode {
                 else
                     robot.rightClaw.setPosition(rightPos);
             }
-            else if (gamepad1.a) {
+            else if (gamepad2.dpad_down) {
                 double leftPos = robot.leftClaw.getPosition() + 0.05;
                 double rightPos = robot.rightClaw.getPosition() - 0.05;
 

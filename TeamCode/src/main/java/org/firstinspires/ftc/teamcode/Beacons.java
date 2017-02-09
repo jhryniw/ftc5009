@@ -24,10 +24,9 @@ public class Beacons extends PathBase {
                 robot.feeder(1 , 500); //up feed
                 robot.ballshooter(0, 0); //stop shooter
                 robot.pivot(60, 0.2); //pivot
-                robot.encoderDrive(-0.8 , 60); //gets to beacon
+                robot.encoderDrive(-0.8 , 50); //gets to beacon
                 robot.pivot(50, 0.2);
-                robot.encoderDrive(-0.5,23);
-                robot.encoderDrive(0.5,5);
+                robot.encoderDrive(-0.5,15);
                 break;
 
             case RED:
@@ -40,24 +39,23 @@ public class Beacons extends PathBase {
                 robot.feeder(0, 1000); //down feed
                 robot.feeder(1, 500); //up feed
                 robot.ballshooter(0, 0);
-
                 robot.pivot(-60, 0.2); //pivot
-                robot.encoderDrive(-0.8, 60);
+                robot.encoderDrive(-0.8, 52);
                 robot.pivot(-50, 0.2);
-                robot.encoderDrive(-0.5,23);
-                robot.encoderDrive(0.5,5);
+                robot.encoderDrive(-0.5,15);
                 break;
         }
-        robot.feeder(1,5500);
         Alliance[] results = robot.beaconClassifier.classify();
         boolean isleft = (alliance == results[0]);
         boolean isright = (alliance == results[1]);
 
-        if (!(isleft && isright)) {
-            robot.encoderDrive(-0.6, 15);
-            robot.encoderDrive(0.6, 5);
+        if (isleft) {
+            robot.pivot(-45, 0.2);
         }
-
+        else if (isright) {
+            robot.pivot(45, 0.2);
+        }
+        /*
         switch (alliance) {
             case BLUE:
                 robot.encoderDrive(0.5, 30);
@@ -72,6 +70,6 @@ public class Beacons extends PathBase {
                 robot.encoderDrive(0.5, 5);
                 break;
         }
+        */
     }
 }
-

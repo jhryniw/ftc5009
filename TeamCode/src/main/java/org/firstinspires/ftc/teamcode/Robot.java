@@ -41,9 +41,13 @@ public class Robot {
         hw.init(hwMap);
         locator.init(hwMap.appContext);
 
-        beaconClassifier = new BeaconClassifier((Activity) hwMap.appContext, 0);
+
         // turn the LED on in the beginning, just so user will know that the sensor is active.
         enableLed();
+    }
+
+    public void beaconclassifierinit(HardwareMap hwMap) {
+        beaconClassifier = new BeaconClassifier((Activity) hwMap.appContext, 0);
     }
 
     /*
