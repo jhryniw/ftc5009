@@ -75,12 +75,12 @@ public class Beacons extends PathBase {
         switch (alliance) {
             case BLUE:
                 robot.pivot(-92, 0.2);
-                robot.encoderDrive(-0.7, 52);
+                robot.encoderDrive(-0.7, 50);
                 robot.pivot(92, 0.2);
                 break;
             case RED:
                 robot.pivot(92, 0.2);
-                robot.encoderDrive(0.7, 52);
+                robot.encoderDrive(0.7, 50);
                 robot.pivot(-92, 0.2);
                 break;
         }
@@ -98,5 +98,9 @@ public class Beacons extends PathBase {
             robot.pivot(45, 0.2);
             robot.pivot(-45, 0.2);
         }
+        robot.encoderDrive(-0.5, 12);
+        robot.encoderDrive(0.5, 10);
+        robot.pivot(45, -0.3);
+        robot.encoderDrive(0.5, 50);
     }
 }
