@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 /**
  * Created by Vicki on 2016-10-24.
  */
 
 public class BallShooter extends PathBase {
 
-    public BallShooter(Robot r, Coordinate startLoc) {
-        super(r, startLoc, "Ball Shooter");
+    public BallShooter(LinearOpMode opMode, Robot r, Coordinate startLoc) {
+        super(opMode, r, startLoc, "Ball Shooter");
     }
 
     @Override

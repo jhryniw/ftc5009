@@ -14,11 +14,14 @@ public abstract class PathBase {
     protected Alliance alliance;
     protected Coordinate startLocation;
     protected Robot robot;
+    protected LinearOpMode opMode;
 
-    public PathBase(Robot r, Coordinate startLoc, String name) {
+    public PathBase(LinearOpMode om, Robot r, Coordinate startLoc, String name) {
+        opMode = om;
         alliance = Alliance.NA;
         startLocation = startLoc;
         robot = r;
+
         this.name = name;
     }
 

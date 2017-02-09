@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 /**
  * Created by Vicki on 2016-10-15.
  */
 
-public class Beacons extends PathBase {
+final class Beacons extends PathBase {
 
-    private OpModeCallbacks opModeCallbacks;
-    public Beacons(Robot r, Coordinate startLoc) {
-        super(r, startLoc, "Beacons");
+    Beacons(LinearOpMode opMode, Robot r, Coordinate startLoc) {
+        super(opMode, r, startLoc, "Beacons");
     }
 
     @Override
@@ -46,19 +47,21 @@ public class Beacons extends PathBase {
                 robot.encoderDrive(-0.5 , 5);
                 break;
         }
-        //Alliance[] results = robot.beaconClassifier.classify();
-        Alliance[] results = { Alliance.RED, Alliance.BLUE };
-        boolean is_left = (alliance == results[0]);
-        boolean is_right = (alliance == results[1]);
 
-       /* try  {
-            opModeCallbacks.addData("OpenCV", "Classification succeeded!");
-            opModeCallbacks.addData("OpenCV", "Result { %s, %s }", results[0].toString(), results[1].toString());
-            opModeCallbacks.updateTelemetry();
+        Alliance[] result = robot.beaconClassifier.classify();
+        //Alliance[] result = { Alliance.RED, Alliance.BLUE };
+
+        if(result == BeaconClassifier.CLASSIFICATION_ERROR) {
+            opMode.telemetry.addData("OpenCV", "Error...");
+            return;
         }
-        catch (NullPointerException except) {
-            opModeCallbacks.addData("OpenCV", "Classification NA!");
-        }*/
+        else {
+            opMode.telemetry.addData("OpenCV", "Classification succeeded!");
+            opMode.telemetry.addData("OpenCV", "Result { %s, %s }", result[0].toString(), result[1].toString());
+        }
+
+        boolean is_left = (alliance == result[0]);
+        boolean is_right = (alliance == result[1]);
 
         if (is_left) {
             robot.pivot(-45, 0.2);
@@ -85,19 +88,30 @@ public class Beacons extends PathBase {
                 break;
         }
 
-        //Alliance[] results2 = robot.beaconClassifier.classify();
-        Alliance[] results2 = { Alliance.BLUE, Alliance.RED };
-        is_left = (alliance == results2[0]);
-        is_right = (alliance == results2[1]);
+        Alliance[] result2 = robot.beaconClassifier.classify();
+        //Alliance[] result2 = { Alliance.RED, Alliance.BLUE };
 
-        if (is_left) {
+        if(result2 == BeaconClassifier.CLASSIFICATION_ERROR) {
+            opMode.telemetry.addData("OpenCV", "Error...");
+            return;
+        }
+        else {
+            opMode.telemetry.addData("OpenCV", "Classification succeeded!");
+            opMode.telemetry.addData("OpenCV", "Result { %s, %s }", result2[0].toString(), result2[1].toString());
+        }
+
+        boolean is_left2 = (alliance == result2[0]);
+        boolean is_right2 = (alliance == result2[1]);
+
+        if (is_left2) {
             robot.pivot(-45, 0.2);
             robot.pivot(45, 0.2);
         }
-        else if (is_right) {
+        else if (is_right2) {
             robot.pivot(45, 0.2);
             robot.pivot(-45, 0.2);
         }
+
         robot.encoderDrive(-0.5, 12);
         robot.encoderDrive(0.5, 10);
         robot.pivot(45, -0.3);

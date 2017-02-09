@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 /**
  * Created by Vicki on 2016-10-15.
  */
 
-public class BallKnocker extends PathBase {
+final class BallKnocker extends PathBase {
 
-
-    public BallKnocker(Robot r, Coordinate startLoc) {
-        super(r, startLoc, "Ball Knocker");
+    BallKnocker(LinearOpMode opMode, Robot r, Coordinate startLoc) {
+        super(opMode, r, startLoc, "Ball Knocker");
     }
 
     @Override

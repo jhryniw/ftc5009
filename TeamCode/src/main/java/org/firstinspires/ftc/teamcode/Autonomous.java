@@ -61,16 +61,16 @@ public class Autonomous extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         //Initialize robot/hardware
-        robot = new Robot("proto1", hardwareMap, getCallbacks(this));
+        robot = new Robot("proto1", hardwareMap, this);
 
         //Register paths
-        pathList.put("Ball Knocker", new BallKnocker(robot, new Coordinate(0, 0)));
-        pathList.put("Beacons", new Beacons(robot, new Coordinate(0, 0)));
-        pathList.put("Corner Goal", new CornerGoal(robot, new Coordinate(0, 0)));
-        pathList.put("Ball Shooter", new BallShooter (robot, new Coordinate(0, 0)));
-        pathList.put("Target Test", new PDTest(robot, new Coordinate(0, 0)));
-        pathList.put("Feeder Auto", new FeederAuto(robot, new Coordinate(0, 0)));
-        pathList.put("Feeder Auto2", new FeederAuto2(robot, new Coordinate(0, 0)));
+        pathList.put("Ball Knocker", new BallKnocker(this, robot, new Coordinate(0, 0)));
+        pathList.put("Beacons", new Beacons(this, robot, new Coordinate(0, 0)));
+        pathList.put("Corner Goal", new CornerGoal(this, robot, new Coordinate(0, 0)));
+        pathList.put("Ball Shooter", new BallShooter (this, robot, new Coordinate(0, 0)));
+        pathList.put("Target Test", new PDTest(this, robot, new Coordinate(0, 0)));
+        pathList.put("Feeder Auto", new FeederAuto(this, robot, new Coordinate(0, 0)));
+        pathList.put("Feeder Auto2", new FeederAuto2(this, robot, new Coordinate(0, 0)));
 
         pathNames = new ArrayList<String>(pathList.keySet());
 
@@ -88,8 +88,6 @@ public class Autonomous extends LinearOpMode {
 
         //robot.haltLocator();
 
-        robot.beaconclassifierinit(hardwareMap);
-
         waitForStart();
 
         //robot.launchLocator();
@@ -102,31 +100,6 @@ public class Autonomous extends LinearOpMode {
         catch (InterruptedException e) {
             robot.haltLocator();
         }
-    }
-
-
-    private OpModeCallbacks getCallbacks(final LinearOpMode opMode) {
-        return new OpModeCallbacks() {
-            @Override
-            public void idle() throws InterruptedException {
-                opMode.idle();
-            }
-
-            @Override
-            public boolean opModeIsActive() {
-                return opMode.opModeIsActive();
-            }
-
-            @Override
-            public void addData(String caption, String format, Object... args) {
-                telemetry.addData(caption, format, args);
-            }
-
-            @Override
-            public void updateTelemetry() {
-                opMode.updateTelemetry(telemetry);
-            }
-        };
     }
 
     private int getPathPosition(String key) {

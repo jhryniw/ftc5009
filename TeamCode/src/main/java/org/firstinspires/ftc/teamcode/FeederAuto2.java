@@ -7,10 +7,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Created by Vicki on 2017-02-04.
  */
 
+final class FeederAuto2 extends PathBase {
 
-public class FeederAuto2 extends PathBase {
-
-    public FeederAuto2(Robot r, Coordinate startLoc) { super(r, startLoc, "Feeder Auto2"); }
+    FeederAuto2(LinearOpMode opMode, Robot r, Coordinate startLoc) { super(opMode, r, startLoc, "Feeder Auto2"); }
 
     @Override
     void run() throws InterruptedException {

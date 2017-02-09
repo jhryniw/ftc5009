@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 /**
  * Created by Vicki on 2016-10-22.
  */
 
-public class CornerGoal extends PathBase {
+final class CornerGoal extends PathBase {
 
-    public CornerGoal(Robot r, Coordinate startLoc) {
-        super(r, startLoc, "Corner Goal");
+    CornerGoal(LinearOpMode opMode, Robot r, Coordinate startLoc) {
+        super(opMode, r, startLoc, "Corner Goal");
     }
 
     @Override

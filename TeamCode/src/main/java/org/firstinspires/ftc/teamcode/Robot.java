@@ -2,7 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.view.SurfaceView;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
@@ -25,7 +28,7 @@ public class Robot {
     private Hardware hw = new Hardware();
     private RobotLocator locator = new RobotLocator();
     private ElapsedTime runtime = new ElapsedTime();
-    private OpModeCallbacks opModeCallbacks;
+    private LinearOpMode opMode;
 
     public BeaconClassifier beaconClassifier;
 
@@ -35,18 +38,18 @@ public class Robot {
     private static double P = 0.2;
     private static double D = 8;
 
-    public Robot(String robotName, HardwareMap hwMap, OpModeCallbacks callbacks) {
+    public Robot(String robotName, HardwareMap hwMap, LinearOpMode om) {
         name = robotName;
-        opModeCallbacks = callbacks;
+        opMode = om;
+
         hw.init(hwMap);
         //locator.init(hwMap.appContext);
 
+        beaconClassifier = new BeaconClassifier((Activity) hwMap.appContext, 0);
+        beaconClassifier.setPreviewVisibility(SurfaceView.VISIBLE);
+
         // turn the LED on in the beginning, just so user will know that the sensor is active.
         enableLed();
-    }
-
-    public void beaconclassifierinit(HardwareMap hwMap) {
-        beaconClassifier = new BeaconClassifier((Activity) hwMap.appContext, 0);
     }
 
     /*
@@ -76,12 +79,12 @@ public class Robot {
         hw.rightMotor.setPower(speed);
 
         int position = hw.leftMotor.getCurrentPosition();
-        while (opModeCallbacks.opModeIsActive() && Math.abs(position) < target) {
+        while (opMode.opModeIsActive() && Math.abs(position) < target) {
             position = hw.leftMotor.getCurrentPosition();
 
-            opModeCallbacks.addData("EncoderTarget", "%d", target);
-            opModeCallbacks.addData("EncoderPosition", "%d", position);
-            opModeCallbacks.updateTelemetry();
+            opMode.telemetry.addData("EncoderTarget", "%d", target);
+            opMode.telemetry.addData("EncoderPosition", "%d", position);
+            opMode.telemetry.update();
             sleep(10);
         }
 
@@ -108,13 +111,13 @@ public class Robot {
         //loop
         int position = hw.leftMotor.getCurrentPosition();
 
-        while (opModeCallbacks.opModeIsActive() && Math.abs(position) < target) {
+        while (opMode.opModeIsActive() && Math.abs(position) < target) {
             //TODO: Take the average of both the left and right encoders
             position = hw.leftMotor.getCurrentPosition();
 
-            opModeCallbacks.addData("EncoderTarget", "%d", target);
-            opModeCallbacks.addData("EncoderPosition", "%d", position);
-            opModeCallbacks.updateTelemetry();
+            opMode.telemetry.addData("EncoderTarget", "%d", target);
+            opMode.telemetry.addData("EncoderPosition", "%d", position);
+            opMode.telemetry.update();
             sleep(10);
         }
 
@@ -124,13 +127,13 @@ public class Robot {
     }
 
     public void testLoop() throws InterruptedException {
-        while(opModeCallbacks.opModeIsActive()) {
-            opModeCallbacks.addData("Status", locator.isTracking() ? "Tracking" : "Not Tracking");
-            opModeCallbacks.addData("Robot location", locator.getRobotLocation().toString());
-            opModeCallbacks.addData("Rate", Integer.toString(locator.getFps()));
+        while(opMode.opModeIsActive()) {
+            opMode.telemetry.addData("Status", locator.isTracking() ? "Tracking" : "Not Tracking");
+            opMode.telemetry.addData("Robot location", locator.getRobotLocation().toString());
+            opMode.telemetry.addData("Rate", Integer.toString(locator.getFps()));
 
-            opModeCallbacks.updateTelemetry();
-            opModeCallbacks.idle();
+            opMode.telemetry.update();
+            opMode.idle();
         }
     }
 
@@ -146,7 +149,7 @@ public class Robot {
 
         while(!locator.isTracking()) {
             locator.getRobotLocation();
-            opModeCallbacks.idle();
+            opMode.idle();
         }
 
         float[] start = locator.getRobotLocationXZ();
@@ -156,9 +159,9 @@ public class Robot {
         double d = Math.sqrt(dx * dx + dz * dz);
         int theta = (int) Math.toDegrees(Math.acos((dx * Math.cos(o) + dz * Math.sin(o)) / d));
 
-        opModeCallbacks.addData("Distance", Double.toString(d));
-        opModeCallbacks.addData("Theta", Double.toString(theta));
-        opModeCallbacks.updateTelemetry();
+        opMode.telemetry.addData("Distance", Double.toString(d));
+        opMode.telemetry.addData("Theta", Double.toString(theta));
+        opMode.telemetry.update();
 
         encoderDrive(speed, d);
         pivot(theta, speed);
@@ -182,7 +185,7 @@ public class Robot {
         double error = 0;
         double diff_error = 0;
 
-        while (e > 1 && opModeCallbacks.opModeIsActive()) {
+        while (e > 1 && opMode.opModeIsActive()) {
             float[] location = locator.getRobotLocationXZ();
 
             double rx = location[0] - start[0];
@@ -212,16 +215,16 @@ public class Robot {
 
             setSpeed(-speed, steer);
 
-            opModeCallbacks.addData("Status:", "%s", locator.isTracking() ? "Tracking" : "Not Tracking");
-            opModeCallbacks.addData("Robot location", locator.getRobotLocation().toString());
-            opModeCallbacks.addData("Errors", "{ %.2f, %.2f, %.2f }", e, error, diff_error);
-            opModeCallbacks.addData("Position:", "{ %.2f, %.2f }", location[0], location[1]);
-            opModeCallbacks.addData("Speed:", "{ %.2f, %.2f }", speed, steer);
-            opModeCallbacks.addData("Goal:", "%.2f { %.2f, %.2f }", u, goal[0], goal[1]);
-            opModeCallbacks.addData("Rate", Integer.toString(locator.getFps()));
-            opModeCallbacks.updateTelemetry();
+            opMode.telemetry.addData("Status:", "%s", locator.isTracking() ? "Tracking" : "Not Tracking");
+            opMode.telemetry.addData("Robot location", locator.getRobotLocation().toString());
+            opMode.telemetry.addData("Errors", "{ %.2f, %.2f, %.2f }", e, error, diff_error);
+            opMode.telemetry.addData("Position:", "{ %.2f, %.2f }", location[0], location[1]);
+            opMode.telemetry.addData("Speed:", "{ %.2f, %.2f }", speed, steer);
+            opMode.telemetry.addData("Goal:", "%.2f { %.2f, %.2f }", u, goal[0], goal[1]);
+            opMode.telemetry.addData("Rate", Integer.toString(locator.getFps()));
+            opMode.telemetry.update();
 
-            opModeCallbacks.idle();
+            opMode.idle();
         }
 
         stop();
@@ -263,7 +266,7 @@ public class Robot {
             right_power = Math.signum(right_power) * MAX_POWER;
         }
 
-        opModeCallbacks.addData("Power:", "{ %.2f, %.2f }", left_power, right_power);
+        opMode.telemetry.addData("Power:", "{ %.2f, %.2f }", left_power, right_power);
 
         try {
             hw.leftMotor.setPower(left_power);

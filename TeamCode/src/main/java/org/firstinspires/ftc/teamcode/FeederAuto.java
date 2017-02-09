@@ -9,10 +9,10 @@ import java.util.Vector;
  * Created by Vicki on 2017-01-31.
  */
 
-public class FeederAuto extends PathBase {
+final class FeederAuto extends PathBase {
 
-    public FeederAuto(Robot r, Coordinate startLoc) {
-        super(r, startLoc, "Feeder Auto");
+    FeederAuto(LinearOpMode opMode, Robot r, Coordinate startLoc) {
+        super(opMode, r, startLoc, "Feeder Auto");
     }
 
     @Override
