@@ -39,8 +39,7 @@ public class Robot {
         name = robotName;
         opModeCallbacks = callbacks;
         hw.init(hwMap);
-        locator.init(hwMap.appContext);
-
+        //locator.init(hwMap.appContext);
 
         // turn the LED on in the beginning, just so user will know that the sensor is active.
         enableLed();

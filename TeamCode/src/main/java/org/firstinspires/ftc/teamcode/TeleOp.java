@@ -38,10 +38,10 @@ public class TeleOp extends LinearOpMode {
 
             //Lift
 
-            if(gamepad2.right_trigger > 0.5) {
+            if(gamepad1.right_trigger > 0.5 || gamepad2.right_trigger > 0.5) {
                 robot.liftMotor.setPower(1);
             }
-            else if (gamepad2.left_trigger > 0.5) {
+            else if (gamepad1.left_trigger > 0.5 || gamepad2.left_trigger > 0.5) {
                 robot.liftMotor.setPower(-1);
             }
             else
