@@ -94,7 +94,7 @@ public class TeleOp extends LinearOpMode {
                     robot.shooterMotor.setPower(0);
                     shooter_state = 0;
                 }
-            } else if (gamepad2.b && r2_is_clicked){
+            } else if (!gamepad2.b && r2_is_clicked){
                r2_is_clicked = false;
             }
             /*
@@ -167,8 +167,8 @@ public class TeleOp extends LinearOpMode {
 
              if(gamepad2.dpad_up) {
 
-                double leftPos = robot.leftClaw.getPosition() - 0.05;
-                double rightPos = robot.rightClaw.getPosition() + 0.05;
+                double leftPos = -1;
+                double rightPos = 1;
 
                 //outward
                 if(leftPos < 0)
