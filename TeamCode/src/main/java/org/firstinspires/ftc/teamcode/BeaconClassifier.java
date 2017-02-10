@@ -59,7 +59,7 @@ class BeaconClassifier implements CameraBridgeViewBase.CvCameraViewListener2 {
                         Log.i("OpenCV", "OpenCV loaded successfully");
                         mOpenCvInitialized = true;
 
-                        mBeaconMatcher = new BeaconMatcher(mActivity, 120, 90);
+                        mBeaconMatcher = new BeaconMatcher(mActivity, 240, 180);
                         mCameraView.connectCamera(480, 640);
                         mCameraView.enableView();
                     } break;

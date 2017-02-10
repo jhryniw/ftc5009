@@ -60,6 +60,8 @@ final class Beacons extends PathBase {
             opMode.telemetry.addData("OpenCV", "Result { %s, %s }", result[0].toString(), result[1].toString());
         }
 
+        opMode.telemetry.update();
+
         boolean is_left = (alliance == result[0]);
         boolean is_right = (alliance == result[1]);
 
@@ -92,13 +94,16 @@ final class Beacons extends PathBase {
         //Alliance[] result2 = { Alliance.RED, Alliance.BLUE };
 
         if(result2 == BeaconClassifier.CLASSIFICATION_ERROR) {
-            opMode.telemetry.addData("OpenCV", "Error...");
+            robot.opMode.telemetry.addData("OpenCV", "Error...");
             return;
         }
         else {
-            opMode.telemetry.addData("OpenCV", "Classification succeeded!");
-            opMode.telemetry.addData("OpenCV", "Result { %s, %s }", result2[0].toString(), result2[1].toString());
+            robot.opMode.telemetry.addData("OpenCV", "Classification succeeded!");
+            robot.opMode.telemetry.addData("OpenCV", "Result { %s, %s }", result2[0].toString(), result2[1].toString());
         }
+
+        robot.opMode.telemetry.update();
+        opMode.sleep(2000);
 
         boolean is_left2 = (alliance == result2[0]);
         boolean is_right2 = (alliance == result2[1]);

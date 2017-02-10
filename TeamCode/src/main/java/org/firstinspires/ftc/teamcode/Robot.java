@@ -28,7 +28,7 @@ public class Robot {
     private Hardware hw = new Hardware();
     private RobotLocator locator = new RobotLocator();
     private ElapsedTime runtime = new ElapsedTime();
-    private LinearOpMode opMode;
+    public LinearOpMode opMode;
 
     public BeaconClassifier beaconClassifier;
 

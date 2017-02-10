@@ -95,11 +95,12 @@ public class Autonomous extends LinearOpMode {
         //Run selected path
         try {
             selectedPath.run();
-            while(opModeIsActive()) { idle(); }
         }
         catch (InterruptedException e) {
-            robot.haltLocator();
+            //robot.haltLocator();
         }
+
+        robot.beaconClassifier.close();
     }
 
     private int getPathPosition(String key) {

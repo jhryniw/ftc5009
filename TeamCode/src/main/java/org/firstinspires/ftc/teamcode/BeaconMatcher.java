@@ -20,9 +20,9 @@ import java.util.HashMap;
  */
 
 
-public class BeaconMatcher {
+class BeaconMatcher {
 
-    public enum BeaconType { RED_BLUE, BLUE_RED, RED_RED, BLUE_BLUE };
+    enum BeaconType { RED_BLUE, BLUE_RED, RED_RED, BLUE_BLUE };
 
     private HashMap<BeaconType, Mat> templates = new HashMap<>();
 
