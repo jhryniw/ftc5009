@@ -31,7 +31,8 @@ final class FeederAuto extends PathBase {
 
                 robot.pivot(60, 0.2); //pivot
                 robot.encoderDrive(-0.8, 50);
-                robot.pivot(57, 0.2);
+                robot.pivot(50, 0.2);
+                robot.encoderDrive(-0.5, 5);
                 break;
 
             case RED:
@@ -49,22 +50,38 @@ final class FeederAuto extends PathBase {
                 robot.encoderDrive(-0.8, 50);
                 robot.pivot(-50, 0.2);
                 robot.encoderDrive(0.5, 10);
+                robot.encoderDrive(-0.5, 5);
                 break;
         }
+        Alliance[] result = robot.beaconClassifier.classify();
+        //Alliance[] result = { Alliance.RED, Alliance.BLUE };
+
+        if(result == BeaconClassifier.CLASSIFICATION_ERROR) {
+            opMode.telemetry.addData("OpenCV", "Error...");
+            return;
+        }
+        else {
+            opMode.telemetry.addData("OpenCV", "Classification succeeded!");
+            opMode.telemetry.addData("OpenCV", "Result { %s, %s }", result[0].toString(), result[1].toString());
+        }
+
+        opMode.telemetry.update();
+
+        boolean is_left = (alliance == result[0]);
+        boolean is_right = (alliance == result[1]);
+
+        if (is_left) {
+            robot.pivot(-45, 0.2);
+            robot.pivot(45, 0.2);
+        }
+        else if (is_right) {
+            robot.pivot(45, 0.2);
+            robot.pivot(-45, 0.2);
+        }
+            robot.encoderDrive(-0.5, 7);
+            robot.encoderDrive(1, 57);
 
 
-        switch (alliance) {
-            case BLUE:
-                robot.encoderDrive(0.5, 29);
-                robot.pivot(-45, 0.5);
-                robot.pivot(45, 0.3);
-                robot.encoderDrive(0.3, 4);
-                break;
-            case RED:
-                robot.encoderDrive(0.5, 29);
-                robot.pivot(45, 0.5);
-                robot.pivot(-45, 0.3);
-                robot.encoderDrive(0.3, 4);
 
 
         }
@@ -73,5 +90,5 @@ final class FeederAuto extends PathBase {
     }
 
 
-}
+
 
