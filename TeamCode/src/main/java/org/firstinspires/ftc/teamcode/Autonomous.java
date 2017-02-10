@@ -71,6 +71,8 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Target Test", new PDTest(this, robot, new Coordinate(0, 0)));
         pathList.put("Feeder Auto", new FeederAuto(this, robot, new Coordinate(0, 0)));
         pathList.put("Feeder Auto2", new FeederAuto2(this, robot, new Coordinate(0, 0)));
+        pathList.put("Simple Auto", new FeederAuto2(this, robot, new Coordinate(0, 0)));
+
 
         pathNames = new ArrayList<String>(pathList.keySet());
 

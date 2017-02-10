@@ -17,7 +17,7 @@ final class Beacons extends PathBase {
         switch (alliance) {
             case BLUE:
                 robot.encoderDrive(-0.5, 5); //backward
-                robot.ballshooter(0.95, 500);
+                robot.ballshooter(0.95, 1);
                 robot.feeder(0, 700); //down feed
                 robot.feeder(1, 1000); //up feed
                 robot.feeder(0, 1000); //down feed
@@ -41,10 +41,10 @@ final class Beacons extends PathBase {
                 robot.feeder(0, 1000); //down feed
                 robot.feeder(1, 500); //up feed
                 robot.ballshooter(0, 0);
-                robot.pivot(-60, 0.2); //pivot
-                robot.encoderDrive(-0.8, 60);
-                robot.pivot(-50, 0.2);
-                robot.encoderDrive(-0.5 , 5);
+                robot.pivot(-56, 0.2); //pivot
+                robot.encoderDrive(0.9, 62.2);
+                robot.pivot(-55, 0.2);
+                robot.encoderDrive(-0.5 , 1);
                 break;
         }
 
