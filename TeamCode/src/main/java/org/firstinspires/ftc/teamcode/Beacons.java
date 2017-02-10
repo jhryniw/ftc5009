@@ -17,23 +17,23 @@ final class Beacons extends PathBase {
         switch (alliance) {
             case BLUE:
                 robot.encoderDrive(-0.5, 5); //backward
-                robot.ballshooter(1.0, 500);
+                robot.ballshooter(0.95, 500);
                 robot.feeder(0, 700); //down feed
                 robot.feeder(1, 1000); //up feed
                 robot.feeder(0, 1000); //down feed
-                robot.feeder(1, 500); //up feed
-                robot.feeder(0 ,1000); //down feed
-                robot.feeder(1 , 500); //up feed
+                robot.feeder(1, 1000); //up feed
+                robot.feeder(0 ,200); //down feed
+                robot.feeder(1 , 0); //up feed
                 robot.ballshooter(0, 0); //stop shooter
-                robot.pivot(60, 0.2); //pivot
-                robot.encoderDrive(-0.8 , 60); //gets to beacon
-                robot.pivot(50, 0.2);
-                robot.encoderDrive(-0.5 , 5);
+                robot.pivot(56, 0.2); //pivot
+                robot.encoderDrive(-0.9 , 62.2); //gets to beacon
+                robot.pivot(55, 0.2);
+                robot.encoderDrive(-0.5 , 1);
                 break;
 
             case RED:
                 robot.encoderDrive(-0.5, 5); //backward
-                robot.ballshooter(1.0, 100);
+                robot.ballshooter(0.95, 100);
                 robot.feeder(0, 700); //down feed
                 robot.feeder(1, 1000); //up feed
                 robot.feeder(0, 1000); //down feed
@@ -65,13 +65,15 @@ final class Beacons extends PathBase {
         boolean is_left = (alliance == result[0]);
         boolean is_right = (alliance == result[1]);
 
-        if (is_left) {
-            robot.pivot(-45, 0.2);
+        if (is_left){
+            robot.encoderDrive(-0.2, 3);
             robot.pivot(45, 0.2);
+            robot.pivot(-45, 0.2);
         }
         else if (is_right) {
-            robot.pivot(45, 0.2);
+            robot.encoderDrive(-0.2, 3);
             robot.pivot(-45, 0.2);
+            robot.pivot(45, 0.2);
         }
 
         robot.encoderDrive(-0.5, 7);
@@ -80,12 +82,12 @@ final class Beacons extends PathBase {
         switch (alliance) {
             case BLUE:
                 robot.pivot(-92, 0.2);
-                robot.encoderDrive(-0.7, 50);
+                robot.encoderDrive(-0.7, 52);
                 robot.pivot(92, 0.2);
                 break;
             case RED:
                 robot.pivot(92, 0.2);
-                robot.encoderDrive(0.7, 50);
+                robot.encoderDrive(0.7, 52);
                 robot.pivot(-92, 0.2);
                 break;
         }
@@ -103,18 +105,19 @@ final class Beacons extends PathBase {
         }
 
         robot.opMode.telemetry.update();
-        opMode.sleep(2000);
 
         boolean is_left2 = (alliance == result2[0]);
         boolean is_right2 = (alliance == result2[1]);
 
         if (is_left2) {
-            robot.pivot(-45, 0.2);
+            robot.encoderDrive(-0.2, 3);
             robot.pivot(45, 0.2);
+            robot.pivot(-45, 0.2);
         }
         else if (is_right2) {
-            robot.pivot(45, 0.2);
+            robot.encoderDrive(-0.2, 3);
             robot.pivot(-45, 0.2);
+            robot.pivot(45, 0.2);
         }
 
         robot.encoderDrive(-0.5, 12);

@@ -26,7 +26,7 @@ import static java.lang.Thread.sleep;
 public class Robot {
 
     private Hardware hw = new Hardware();
-    private RobotLocator locator = new RobotLocator();
+    //private RobotLocator locator = new RobotLocator();
     private ElapsedTime runtime = new ElapsedTime();
     public LinearOpMode opMode;
 
@@ -128,26 +128,26 @@ public class Robot {
 
     public void testLoop() throws InterruptedException {
         while(opMode.opModeIsActive()) {
-            opMode.telemetry.addData("Status", locator.isTracking() ? "Tracking" : "Not Tracking");
+            /*opMode.telemetry.addData("Status", locator.isTracking() ? "Tracking" : "Not Tracking");
             opMode.telemetry.addData("Robot location", locator.getRobotLocation().toString());
             opMode.telemetry.addData("Rate", Integer.toString(locator.getFps()));
 
             opMode.telemetry.update();
-            opMode.idle();
+            opMode.idle();*/
         }
     }
 
     public void launchLocator() {
-        locator.launch();
+        //locator.launch();
     }
 
     public void haltLocator() {
-        locator.halt();
+        //locator.halt();
     }
 
     public void moveToTargetEncoder(int x, int z,int o, double speed) throws InterruptedException {
 
-        while(!locator.isTracking()) {
+        /*while(!locator.isTracking()) {
             locator.getRobotLocation();
             opMode.idle();
         }
@@ -169,12 +169,12 @@ public class Robot {
         //Thread.sleep(3000);
         //pivot( (int) theta, -speed);
         //encoderDrive(-speed, d);
-
+        */
     }
 
     public void moveToTarget(int x, int z,  double speed) throws InterruptedException {
 
-        float[] start = locator.getRobotLocationXZ();
+        /*float[] start = locator.getRobotLocationXZ();
         float[] goal = { x, z };
 
         double u = 0;
@@ -225,7 +225,7 @@ public class Robot {
             opMode.telemetry.update();
 
             opMode.idle();
-        }
+        }*/
 
         stop();
     }
