@@ -22,15 +22,16 @@ import java.util.HashMap;
 
 class BeaconMatcher {
 
-    enum BeaconType { RED_BLUE, BLUE_RED, RED_RED, BLUE_BLUE };
+    enum BeaconType { RED_BLUE, BLUE_RED, RED_RED, BLUE_BLUE }
 
     private HashMap<BeaconType, Mat> templates = new HashMap<>();
 
     BeaconMatcher(Context ctx, double width, double height) {
 
         try {
-            templates.put(BeaconType.RED_BLUE, Utils.loadResource(ctx, R.drawable.red_blue));
-            templates.put(BeaconType.BLUE_RED, Utils.loadResource(ctx, R.drawable.blue_red));
+            templates.put(BeaconType.RED_BLUE, Utils.loadResource(ctx, R.drawable.med_red_blue));
+            templates.put(BeaconType.BLUE_RED, Utils.loadResource(ctx, R.drawable.med_blue_red));
+
             //templates.put(BeaconType.RED_RED, Utils.loadResource(ctx, R.drawable.red_red));
             //templates.put(BeaconType.BLUE_BLUE, Utils.loadResource(ctx, R.drawable.blue_blue));
         }
