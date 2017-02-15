@@ -6,17 +6,18 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  * Created by Vicki on 2017-02-10.
  */
 
-final class SimpleAuto extends PathBase {
-    SimpleAuto(LinearOpMode opMode, Robot r, Coordinate startLoc) {
-        super(opMode, r, startLoc, "Simple Auto"); }
+final class FarCorner extends PathBase {
+    FarCorner(LinearOpMode opMode, Robot r, Coordinate startLoc) {
+        super(opMode, r, startLoc, "Simple Auto");
+    }
 
         @Override
         void run() throws InterruptedException {
             switch (alliance) {
                 case BLUE:
-                    robot.encoderDrive(-0.4, 2); //forward a bit
+                    robot.encoderDrive(-0.4, 3); //forward a bit
                     robot.pivot(45, 0.3); //face the center vortex
-                    robot.encoderDrive(-0.9, 14); //get closer center vortex
+                    robot.encoderDrive(-0.6, 25); //get closer center vortex
                     robot.ballshooter(0.95, 100);
                     robot.feeder(0, 700); //down feed
                     robot.feeder(1, 1000); //up feed
@@ -25,12 +26,13 @@ final class SimpleAuto extends PathBase {
                     robot.feeder(0 ,200); //down feed
                     robot.feeder(1 , 0); //up feed
                     robot.ballshooter(0, 0);
-                    robot.encoderDrive(-1, 25); //knock capball
+                    robot.encoderDrive(-0.6, 45); //knock capball
+                    robot.pivot(50, 0.4);
                     break;
                 case RED:
-                    robot.encoderDrive(-0.4, 2);
+                    robot.encoderDrive(-0.4, 3);
                     robot.pivot(-45, 0.3);
-                    robot.encoderDrive(-0.9, 14);
+                    robot.encoderDrive(-0.6, 25);
                     robot.ballshooter(0.95, 100);
                     robot.feeder(0, 700); //down feed
                     robot.feeder(1, 1000); //up feed
@@ -39,8 +41,9 @@ final class SimpleAuto extends PathBase {
                     robot.feeder(0 ,200); //down feed
                     robot.feeder(1 , 0); //up feed
                     robot.ballshooter(0, 0);
-                    robot.encoderDrive(-1, 25);
+                    robot.encoderDrive(-0.6, 45);
+                    robot.pivot(-35, 0.4);
                     break;
+            }
     }
-}
 }

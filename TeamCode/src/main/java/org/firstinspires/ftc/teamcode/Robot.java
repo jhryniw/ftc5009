@@ -237,6 +237,7 @@ public class Robot {
 
     public void ballshooter ( double speed, long time ) throws InterruptedException {
         hw.shooterMotor.setPower(speed);
+        hw.shooterMotor2.setPower(speed);
         sleep(time);
     }
     public void feeder (float position, long time) throws InterruptedException {

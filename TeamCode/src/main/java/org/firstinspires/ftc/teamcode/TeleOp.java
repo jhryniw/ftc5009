@@ -88,10 +88,12 @@ public class TeleOp extends LinearOpMode {
                 r2_is_clicked = true;
                 if(shooter_state !=1) {
                     robot.shooterMotor.setPower((double) SHOOTER_POWER);
+                    robot.shooterMotor2.setPower((double) SHOOTER_POWER);
                     shooter_state = 1;
                 }
                 else {
                     robot.shooterMotor.setPower(0);
+                    robot.shooterMotor2.setPower(0);
                     shooter_state = 0;
                 }
             } else if (!gamepad2.b && r2_is_clicked){

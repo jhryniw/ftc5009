@@ -1,27 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.os.Looper;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-import android.view.View;
-import android.os.Bundle;
 import android.widget.ToggleButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-
-import org.firstinspires.ftc.teamcode.R;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -30,9 +20,6 @@ import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-
-import java.util.concurrent.Callable;
 
 /**
  * Main Autonomous Class
@@ -71,7 +58,10 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Target Test", new PDTest(this, robot, new Coordinate(0, 0)));
         pathList.put("Feeder Auto", new FeederAuto(this, robot, new Coordinate(0, 0)));
         pathList.put("Feeder Auto2", new FeederAuto2(this, robot, new Coordinate(0, 0)));
-        pathList.put("Simple Auto", new FeederAuto2(this, robot, new Coordinate(0, 0)));
+        pathList.put("Far Corner", new FarCorner(this, robot, new Coordinate(0, 0)));
+        pathList.put("Close Corner", new CloseCorner(this, robot, new Coordinate(0, 0)));
+
+
 
 
         pathNames = new ArrayList<String>(pathList.keySet());
