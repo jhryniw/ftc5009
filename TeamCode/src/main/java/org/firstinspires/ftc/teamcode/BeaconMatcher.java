@@ -20,7 +20,6 @@ import java.util.HashMap;
  * Created by James on 2017-02-06.
  */
 
-
 class BeaconMatcher {
 
     enum BeaconType { RED_BLUE, BLUE_RED, RED_RED, BLUE_BLUE }
@@ -29,16 +28,18 @@ class BeaconMatcher {
 
     BeaconMatcher(Context ctx, double width, double height) {
 
-        /*try {
-            templates.put(BeaconType.RED_BLUE, Utils.loadResource(ctx, R.drawable.med_red_blue));
-            templates.put(BeaconType.BLUE_RED, Utils.loadResource(ctx, R.drawable.med_blue_red));
+      try {
+           templates.put(BeaconType.RED_BLUE, Utils.loadResource(ctx, R.drawable.good_red_blues));
+           templates.put(BeaconType.BLUE_RED, Utils.loadResource(ctx, R.drawable.good_blue_red));
+           // templates.put(BeaconType.RED_BLUE, Utils.loadResource(ctx, R.drawable.med_red_blue));
+            //templates.put(BeaconType.BLUE_RED, Utils.loadResource(ctx, R.drawable.med_blue_red));
 
             //templates.put(BeaconType.RED_RED, Utils.loadResource(ctx, R.drawable.red_red));
             //templates.put(BeaconType.BLUE_BLUE, Utils.loadResource(ctx, R.drawable.blue_blue));
         }
         catch (IOException e) {
             Log.e("OpenCV", "Error Loading Beacon Image!");
-        }*/
+        }
 
         Size tSize = new Size(width, height);
 

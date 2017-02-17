@@ -58,10 +58,10 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Target Test", new PDTest(this, robot, new Coordinate(0, 0)));
         pathList.put("Feeder Auto", new FeederAuto(this, robot, new Coordinate(0, 0)));
         pathList.put("Feeder Auto2", new FeederAuto2(this, robot, new Coordinate(0, 0)));
-        pathList.put("Far Corner", new FarCorner(this, robot, new Coordinate(0, 0)));
+        //pathList.put("Far Cornerslol", new FarCornerslol(this, robot, new Coordinate(0, 0)));
+        //pathList.put("Close Cornerslol", new CloseCornerslol(this, robot, new Coordinate(0, 0)));
         pathList.put("Close Corner", new CloseCorner(this, robot, new Coordinate(0, 0)));
-
-
+        pathList.put("Far Corner", new FarCorner(this, robot, new Coordinate(0, 0)));
 
 
         pathNames = new ArrayList<String>(pathList.keySet());
@@ -72,6 +72,11 @@ public class Autonomous extends LinearOpMode {
         alliance = prefs.getString("ALLIANCE_KEY", "BLUE").equals("BLUE") ? Alliance.BLUE : Alliance.RED;
         selectedPath = pathList.get(prefs.getString("PATH_KEY", pathList.keySet().toArray()[0].toString()));
 
+
+        if (selectedPath == null){
+            selectedPath = pathList.get("Close Corner");
+        }
+
         //Run configuration
         buildConfigDialog();
 
@@ -81,6 +86,8 @@ public class Autonomous extends LinearOpMode {
         //robot.haltLocator();
 
         waitForStart();
+
+        sleep(delay);
 
         //robot.launchLocator();
 
@@ -134,10 +141,10 @@ public class Autonomous extends LinearOpMode {
         final TextView txtDelayBar = (TextView) dialogView.findViewById(R.id.txtDelayBar);
         txtDelayBar.setText("Delay: " + delay + "ms");
 
+
         SeekBar delayBar = (SeekBar) dialogView.findViewById(R.id.delayBar);
         delayBar.setMax(300);
         delayBar.setProgress(delay / 100);
-
         delayBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override

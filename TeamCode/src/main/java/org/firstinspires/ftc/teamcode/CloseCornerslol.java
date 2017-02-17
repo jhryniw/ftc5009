@@ -1,15 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.*;
 
 /**
- * Created by Vicki on 2017-02-15.
+ * Created by szost on 2017-02-13.
  */
 
-final class CloseCorner extends PathBase {
-    CloseCorner(LinearOpMode opMode, Robot r, Coordinate startLoc) {
-        super(opMode, r, startLoc, "Close Corner");
+final class CloseCornerslol extends PathBase{
+    CloseCornerslol(LinearOpMode opMode, Robot r, Coordinate startLoc) {
+        super(opMode, r, startLoc, "Close Corners");
     }
     @Override
     void run() throws InterruptedException {
@@ -49,6 +48,7 @@ final class CloseCorner extends PathBase {
                 robot.encoderDrive(-0.3, 25);
                 robot.pivot(-60, 0.8);
                 break;
+
+        }
     }
-}
 }

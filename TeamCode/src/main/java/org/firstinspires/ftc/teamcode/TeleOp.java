@@ -226,12 +226,12 @@ public class TeleOp extends LinearOpMode {
             }
 
             else if (gamepad1.dpad_right) {
-                l_power = 0.2;
-                r_power = -0.2;
+                l_power = 0.1;
+                r_power = -0.1;
             }
             else if (gamepad1.dpad_left) {
-                l_power = -0.2;
-                r_power = 0.2;
+                l_power = -0.1;
+                r_power = 0.1;
             }
 
             //apply values to motor speed
