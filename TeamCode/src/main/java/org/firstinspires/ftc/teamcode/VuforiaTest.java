@@ -124,12 +124,7 @@ public class VuforiaTest extends LinearOpMode {
 
                 isTracking = tracking;
 
-                try {
-                    idle();
-                }
-                catch (InterruptedException e) {
-                    this.cancel(true);
-                }
+                idle();
             }
 
             return null;
