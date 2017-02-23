@@ -45,8 +45,7 @@ public class Robot {
         hw.init(hwMap);
         //locator.init(hwMap.appContext);
 
-        beaconClassifier = new BeaconClassifier((Activity) hwMap.appContext, 0);
-        beaconClassifier.setPreviewVisibility(SurfaceView.VISIBLE);
+        beaconClassifier = new BeaconClassifier((Activity) hwMap.appContext);
 
         // turn the LED on in the beginning, just so user will know that the sensor is active.
         enableLed();

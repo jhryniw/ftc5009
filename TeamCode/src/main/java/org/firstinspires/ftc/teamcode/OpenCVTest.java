@@ -26,11 +26,10 @@ public class OpenCVTest extends LinearOpMode {
          * Camera ID 0: Back Camera
          * Camera ID 1: Front Camera
          */
-        beaconClassifier = new BeaconClassifier((Activity) hardwareMap.appContext, 0);
+        beaconClassifier = new BeaconClassifier((Activity) hardwareMap.appContext);
 
         waitForStart();
 
-        beaconClassifier.setPreviewVisibility(SurfaceView.VISIBLE);
         Alliance[] result = beaconClassifier.classify();
         if(result == BeaconClassifier.CLASSIFICATION_ERROR) {
             telemetry.addData("OpenCV", "Error...");
@@ -43,6 +42,5 @@ public class OpenCVTest extends LinearOpMode {
         telemetry.update();
 
         sleep(5000);
-        beaconClassifier.close();
     }
 }

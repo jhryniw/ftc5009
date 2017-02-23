@@ -98,8 +98,6 @@ public class Autonomous extends LinearOpMode {
         catch (InterruptedException e) {
             //robot.haltLocator();
         }
-
-        robot.beaconClassifier.close();
     }
 
     private int getPathPosition(String key) {
