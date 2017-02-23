@@ -7,6 +7,8 @@ import android.os.Debug;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.vuforia.CameraCalibration;
+import com.vuforia.Frame;
 import com.vuforia.HINT;
 import com.vuforia.Vuforia;
 
@@ -18,12 +20,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.*;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by James on 2016-12-10.
@@ -37,6 +39,9 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
 
     private VectorF robotLocation = new VectorF(0, 0, 0);
     private VuforiaTrackables beacons;
+    private BlockingQueue<Frame> frameQueue;
+
+    private CameraCalibration cameraInfo;
 
     private long last_cycle;
     private boolean isTracking = false;
@@ -57,15 +62,16 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
 
     public void init(Context ctx) {
 
-        //VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
-        VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters();
+        VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
         params.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        params.vuforiaLicenseKey = ctx.getString(R.string.vuforia_license_key); //"AW5ADSz/////AAAAGZwQUUhq3k+GnK7vAfcImu4iQkhXG40fIHzKKwouEq4vAAtcpPlheUJOnrPCeHmsgF4SBZmierGuoSVWmgjQ/yCUKnJWTAt8CpVBSJWV3uP0FoI61JtCC/0JBK5ehCITvHlGzWtMQyyl4yb7qIXjAKZeiDI4ztBPwODBpJLOvASrNSYWD+Wo+UdILBdIfMmisTg3gKSFeGnV5YQmmZKIh8Ikzjh5/GrT4yWsmHZdIpZF2JFQA3V8wSqSCuKIi/CQGarB+k24MH8l/+dcXt8PxlW16cjUHjT86KlDhLfioUTcWUYIRR1CE/BtX8zUnV5FUimQXsiBRn3DZHGQQ+jJW/omsEhWe2ApwIrbsdp56KJh";
+        params.vuforiaLicenseKey = ctx.getString(R.string.vuforia_license_key);
         params.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
 
-        VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(params);
         Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
-        
+
+        VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(params);
+        cameraInfo = vuforia.getCameraCalibration();
+
         beacons = vuforia.loadTrackablesFromAsset("FTC_2016-17");
 
         beacons.get(0).setName("Wheels");
