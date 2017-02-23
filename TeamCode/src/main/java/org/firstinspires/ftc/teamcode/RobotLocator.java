@@ -65,7 +65,7 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
 
         VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(params);
         Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
-
+        
         beacons = vuforia.loadTrackablesFromAsset("FTC_2016-17");
 
         beacons.get(0).setName("Wheels");
