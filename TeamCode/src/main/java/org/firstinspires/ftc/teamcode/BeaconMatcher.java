@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.util.Log;
-import org.firstinspires.ftc.teamcode.R;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -14,7 +14,11 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+
+import static org.opencv.android.Utils.loadResource;
 
 /**
  * Created by James on 2017-02-06.
@@ -24,37 +28,58 @@ class BeaconMatcher {
 
     enum BeaconType { RED_BLUE, BLUE_RED, RED_RED, BLUE_BLUE }
 
-    private HashMap<BeaconType, Mat> templates = new HashMap<>();
+    private class BeaconTemplate {
+
+        private Size MIN_SIZE = new Size(60, 40);
+        private Mat oTemplate;
+        ArrayList<Mat> pyramid = new ArrayList<>();
+        BeaconType type;
+
+        BeaconTemplate(Context ctx, int resid, BeaconType type, Size max_size, int max_levels) {
+            this.type = type;
+
+            try {
+                oTemplate = Utils.loadResource(ctx, resid);
+            }
+            catch (IOException e) {
+                Log.e("OpenCV", "Error Loading Beacon Image!");
+            }
+
+            Imgproc.resize(oTemplate, oTemplate, max_size);
+
+            pyramid.add(0, oTemplate);
+            Mat temp = oTemplate;
+
+            for(int level = 1; level < max_levels && temp.width() > MIN_SIZE.width && temp.height() > MIN_SIZE.height; level++) {
+                Mat newTemp = new Mat();
+                Size nextSize = scale(max_size, Math.pow(0.75, level));
+                Imgproc.pyrDown(temp, newTemp);
+                pyramid.add(level, newTemp);
+                temp = newTemp.clone();
+                Log.d("BeaconMatcher", "Level: " + level + " Template Size: " + temp.size());
+            }
+        }
+
+        private Size scale(Size s, double factor) {
+            return new Size((int) s.width * factor, (int) s.height * factor);
+        }
+    }
+
+    private ArrayList<BeaconTemplate> templates = new ArrayList<>();
 
     BeaconMatcher(Context ctx, double width, double height) {
 
-      try {
-           templates.put(BeaconType.RED_BLUE, Utils.loadResource(ctx, R.drawable.good_red_blues));
-           templates.put(BeaconType.BLUE_RED, Utils.loadResource(ctx, R.drawable.good_blue_red));
-           // templates.put(BeaconType.RED_BLUE, Utils.loadResource(ctx, R.drawable.med_red_blue));
-            //templates.put(BeaconType.BLUE_RED, Utils.loadResource(ctx, R.drawable.med_blue_red));
-
-            //templates.put(BeaconType.RED_RED, Utils.loadResource(ctx, R.drawable.red_red));
-            //templates.put(BeaconType.BLUE_BLUE, Utils.loadResource(ctx, R.drawable.blue_blue));
-        }
-        catch (IOException e) {
-            Log.e("OpenCV", "Error Loading Beacon Image!");
-        }
-
         Size tSize = new Size(width, height);
 
-        //Resize the images to desired size
-        for(BeaconType t : templates.keySet()) {
-            Imgproc.resize(templates.get(t), templates.get(t), tSize);
-            Log.d("BeaconMatcher", "Template Size: " + templates.get(t).size());
-        }
+        templates.add(new BeaconTemplate(ctx, R.drawable.med_red_blue, BeaconType.RED_BLUE, tSize, 3));
+        templates.add(new BeaconTemplate(ctx, R.drawable.med_blue_red, BeaconType.BLUE_RED, tSize, 3));
     }
 
     private double findMatch(Mat frame, Mat template) {
         Mat output = new Mat();
         Core.MinMaxLocResult result;
 
-        Imgproc.matchTemplate(frame, template, output, Imgproc.TM_CCOEFF);
+        Imgproc.matchTemplate(frame, template, output, Imgproc.TM_CCOEFF_NORMED);
         result = Core.minMaxLoc(output);
 
         Log.d("BeaconMatcher", "Match found at x: " + result.maxLoc.x + " y: " + result.maxLoc.y);
@@ -70,14 +95,17 @@ class BeaconMatcher {
 
         Imgproc.cvtColor(temp, frame, Imgproc.COLOR_RGBA2RGB);
 
-        for(BeaconType t : templates.keySet()) {
-            double result = findMatch(frame, templates.get(t));
+        for( BeaconTemplate template : templates ) {
+            for( int level = 0; level < template.pyramid.size(); level++ ) {
+                Mat t = template.pyramid.get(level);
+                double result = findMatch(frame, t);
 
-            Log.d("BeaconMatcher", t.name() + " result: " + result);
+                Log.d("BeaconMatcher", template.type.name() + " level: " + level + " size: " + t.size() +  " result: " + result);
 
-            if(result > bestResult) {
-                bestMatch = t;
-                bestResult = result;
+                if (result > bestResult) {
+                    bestMatch = template.type;
+                    bestResult = result;
+                }
             }
         }
 

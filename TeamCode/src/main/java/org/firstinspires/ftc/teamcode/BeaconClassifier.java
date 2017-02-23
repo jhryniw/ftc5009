@@ -30,15 +30,13 @@ import java.util.concurrent.TimeUnit;
  * Created by James on 2017-02-02.
  */
 
-class BeaconClassifier implements CameraBridgeViewBase.CvCameraViewListener2 {
+class BeaconClassifier {
 
     private Activity mActivity;
-    private JavaCameraView mCameraView;
     private BaseLoaderCallback mLoaderCallback;
-    private SynchronousQueue<Mat> mFrameQueue = new SynchronousQueue<>();
     private BeaconMatcher mBeaconMatcher;
 
-    private boolean mOpenCvInitialized = false, mCameraEnabled = false;
+    private boolean mOpenCvInitialized = false;
 
     static Scalar BEACON_RED = new Scalar(255, 110, 200);
     static Scalar BEACON_BLUE = new Scalar(50, 220, 255);
@@ -46,7 +44,7 @@ class BeaconClassifier implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     static Alliance[] CLASSIFICATION_ERROR = new Alliance[] { Alliance.NA, Alliance.NA};
 
-    BeaconClassifier(Activity activity, final int cameraId) {
+    BeaconClassifier(Activity activity) {
 
         mActivity = activity;
 
@@ -59,9 +57,7 @@ class BeaconClassifier implements CameraBridgeViewBase.CvCameraViewListener2 {
                         Log.i("OpenCV", "OpenCV loaded successfully");
                         mOpenCvInitialized = true;
 
-                        mBeaconMatcher = new BeaconMatcher(mActivity, 240, 180);
-                        mCameraView.connectCamera(480, 640);
-                        mCameraView.enableView();
+                        mBeaconMatcher = new BeaconMatcher(mActivity, 480, 360);
                     } break;
                     default:
                     {
@@ -71,7 +67,7 @@ class BeaconClassifier implements CameraBridgeViewBase.CvCameraViewListener2 {
             }
         };
 
-        mActivity.runOnUiThread(new CameraViewInitializer(this, cameraId));
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_2_0, mActivity, mLoaderCallback);
 
         Log.d("OpenCV", "Created Beacon Classifier");
     }
@@ -101,44 +97,36 @@ class BeaconClassifier implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     Alliance[] classify() {
 
-        if(!mOpenCvInitialized || mCameraView == null)
+        if(!mOpenCvInitialized)
             return CLASSIFICATION_ERROR;
 
-        Mat frame;
+        Mat frame = null;
         Alliance lResult, rResult;
-        try {
-            enableCamera();
-            frame = mFrameQueue.poll(3000, TimeUnit.MILLISECONDS);
-            disableCamera();
 
-            if(frame == null) {
-                Log.e("OpenCV", "Unable to read frame from Camera");
-                return CLASSIFICATION_ERROR;
-            }
+        //Get frame
 
-            if(frame.width() == 0 || frame.height() == 0) {
-                Log.e("OpenCV", "Frame is of size 0!");
-                return CLASSIFICATION_ERROR;
-            }
-
-            //Alliance[] result = filterMethod(frame);
-            Alliance[] result = BeaconMatcher.beaconTypeToArray(mBeaconMatcher.searchForMatch(frame));
-
-            lResult = result[0];
-            rResult = result[1];
-
-        }
-        catch(InterruptedException e) {
-            e.printStackTrace();
-            close();
+        if(frame == null) {
+            Log.e("OpenCV", "Unable to read frame from Camera");
             return CLASSIFICATION_ERROR;
         }
-        catch (Exception e) {
-            close();
+
+        if(frame.width() == 0 || frame.height() == 0) {
+            Log.e("OpenCV", "Frame is of size 0!");
             return CLASSIFICATION_ERROR;
         }
+
+        //Alliance[] result = filterMethod(frame);
+        Alliance[] result = BeaconMatcher.beaconTypeToArray(mBeaconMatcher.searchForMatch(frame));
+
+        lResult = result[0];
+        rResult = result[1];
 
         return new Alliance[] { lResult , rResult };
+    }
+
+    private Alliance[] momentMethod(Mat frame) {
+        //TODO: complete this method
+        return new Alliance[] {Alliance.NA, Alliance.NA};
     }
 
     private Alliance[] filterMethod(Mat frame) {
@@ -188,124 +176,6 @@ class BeaconClassifier implements CameraBridgeViewBase.CvCameraViewListener2 {
 
         return new Alliance[] { lResult, rResult };
     }
-
-    /**
-     * Camera Callbacks
-     */
-
-    private class CameraViewInitializer implements Runnable {
-        private CameraBridgeViewBase.CvCameraViewListener2 listener;
-        private int mCameraId;
-        private CameraViewInitializer(CameraBridgeViewBase.CvCameraViewListener2 l, int cameraId) { listener = l; mCameraId = cameraId; }
-
-        public void run() {
-            LinearLayout cameraPreviewLayout = (LinearLayout) mActivity.findViewById(R.id.cameraMonitorViewId);
-
-            mCameraView = new JavaCameraView(mActivity, mCameraId);
-
-            cameraPreviewLayout.addView(mCameraView);
-
-            //mCameraView.setVisibility(SurfaceView.GONE);
-            mCameraView.setCvCameraViewListener(listener);
-            mCameraView.enableFpsMeter();
-            mCameraView.setMaxFrameSize(960, 720);
-
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_2_0, mActivity, mLoaderCallback);
-        }
-    }
-
-    private Runnable hEnableCamera = new Runnable() {
-        @Override
-        public void run() {
-            mCameraView.setVisibility(SurfaceView.VISIBLE);
-            mCameraView.enableView();
-        }
-    };
-
-    private Runnable hDisableCamera = new Runnable() {
-        @Override
-        public void run() {
-            mCameraView.disableView();
-            mCameraView.setVisibility(SurfaceView.GONE);
-        }
-    };
-
-    private void enableCamera() {
-        mActivity.runOnUiThread(hEnableCamera);
-        mCameraEnabled = true;
-    }
-
-    private void disableCamera() {
-        mActivity.runOnUiThread(hDisableCamera);
-        mCameraEnabled = false;
-    }
-
-    @Override
-    public void onCameraViewStarted(int width, int height) {
-
-    }
-
-    @Override
-    public void onCameraViewStopped() {
-
-    }
-
-    @Override
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-
-        Log.d("OpenCV", "Frame callback received");
-
-        mFrameQueue.offer(inputFrame.rgba());
-
-        return inputFrame.rgba();
-    }
-
-    /**
-     * Sets the visibility of the JavaCameraView
-     * @param visibility - should be of enum SurfaceView => VISIBLE / GONE
-     */
-    void setPreviewVisibility(final int visibility) {
-        //This prevents the visibility from changing which the SurfaceView is locked, crashing the thread
-        if(!mCameraEnabled)
-            mActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mCameraView.setVisibility(visibility);
-                }
-            });
-    }
-
-    void close() {
-        mActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                disableCamera();
-                mCameraView.disconnectCamera();
-                mCameraView.setVisibility(SurfaceView.GONE);
-            }
-        });
-
-        mCameraEnabled = false;
-    }
 }
-
-/**
- * Garbage
- */
-
-/*Mat hsv = new Mat(), h = new Mat(), centers = new Mat(), labels = new Mat();
-
-Imgproc.cvtColor(frame, hsv, Imgproc.COLOR_RGB2HSV);
-Core.extractChannel(hsv, h, 0);
-h.convertTo(h, CvType.CV_32F, 1.0 / 255.0);
-
-//Important: kmeans requires a Mat formatted as 32F!
-TermCriteria criteria = new TermCriteria(TermCriteria.EPS + TermCriteria.MAX_ITER, 100, 1);
-double compactness = Core.kmeans(h, 2, labels, criteria, 1, Core.KMEANS_PP_CENTERS, centers);
-
-//Reshape labels to 2D mat of width and height + scale * 255.0
-
-Log.d("OpenCV - Clustering", "Compactness: " + compactness);
-Log.d("OpenCV - Clustering", "Labels - Width: "  + labels.cols() + " Height: " + labels.rows());*/
 
 
