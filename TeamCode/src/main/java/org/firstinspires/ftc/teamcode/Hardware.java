@@ -23,8 +23,8 @@ public class Hardware {
     public DcMotor leftMotor;
     public DcMotor rightMotor;
     public DcMotor chickenMotor;
-    public DcMotor shooterMotor;
-    public DcMotor shooterMotor2;
+    public DcMotor shooterMotor_R;
+    public DcMotor shooterMotor_L;
     public DcMotor liftMotor;
 
     //Servos
@@ -58,8 +58,8 @@ public class Hardware {
             leftMotor = hwMap.dcMotor.get("drive_left");
             rightMotor = hwMap.dcMotor.get("drive_right");
             chickenMotor = hwMap.dcMotor.get("chicken_fingers");
-            shooterMotor = hwMap.dcMotor.get("shooter");
-            shooterMotor2 = hwMap.dcMotor.get("shooter_2");
+            shooterMotor_R = hwMap.dcMotor.get("shooter_R");
+            shooterMotor_L= hwMap.dcMotor.get("shooter_L");
             liftMotor = hwMap.dcMotor.get("lift");
 
             leftClaw = hwMap.servo.get("left_claw");
@@ -73,15 +73,15 @@ public class Hardware {
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterMotor_R.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotor_L.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotor_R.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftMotor.setPower(0);
         rightMotor.setPower(0);
         chickenMotor.setPower(0);
-        shooterMotor.setPower(0);
-        shooterMotor2.setPower(0);
+        shooterMotor_R.setPower(0);
+        shooterMotor_L.setPower(0);
 
         leftClaw.scaleRange(0.05, 0.95);
         rightClaw.scaleRange(0.05, 0.95);

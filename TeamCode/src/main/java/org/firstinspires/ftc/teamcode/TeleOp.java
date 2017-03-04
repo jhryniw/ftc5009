@@ -20,6 +20,8 @@ public class TeleOp extends LinearOpMode {
     private boolean chicken_is_clicked = false;
     private boolean r2_is_clicked = false;
     private boolean servo_is_clicked = false;
+    private boolean dpad_active = false;
+    private boolean joystick_active = true;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -81,12 +83,12 @@ public class TeleOp extends LinearOpMode {
             if (gamepad2.b && !r2_is_clicked) {
                 r2_is_clicked = true;
                 if (shooter_state != 1) {
-                    robot.shooterMotor.setPower((double) SHOOTER_POWER);
-                    robot.shooterMotor2.setPower((double) SHOOTER_POWER);
+                    robot.shooterMotor_R.setPower((double) SHOOTER_POWER);
+                    robot.shooterMotor_L.setPower((double) SHOOTER_POWER);
                     shooter_state = 1;
                 } else {
-                    robot.shooterMotor.setPowerFloat();
-                    robot.shooterMotor2.setPowerFloat();
+                    robot.shooterMotor_R.setPowerFloat();
+                    robot.shooterMotor_L.setPowerFloat();
                     shooter_state = 0;
                 }
             } else if (!gamepad2.b && r2_is_clicked) {
@@ -204,30 +206,49 @@ public class TeleOp extends LinearOpMode {
             l_power = Math.signum(l_power) * l_power * l_power;
             r_power = Math.signum(r_power) * r_power * r_power;
 
-            if (Math.abs(l_power) < POWER_THRESHOLD)
+            if (Math.abs(r_power) < POWER_THRESHOLD) {
                 l_power = 0;
-            if (Math.abs(r_power) < POWER_THRESHOLD)
+            }
+            if (Math.abs(l_power) < POWER_THRESHOLD) {
                 r_power = 0;
+            }
+            if (Math.abs(l_power) < POWER_THRESHOLD || Math.abs(r_power) < POWER_THRESHOLD) {
+                joystick_active = false;
+            }
 
 
             //slow mode
             if (gamepad1.dpad_up) {
-                l_power = 0.2;
-                r_power = 0.2;
-            } else if (gamepad1.dpad_down) {
-                l_power = -0.2;
-                r_power = -0.2;
-            } else if (gamepad1.dpad_right) {
-                l_power = 0.1;
-                r_power = -0.1;
-            } else if (gamepad1.dpad_left) {
-                l_power = -0.1;
-                r_power = 0.1;
+                l_power = 0.4;
+                r_power = 0.4;
+                dpad_active = true;
             }
-
+            else if (gamepad1.dpad_down) {
+                l_power = -0.4;
+                r_power = -0.4;
+                dpad_active = true;
+            }
+            else if (gamepad1.dpad_right) {
+                l_power = 0.3;
+                r_power = -0.3;
+                dpad_active = true;
+            }
+            else if (gamepad1.dpad_left) {
+                l_power = -0.3;
+                r_power = 0.3;
+                dpad_active = true;
+            }
+            if (!joystick_active && !dpad_active) {
+                robot.leftMotor.setPowerFloat();
+                robot.rightMotor.setPowerFloat();
+            }
             //apply values to motor speed
-            robot.leftMotor.setPower(l_power);
-            robot.rightMotor.setPower(r_power);
+            else {
+                robot.leftMotor.setPower(l_power);
+                robot.rightMotor.setPower(r_power);
+            }
+            joystick_active = true;
+            dpad_active = false;
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Claws", "Left: %.2f Right %.2f", robot.leftClaw.getPosition(), robot.rightClaw.getPosition());
