@@ -38,13 +38,11 @@ public class TeleOp extends LinearOpMode {
 
             //Lift
 
-            if(gamepad1.right_trigger > 0.5 || gamepad2.right_trigger > 0.5) {
+            if (gamepad1.right_trigger > 0.5 || gamepad2.right_trigger > 0.5) {
                 robot.liftMotor.setPower(1);
-            }
-            else if (gamepad1.left_trigger > 0.5 || gamepad2.left_trigger > 0.5) {
+            } else if (gamepad1.left_trigger > 0.5 || gamepad2.left_trigger > 0.5) {
                 robot.liftMotor.setPower(-1);
-            }
-            else
+            } else
                 robot.liftMotor.setPower(0);
 
             boolean chicken_power = gamepad1.a;
@@ -56,24 +54,20 @@ public class TeleOp extends LinearOpMode {
                 if (chicken_state != 1) {
                     robot.chickenMotor.setPower((double) CHICKEN_POWER);
                     chicken_state = 1;
-                }
-                else {
+                } else {
                     robot.chickenMotor.setPower(0);
                     chicken_state = 0;
                 }
-            }
-            else if (gamepad2.y && !chicken_is_clicked) {
+            } else if (gamepad2.y && !chicken_is_clicked) {
                 chicken_is_clicked = true;
-                if (chicken_state!= -1) {
+                if (chicken_state != -1) {
                     robot.chickenMotor.setPower((double) -CHICKEN_POWER);
                     chicken_state = -1;
-                }
-                else {
+                } else {
                     robot.chickenMotor.setPower(0);
                     chicken_state = 0;
                 }
-            }
-            else if (!gamepad2.a &&!gamepad2.y &&chicken_is_clicked) {
+            } else if (!gamepad2.a && !gamepad2.y && chicken_is_clicked) {
                 chicken_is_clicked = false;
             }
 
@@ -86,18 +80,17 @@ public class TeleOp extends LinearOpMode {
             //Shooter
             if (gamepad2.b && !r2_is_clicked) {
                 r2_is_clicked = true;
-                if(shooter_state !=1) {
+                if (shooter_state != 1) {
                     robot.shooterMotor.setPower((double) SHOOTER_POWER);
                     robot.shooterMotor2.setPower((double) SHOOTER_POWER);
                     shooter_state = 1;
-                }
-                else {
-                    robot.shooterMotor.setPower(0);
-                    robot.shooterMotor2.setPower(0);
+                } else {
+                    robot.shooterMotor.setPowerFloat();
+                    robot.shooterMotor2.setPowerFloat();
                     shooter_state = 0;
                 }
-            } else if (!gamepad2.b && r2_is_clicked){
-               r2_is_clicked = false;
+            } else if (!gamepad2.b && r2_is_clicked) {
+                r2_is_clicked = false;
             }
             /*
 
@@ -151,51 +144,54 @@ public class TeleOp extends LinearOpMode {
             }*/
 
             //Feeder
-            if(gamepad1.y) {
-                double feedPos = robot.feeder.getPosition() + 0.05;
-                if (feedPos > 1) {
-                    robot.feeder.setPosition(1);
-                } else
+            if (gamepad1.a) {
+                double feedPos = robot.feeder.getPosition();
+                while (feedPos > 0) {
+                    feedPos = robot.feeder.getPosition() - 0.05;
+                    sleep(10);
                     robot.feeder.setPosition(feedPos);
-            }
-            if(gamepad1.a) {
-                double feedPos = robot.feeder.getPosition() - 0.05;
-                if (feedPos < 0) {
-                    robot.feeder.setPosition(0);
-                } else
+                }
+
+                sleep(500);
+
+                feedPos = robot.feeder.getPosition();
+
+                while (feedPos < 1) {
+                    feedPos = robot.feeder.getPosition() + 0.05;
+                    sleep(10);
                     robot.feeder.setPosition(feedPos);
+                }
+                sleep(500);
             }
 
-
-             if(gamepad2.dpad_up) {
+            if (gamepad2.dpad_up) {
 
                 double leftPos = -1;
                 double rightPos = 1;
 
                 //outward
-                if(leftPos < 0)
+                if (leftPos < 0)
                     robot.leftClaw.setPosition(0);
                 else
                     robot.leftClaw.setPosition(leftPos);
 
                 //inward
-                if(rightPos > 1)
+                if (rightPos > 1)
                     robot.rightClaw.setPosition(1);
                 else
                     robot.rightClaw.setPosition(rightPos);
-            }
-            else if (gamepad2.dpad_down) {
+            } else if (gamepad2.dpad_down) {
                 double leftPos = robot.leftClaw.getPosition() + 0.05;
                 double rightPos = robot.rightClaw.getPosition() - 0.05;
 
                 //inward
-                if(leftPos > 1)
+                if (leftPos > 1)
                     robot.leftClaw.setPosition(1);
                 else
                     robot.leftClaw.setPosition(leftPos);
 
                 //outward
-                if(rightPos < 0)
+                if (rightPos < 0)
                     robot.rightClaw.setPosition(0);
                 else
                     robot.rightClaw.setPosition(rightPos);
@@ -216,20 +212,15 @@ public class TeleOp extends LinearOpMode {
 
             //slow mode
             if (gamepad1.dpad_up) {
-               l_power = 0.2;
-               r_power = 0.2;
-           }
-
-            else if (gamepad1.dpad_down) {
+                l_power = 0.2;
+                r_power = 0.2;
+            } else if (gamepad1.dpad_down) {
                 l_power = -0.2;
                 r_power = -0.2;
-            }
-
-            else if (gamepad1.dpad_right) {
+            } else if (gamepad1.dpad_right) {
                 l_power = 0.1;
                 r_power = -0.1;
-            }
-            else if (gamepad1.dpad_left) {
+            } else if (gamepad1.dpad_left) {
                 l_power = -0.1;
                 r_power = 0.1;
             }
@@ -245,5 +236,6 @@ public class TeleOp extends LinearOpMode {
 
             idle();
         }
+
     }
 }
