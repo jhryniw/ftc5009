@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Debug;
+import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.vuforia.CameraCalibration;
 import com.vuforia.Frame;
 import com.vuforia.HINT;
+import com.vuforia.Image;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -23,8 +25,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by James on 2016-12-10.
@@ -38,7 +44,7 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
 
     private VectorF robotLocation = new VectorF(0, 0, 0);
     private VuforiaTrackables beacons;
-    private BlockingQueue<Frame> frameQueue;
+    private BlockingQueue<VuforiaLocalizer.CloseableFrame> frameQueue;
 
     private CameraCalibration cameraInfo;
 
@@ -70,6 +76,7 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
 
         VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(params);
         cameraInfo = vuforia.getCameraCalibration();
+        frameQueue = vuforia.getFrameQueue();
 
         beacons = vuforia.loadTrackablesFromAsset("FTC_2016-17");
 
@@ -115,8 +122,25 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
         //isTracking = false;
     }
 
-    public void getFrame() {
+    Mat getFrame() {
+        try {
+            VuforiaLocalizer.CloseableFrame vuforiaFrame = frameQueue.poll(3000, TimeUnit.MILLISECONDS);
 
+            Image img = vuforiaFrame.getImage(0);
+            ByteBuffer buffer = img.getPixels();
+
+            Mat frame = new Mat(img.getBufferWidth(), img.getBufferHeight(), CvType.CV_8UC1);
+            frame.put(0, 0, buffer.array());
+
+            vuforiaFrame.close();
+
+            Log.d("Vuforia Frame", "Extracted size: " + frame.size());
+            return frame;
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private VuforiaTrackables applyPhoneInformation(VuforiaTrackables trackables) {
@@ -151,7 +175,7 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
             isTracking = tracking;
         }
         catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
