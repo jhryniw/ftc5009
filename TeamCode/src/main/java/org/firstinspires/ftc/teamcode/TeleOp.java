@@ -56,16 +56,19 @@ public class TeleOp extends LinearOpMode {
                 if (chicken_state != 1) {
                     robot.chickenMotor.setPower((double) CHICKEN_POWER);
                     chicken_state = 1;
-                } else {
+                }
+                else {
                     robot.chickenMotor.setPower(0);
                     chicken_state = 0;
                 }
-            } else if (gamepad2.y && !chicken_is_clicked) {
+            }
+            else if (gamepad2.y && !chicken_is_clicked) {
                 chicken_is_clicked = true;
-                if (chicken_state != -1) {
+                if (chicken_state!= -1) {
                     robot.chickenMotor.setPower((double) -CHICKEN_POWER);
                     chicken_state = -1;
-                } else {
+                }
+                else {
                     robot.chickenMotor.setPower(0);
                     chicken_state = 0;
                 }
@@ -182,7 +185,8 @@ public class TeleOp extends LinearOpMode {
                     robot.rightClaw.setPosition(1);
                 else
                     robot.rightClaw.setPosition(rightPos);
-            } else if (gamepad2.dpad_down) {
+            }
+            else if (gamepad2.dpad_down) {
                 double leftPos = robot.leftClaw.getPosition() + 0.05;
                 double rightPos = robot.rightClaw.getPosition() - 0.05;
 

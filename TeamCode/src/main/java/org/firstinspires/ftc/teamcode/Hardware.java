@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 /**
  * Created by James on 2016-09-26.
@@ -37,6 +38,8 @@ public class Hardware {
     public ColorSensor colorSensor;
     public boolean bLedOn = true;
     public static final int LED_CHANNEL = 5; // we assume that the LED pin of the RGB sensor is connected to digital port 5 (zero indexed).
+    public TouchSensor limit;
+
 
     private HardwareMap hwMap;
     public static double WHEEL_BASE = 13.5;
@@ -61,6 +64,12 @@ public class Hardware {
             shooterMotor_R = hwMap.dcMotor.get("shooter_R");
             shooterMotor_L= hwMap.dcMotor.get("shooter_L");
             liftMotor = hwMap.dcMotor.get("lift");
+            limit = hwMap.touchSensor.get("limit");
+
+            //we don't need it
+            //armmotor = hwMap.dcMotor.get("rightdrive")
+            //toplimit = hwMap.touchSensor.get("limit_1")
+            //bottomlimit = hwMap.touchSensor.get("limit_2")
 
             leftClaw = hwMap.servo.get("left_claw");
             rightClaw = hwMap.servo.get("right_claw");

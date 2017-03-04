@@ -358,5 +358,4 @@ public class Robot {
         hw.bLedOn = !hw.bLedOn;
         hw.cdim.setDigitalChannelState(Hardware.LED_CHANNEL, hw.bLedOn);
     }
-
 }
