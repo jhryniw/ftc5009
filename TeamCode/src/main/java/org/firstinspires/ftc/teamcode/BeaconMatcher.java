@@ -87,17 +87,18 @@ class BeaconMatcher {
         return result.maxVal;
     }
 
-    public BeaconType searchForMatch(Mat temp) {
+    public BeaconType searchForMatch(Mat frame) {
         //search all channels for match
-        Mat frame = new Mat();
+        //Mat frame = new Mat();
         BeaconType bestMatch = BeaconType.BLUE_BLUE;
         double bestResult = 0;
 
-        Imgproc.cvtColor(temp, frame, Imgproc.COLOR_RGBA2RGB);
+        //Imgproc.cvtColor(temp, frame, Imgproc.COLOR_RGBA2RGB);
 
         for( BeaconTemplate template : templates ) {
             for( int level = 0; level < template.pyramid.size(); level++ ) {
                 Mat t = template.pyramid.get(level);
+
                 double result = findMatch(frame, t);
 
                 Log.d("BeaconMatcher", template.type.name() + " level: " + level + " size: " + t.size() +  " result: " + result);

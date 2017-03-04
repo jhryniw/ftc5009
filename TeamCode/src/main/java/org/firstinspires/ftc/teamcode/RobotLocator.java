@@ -12,6 +12,7 @@ import com.vuforia.CameraCalibration;
 import com.vuforia.Frame;
 import com.vuforia.HINT;
 import com.vuforia.Image;
+import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -27,6 +28,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
@@ -48,6 +50,8 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
 
     private CameraCalibration cameraInfo;
 
+    private boolean isInitialized = false;
+
     private long last_cycle;
     private boolean isTracking = false;
     private int fps = 0;
@@ -67,15 +71,21 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
 
     public void init(Context ctx) {
 
+        if (isInitialized)
+            return;
+
         VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
         params.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         params.vuforiaLicenseKey = ctx.getString(R.string.vuforia_license_key);
         params.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
 
         Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
+        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true);
 
         VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(params);
         cameraInfo = vuforia.getCameraCalibration();
+
+        vuforia.setFrameQueueCapacity(1);
         frameQueue = vuforia.getFrameQueue();
 
         beacons = vuforia.loadTrackablesFromAsset("FTC_2016-17");
@@ -95,6 +105,9 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
         beacons = applyPhoneInformation(beacons);
 
         beacons.activate();
+
+        Log.d("Vuforia", "Vuforia Initialized");
+        isInitialized = true;
     }
 
     public VectorF getRobotLocation() {
@@ -126,18 +139,57 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
         try {
             VuforiaLocalizer.CloseableFrame vuforiaFrame = frameQueue.poll(3000, TimeUnit.MILLISECONDS);
 
-            Image img = vuforiaFrame.getImage(0);
-            ByteBuffer buffer = img.getPixels();
+            if(vuforiaFrame == null) {
+                throw new NullPointerException("Unable to get frame from Vuforia");
+            }
 
-            Mat frame = new Mat(img.getBufferWidth(), img.getBufferHeight(), CvType.CV_8UC1);
-            frame.put(0, 0, buffer.array());
+            Image rgbImage = null;
+            Image grayImage = null;
+
+            for (int i = 0; i < vuforiaFrame.getNumImages(); i++) {
+                Image img = vuforiaFrame.getImage(i);
+                if (img.getFormat() == PIXEL_FORMAT.RGB888) {
+                    rgbImage = img;
+                    break;
+                }
+                else if (grayImage == null && img.getFormat() == PIXEL_FORMAT.GRAYSCALE) {
+                    grayImage = img;
+                }
+            }
+
+            if(rgbImage == null && grayImage == null)
+                throw new NullPointerException("Unable to find image with RGB or grayscale format in vuforia frame");
+
+            if(rgbImage == null) { //Use grayImage
+
+                Mat frame = new Mat();
+                Mat grayFrame = new Mat(grayImage.getHeight(), grayImage.getWidth(), CvType.CV_8UC1);
+
+                byte[] grayBuffer = new byte[grayImage.getHeight() * grayImage.getWidth()];
+                grayImage.getPixels().get(grayBuffer);
+
+                grayFrame.put(0, 0, grayBuffer);
+
+                //Convert to RGB
+                Imgproc.cvtColor(grayFrame, frame, Imgproc.COLOR_GRAY2RGB);
+                return frame;
+
+            }
+
+            //TODO: Code below is as of yet untested... (no RGB frames have been retrieved from Vuforia)
+            Mat frame = new Mat(rgbImage.getHeight(), rgbImage.getWidth(), CvType.CV_8UC3);
+
+            byte[] buffer = new byte[rgbImage.getHeight() * rgbImage.getWidth()];
+            rgbImage.getPixels().get(buffer);
+
+            frame.put(0, 0, buffer);
 
             vuforiaFrame.close();
 
             Log.d("Vuforia Frame", "Extracted size: " + frame.size());
             return frame;
         }
-        catch (InterruptedException e) {
+        catch (NullPointerException|InterruptedException e) {
             e.printStackTrace();
             return null;
         }

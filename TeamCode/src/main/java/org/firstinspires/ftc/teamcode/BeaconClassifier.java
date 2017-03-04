@@ -35,6 +35,7 @@ class BeaconClassifier {
     private Activity mActivity;
     private BaseLoaderCallback mLoaderCallback;
     private BeaconMatcher mBeaconMatcher;
+    private RobotLocator robotLocator = new RobotLocator();
 
     private boolean mOpenCvInitialized = false;
 
@@ -68,6 +69,7 @@ class BeaconClassifier {
         };
 
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_2_0, mActivity, mLoaderCallback);
+        robotLocator.init(activity);
 
         Log.d("OpenCV", "Created Beacon Classifier");
     }
@@ -100,11 +102,10 @@ class BeaconClassifier {
         if(!mOpenCvInitialized)
             return CLASSIFICATION_ERROR;
 
-        Mat frame = null;
+        Mat frame = robotLocator.getFrame();
         Alliance lResult, rResult;
 
         //Get frame
-
         if(frame == null) {
             Log.e("OpenCV", "Unable to read frame from Camera");
             return CLASSIFICATION_ERROR;
