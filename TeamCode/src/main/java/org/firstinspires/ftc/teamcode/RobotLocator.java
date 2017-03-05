@@ -80,7 +80,6 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
         params.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
 
         Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
-        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true);
 
         VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(params);
         cameraInfo = vuforia.getCameraCalibration();

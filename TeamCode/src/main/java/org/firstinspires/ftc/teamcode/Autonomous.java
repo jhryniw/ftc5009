@@ -40,10 +40,6 @@ public class Autonomous extends LinearOpMode {
     private Alliance alliance = Alliance.BLUE;
     private boolean configured = false;
 
-    Autonomous() {
-        super();
-    }
-
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -74,7 +70,7 @@ public class Autonomous extends LinearOpMode {
 
 
         if (selectedPath == null){
-            selectedPath = pathList.get("Close Corner");
+            selectedPath = pathList.get("Ball Knocker");
         }
 
         //Run configuration
