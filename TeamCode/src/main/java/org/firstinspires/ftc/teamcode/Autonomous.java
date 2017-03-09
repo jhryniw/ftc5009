@@ -5,9 +5,9 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -26,7 +26,7 @@ import java.util.List;
  * Created by James on 2016-10-09.
  */
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name="Autonomous")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous")
 public class Autonomous extends LinearOpMode {
 
     private Robot robot;
@@ -50,12 +50,10 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Ball Knocker", new BallKnocker(this, robot, new Coordinate(0, 0)));
         pathList.put("Beacons", new Beacons(this, robot, new Coordinate(0, 0)));
         pathList.put("Corner Goal", new CornerGoal(this, robot, new Coordinate(0, 0)));
-        pathList.put("Ball Shooter", new BallShooter (this, robot, new Coordinate(0, 0)));
+        pathList.put("Ball Shooter", new BallShooter(this, robot, new Coordinate(0, 0)));
         pathList.put("Target Test", new PDTest(this, robot, new Coordinate(0, 0)));
         pathList.put("Feeder Auto", new FeederAuto(this, robot, new Coordinate(0, 0)));
         pathList.put("Feeder Auto2", new FeederAuto2(this, robot, new Coordinate(0, 0)));
-        //pathList.put("Far Cornerslol", new FarCornerslol(this, robot, new Coordinate(0, 0)));
-        //pathList.put("Close Cornerslol", new CloseCornerslol(this, robot, new Coordinate(0, 0)));
         pathList.put("Close Corner", new CloseCorner(this, robot, new Coordinate(0, 0)));
         pathList.put("Far Corner", new FarCorner(this, robot, new Coordinate(0, 0)));
 
@@ -69,14 +67,16 @@ public class Autonomous extends LinearOpMode {
         selectedPath = pathList.get(prefs.getString("PATH_KEY", pathList.keySet().toArray()[0].toString()));
 
 
-        if (selectedPath == null){
+        if (selectedPath == null) {
             selectedPath = pathList.get("Ball Knocker");
         }
 
         //Run configuration
         buildConfigDialog();
 
-        while(!configured) {idle();}
+        while (!configured) {
+            idle();
+        }
         selectedPath.setAlliance(alliance);
 
         //robot.haltLocator();
@@ -90,8 +90,7 @@ public class Autonomous extends LinearOpMode {
         //Run selected path
         try {
             selectedPath.run();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             //robot.haltLocator();
         }
     }
@@ -99,7 +98,7 @@ public class Autonomous extends LinearOpMode {
     private int getPathPosition(String key) {
         if (pathList.containsKey(key)) {
             for (int i = 0; i < pathNames.size(); i++) {
-                if(pathNames.get(i).equals(key))
+                if (pathNames.get(i).equals(key))
                     return i;
             }
         }
@@ -115,7 +114,7 @@ public class Autonomous extends LinearOpMode {
         LayoutInflater inflater = ftcActivity.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_configuration, null);
 
-        builder .setTitle("Configuration")
+        builder.setTitle("Configuration")
                 .setView(dialogView)
                 .setNeutralButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -165,10 +164,9 @@ public class Autonomous extends LinearOpMode {
             @Override
             public void onClick(View v) {
                 ToggleButton btn = (ToggleButton) v;
-                if(btn.isChecked()) {
+                if (btn.isChecked()) {
                     alliance = Alliance.BLUE;
-                }
-                else {
+                } else {
                     alliance = Alliance.RED;
                 }
             }
