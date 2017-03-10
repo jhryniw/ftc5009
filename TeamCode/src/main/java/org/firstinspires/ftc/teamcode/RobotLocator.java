@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.vuforia.CameraCalibration;
+import com.vuforia.CameraDevice;
 import com.vuforia.Frame;
 import com.vuforia.HINT;
 import com.vuforia.Image;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -79,9 +81,8 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
         params.vuforiaLicenseKey = ctx.getString(R.string.vuforia_license_key);
         params.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
 
-        Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
-
-        VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(params);
+        //VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(params);
+        VuforiaLocalizer vuforia = new VuforiaLocalizerImpl2(params);
         cameraInfo = vuforia.getCameraCalibration();
 
         vuforia.setFrameQueueCapacity(1);
@@ -104,6 +105,7 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
         beacons = applyPhoneInformation(beacons);
 
         beacons.activate();
+        Vuforia.setHint(HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 4);
 
         Log.d("Vuforia", "Vuforia Initialized");
         isInitialized = true;
@@ -171,8 +173,8 @@ public class RobotLocator extends AsyncTask<Void, Void, Void> {
 
                 //Convert to RGB
                 Imgproc.cvtColor(grayFrame, frame, Imgproc.COLOR_GRAY2RGB);
+                Log.d("Mean", Core.mean(grayFrame).toString() + " Color " + Core.mean(frame).toString());
                 return frame;
-
             }
 
             //TODO: Code below is as of yet untested... (no RGB frames have been retrieved from Vuforia)
