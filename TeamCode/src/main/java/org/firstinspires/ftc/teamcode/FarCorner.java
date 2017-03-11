@@ -46,4 +46,6 @@ final class FarCorner extends PathBase {
                 break;
         }
     }
+
+    private void
 }
