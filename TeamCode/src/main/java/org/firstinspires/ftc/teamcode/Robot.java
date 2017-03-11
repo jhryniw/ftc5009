@@ -17,8 +17,6 @@ import static java.lang.Thread.sleep;
 
 public class Robot {
 
-    //private Hardware hw = new Hardware();
-    //private RobotLocator locator = new RobotLocator();
     private ElapsedTime runtime = new ElapsedTime();
     public LinearOpMode opMode;
 
@@ -35,7 +33,7 @@ public class Robot {
         opMode = om;
 
         Hardware.init(hwMap);
-        //locator.init(hwMap.appContext);
+        VuforiaWrapper.init(hwMap.appContext);
 
         beaconClassifier = new BeaconClassifier((Activity) hwMap.appContext);
 
@@ -119,12 +117,11 @@ public class Robot {
 
     public void testLoop() throws InterruptedException {
         while(opMode.opModeIsActive()) {
-            /*opMode.telemetry.addData("Status", locator.isTracking() ? "Tracking" : "Not Tracking");
-            opMode.telemetry.addData("Robot location", locator.getRobotLocation().toString());
-            opMode.telemetry.addData("Rate", Integer.toString(locator.getFps()));
+            opMode.telemetry.addData("Status", RobotLocator.isTracking() ? "Tracking" : "Not Tracking");
+            opMode.telemetry.addData("Robot location", RobotLocator.getRobotLocation().toString());
 
             opMode.telemetry.update();
-            opMode.idle();*/
+            opMode.idle();
         }
     }
 

@@ -70,7 +70,6 @@ class BeaconClassifier {
         };
 
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_2_0, mActivity, mLoaderCallback);
-        robotLocator.init(activity);
 
         Log.d("OpenCV", "Created Beacon Classifier");
     }
@@ -103,7 +102,7 @@ class BeaconClassifier {
         if(!mOpenCvInitialized)
             return CLASSIFICATION_ERROR;
 
-        Mat frame = robotLocator.getFrame();
+        Mat frame = FrameExtractor.getFrame();
         Alliance lResult, rResult;
 
         //Get frame
