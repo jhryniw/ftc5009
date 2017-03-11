@@ -18,14 +18,7 @@ final class FarCorner extends PathBase {
                 robot.encoderDrive(-0.4, 3); //forward a bit
                 robot.pivot(45, 0.3); //face the center vortex
                 robot.encoderDrive(-0.6, 25); //get closer center vortex
-                robot.ballshooter(0.95, 100);
-                robot.feeder(0, 700); //down feed
-                robot.feeder(1, 1000); //up feed
-                robot.feeder(0, 1000); //down feed
-                robot.feeder(1, 1000); //up feed
-                robot.feeder(0 ,200); //down feed
-                robot.feeder(1 , 0); //up feed
-                robot.ballshooter(0, 0);
+                shoot();
                 robot.encoderDrive(-0.6, 45); //knock capball
                 robot.pivot(50, 0.4);
                 break;
@@ -33,19 +26,21 @@ final class FarCorner extends PathBase {
                 robot.encoderDrive(-0.4, 3);
                 robot.pivot(-45, 0.3);
                 robot.encoderDrive(-0.6, 25);
-                robot.ballshooter(0.95, 100);
-                robot.feeder(0, 700); //down feed
-                robot.feeder(1, 1000); //up feed
-                robot.feeder(0, 1000); //down feed
-                robot.feeder(1, 1000); //up feed
-                robot.feeder(0 ,200); //down feed
-                robot.feeder(1 , 0); //up feed
-                robot.ballshooter(0, 0);
+                shoot();
                 robot.encoderDrive(-0.6, 45);
                 robot.pivot(-35, 0.4);
                 break;
         }
     }
 
-    private void
+    private void shoot() throws InterruptedException{
+        robot.ballshooter(0.95, 100);
+        robot.feeder(0, 700); //down feed
+        robot.feeder(1, 1000); //up feed
+        robot.feeder(0, 1000); //down feed
+        robot.feeder(1, 1000); //up feed
+        robot.feeder(0 ,200); //down feed
+        robot.feeder(1 , 0); //up feed
+        robot.ballshooter(0, 0);
+    }
 }
