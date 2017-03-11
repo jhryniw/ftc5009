@@ -2,20 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.view.SurfaceView;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-
-import java.util.concurrent.Callable;
 
 import static java.lang.Thread.sleep;
 
@@ -25,8 +17,6 @@ import static java.lang.Thread.sleep;
 
 public class Robot {
 
-    private Hardware hw = new Hardware();
-    //private RobotLocator locator = new RobotLocator();
     private ElapsedTime runtime = new ElapsedTime();
     public LinearOpMode opMode;
 
@@ -42,8 +32,8 @@ public class Robot {
         name = robotName;
         opMode = om;
 
-        hw.init(hwMap);
-        //locator.init(hwMap.appContext);
+        Hardware.init(hwMap);
+        VuforiaWrapper.init(hwMap.appContext);
 
         beaconClassifier = new BeaconClassifier((Activity) hwMap.appContext);
 
@@ -74,12 +64,12 @@ public class Robot {
         if(accelerationEnabled)
             acceleration (0.01, speed, 1000);
 
-        hw.leftMotor.setPower(speed);
-        hw.rightMotor.setPower(speed);
+        Hardware.leftMotor.setPower(speed);
+        Hardware.rightMotor.setPower(speed);
 
-        int position = hw.leftMotor.getCurrentPosition();
+        int position = Hardware.leftMotor.getCurrentPosition();
         while (opMode.opModeIsActive() && Math.abs(position) < target) {
-            position = hw.leftMotor.getCurrentPosition();
+            position = Hardware.leftMotor.getCurrentPosition();
 
             opMode.telemetry.addData("EncoderTarget", "%d", target);
             opMode.telemetry.addData("EncoderPosition", "%d", position);
@@ -104,15 +94,15 @@ public class Robot {
             power = -power;
         }
 
-        hw.leftMotor.setPower(power);
-        hw.rightMotor.setPower(-power);
+        Hardware.leftMotor.setPower(power);
+        Hardware.rightMotor.setPower(-power);
 
         //loop
-        int position = hw.leftMotor.getCurrentPosition();
+        int position = Hardware.leftMotor.getCurrentPosition();
 
         while (opMode.opModeIsActive() && Math.abs(position) < target) {
             //TODO: Take the average of both the left and right encoders
-            position = hw.leftMotor.getCurrentPosition();
+            position = Hardware.leftMotor.getCurrentPosition();
 
             opMode.telemetry.addData("EncoderTarget", "%d", target);
             opMode.telemetry.addData("EncoderPosition", "%d", position);
@@ -127,12 +117,11 @@ public class Robot {
 
     public void testLoop() throws InterruptedException {
         while(opMode.opModeIsActive()) {
-            /*opMode.telemetry.addData("Status", locator.isTracking() ? "Tracking" : "Not Tracking");
-            opMode.telemetry.addData("Robot location", locator.getRobotLocation().toString());
-            opMode.telemetry.addData("Rate", Integer.toString(locator.getFps()));
+            opMode.telemetry.addData("Status", RobotLocator.isTracking() ? "Tracking" : "Not Tracking");
+            opMode.telemetry.addData("Robot location", RobotLocator.getRobotLocation().toString());
 
             opMode.telemetry.update();
-            opMode.idle();*/
+            opMode.idle();
         }
     }
 
@@ -230,17 +219,17 @@ public class Robot {
     }
 
     public void ballgrabber ( double speed, long time ) throws InterruptedException {
-        hw.chickenMotor.setPower(speed);
+        Hardware.chickenMotor.setPower(speed);
         sleep(time);
     }
 
     public void ballshooter ( double speed, long time ) throws InterruptedException {
-        hw.shooterMotor_R.setPower(speed);
-        hw.shooterMotor_L.setPower(speed);
+        Hardware.shooterMotorRight.setPower(speed);
+        Hardware.shooterMotorLeft.setPower(speed);
         sleep(time);
     }
     public void feeder (float position, long time) throws InterruptedException {
-        hw.feeder.setPosition(position);
+        Hardware.feeder.setPosition(position);
         sleep(time);
     }
 
@@ -269,8 +258,8 @@ public class Robot {
         opMode.telemetry.addData("Power:", "{ %.2f, %.2f }", left_power, right_power);
 
         try {
-            hw.leftMotor.setPower(left_power);
-            hw.rightMotor.setPower(right_power);
+            Hardware.leftMotor.setPower(left_power);
+            Hardware.rightMotor.setPower(right_power);
         }
         catch (IllegalArgumentException e) {
             return;
@@ -287,15 +276,15 @@ public class Robot {
         long increment_time = (long) (ms_time / ((Math.abs(max_speed) - MIN_SPEED)/increment));
 
         for (double i = MIN_SPEED; i <= Math.abs(max_speed); i += increment) {
-            hw.leftMotor.setPower(i * dir);
-            hw.rightMotor.setPower(i * dir);
+            Hardware.leftMotor.setPower(i * dir);
+            Hardware.rightMotor.setPower(i * dir);
             sleep(increment_time);
         }
 
-        hw.leftMotor.setPower(max_speed);
-        hw.rightMotor.setPower(max_speed);
+        Hardware.leftMotor.setPower(max_speed);
+        Hardware.rightMotor.setPower(max_speed);
 
-        return hw.leftMotor.getCurrentPosition();
+        return Hardware.leftMotor.getCurrentPosition();
     }
 
     private void deceleration (double decrement, double cur_speed, int ms_time, int target) throws InterruptedException {
@@ -303,9 +292,9 @@ public class Robot {
         double dir = cur_speed/Math.abs(cur_speed);
         long decrement_time = (long) (ms_time / ((Math.abs(cur_speed) - MIN_SPEED) / decrement));
 
-        for (double i = Math.abs(cur_speed); i >= MIN_SPEED && Math.abs(hw.leftMotor.getCurrentPosition()) < target; i -= decrement) {
-            hw.leftMotor.setPower(i * dir);
-            hw.rightMotor.setPower(i * dir);
+        for (double i = Math.abs(cur_speed); i >= MIN_SPEED && Math.abs(Hardware.leftMotor.getCurrentPosition()) < target; i -= decrement) {
+            Hardware.leftMotor.setPower(i * dir);
+            Hardware.rightMotor.setPower(i * dir);
             sleep(decrement_time);
         }
 
@@ -314,30 +303,32 @@ public class Robot {
 
     private void resetEncoders() {
         //Reset the encoders
-        hw.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hw.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Hardware.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Hardware.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Return mode back to run with encoders
-        hw.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hw.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Hardware.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Hardware.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     private void stop() {
-        hw.leftMotor.setPower(0);
-        hw.rightMotor.setPower(0);
+        Hardware.leftMotor.setPower(0);
+        Hardware.rightMotor.setPower(0);
     }
 
     /*
      * Color Sensor Functionality
      */
     public float[] getRgb() {
-        float[] rgb = {hw.colorSensor.red(), hw.colorSensor.green(), hw.colorSensor.green()};
+        ColorSensor colorSensor = Hardware.colorSensor;
+        float[] rgb = {colorSensor.red(), colorSensor.green(), colorSensor.green()};
         return rgb;
     }
 
     public float[] getHsv() {
+        ColorSensor colorSensor = Hardware.colorSensor;
         float[] hsvValues = {0f, 0f, 0f};
-        Color.RGBToHSV((hw.colorSensor.red() * 255) / 800, (hw.colorSensor.green() * 255) / 800, (hw.colorSensor.blue() * 255) / 800, hsvValues);
+        Color.RGBToHSV((colorSensor.red() * 255) / 800, (colorSensor.green() * 255) / 800, (colorSensor.blue() * 255) / 800, hsvValues);
         return hsvValues;
     }
 
@@ -345,17 +336,17 @@ public class Robot {
      * LED Functionality
      */
     public void enableLed() {
-        if(!hw.bLedOn)
+        if(!Hardware.bLedOn)
             toggleLed();
     }
 
     public void disableLed() {
-        if(hw.bLedOn)
+        if(Hardware.bLedOn)
             toggleLed();
     }
 
     public void toggleLed() {
-        hw.bLedOn = !hw.bLedOn;
-        hw.cdim.setDigitalChannelState(Hardware.LED_CHANNEL, hw.bLedOn);
+        Hardware.bLedOn = !Hardware.bLedOn;
+        Hardware.cdim.setDigitalChannelState(Hardware.LED_CHANNEL, Hardware.bLedOn);
     }
 }

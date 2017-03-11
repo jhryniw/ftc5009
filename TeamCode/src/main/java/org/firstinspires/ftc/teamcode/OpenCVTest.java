@@ -22,6 +22,8 @@ public class OpenCVTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        VuforiaWrapper.init(hardwareMap.appContext);
+
         /*
          * Camera ID 0: Back Camera
          * Camera ID 1: Front Camera

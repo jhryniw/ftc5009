@@ -89,11 +89,8 @@ class BeaconMatcher {
 
     public BeaconType searchForMatch(Mat frame) {
         //search all channels for match
-        //Mat frame = new Mat();
         BeaconType bestMatch = BeaconType.BLUE_BLUE;
         double bestResult = 0;
-
-        //Imgproc.cvtColor(temp, frame, Imgproc.COLOR_RGBA2RGB);
 
         for( BeaconTemplate template : templates ) {
             for( int level = 0; level < template.pyramid.size(); level++ ) {

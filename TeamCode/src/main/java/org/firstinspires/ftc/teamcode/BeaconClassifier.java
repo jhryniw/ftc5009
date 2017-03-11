@@ -19,6 +19,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.core.TermCriteria;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
@@ -69,7 +70,6 @@ class BeaconClassifier {
         };
 
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_2_0, mActivity, mLoaderCallback);
-        robotLocator.init(activity);
 
         Log.d("OpenCV", "Created Beacon Classifier");
     }
@@ -102,7 +102,7 @@ class BeaconClassifier {
         if(!mOpenCvInitialized)
             return CLASSIFICATION_ERROR;
 
-        Mat frame = robotLocator.getFrame();
+        Mat frame = FrameExtractor.getFrame();
         Alliance lResult, rResult;
 
         //Get frame
@@ -116,13 +116,28 @@ class BeaconClassifier {
             return CLASSIFICATION_ERROR;
         }
 
-        //Alliance[] result = filterMethod(frame);
-        Alliance[] result = BeaconMatcher.beaconTypeToArray(mBeaconMatcher.searchForMatch(frame));
+        Scalar mean = Core.mean(frame);
+        Log.d("OpenCV", String.format("Scalar mean: R: %3.0f G: %3.0f B: %3.0f", mean.val[0], mean.val[1], mean.val[2]));
+        if (mean.val[0] > mean.val[1]) {
+            lResult = Alliance.RED;
+            rResult = Alliance.RED;
+        }
+        else {
+            lResult = Alliance.BLUE;
+            rResult = Alliance.BLUE;
+        }
 
-        lResult = result[0];
-        rResult = result[1];
+        //Alliance[] result = BeaconMatcher.beaconTypeToArray(mBeaconMatcher.searchForMatch(frame));
+
+        //lResult = result[0];
+        //rResult = result[1];
 
         return new Alliance[] { lResult , rResult };
+    }
+
+    private Scalar meanColor(Mat frame) { return meanColor(frame, new Mat()); }
+    private Scalar meanColor(Mat frame, Mat mask) {
+        return Core.mean(frame, mask);
     }
 
     private Alliance[] momentMethod(Mat frame) {
