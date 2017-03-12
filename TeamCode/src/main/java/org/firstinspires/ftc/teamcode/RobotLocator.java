@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Debug;
 import android.util.Log;
 
@@ -40,13 +41,15 @@ import java.util.concurrent.TimeUnit;
  * Created by James on 2016-12-10.
  */
 
-public class RobotLocator {
+class RobotLocator {
 
-    private static float MM_PER_INCH = 25.4f;
+    static float MM_PER_INCH = 25.4f;
     private static int FPS = 30;
     private static int MS_CYCLE_TIME = (int) (1000 / FPS);
 
     private static VectorF robotLocation = new VectorF(0, 0, 0);
+    private static BeaconTarget poseToTarget = new BeaconTarget();
+
     private static VuforiaTrackables beacons;
 
     private static boolean isTracking = false;
@@ -62,7 +65,7 @@ public class RobotLocator {
 
     private static OpenGLMatrix gearsPosition = OpenGLMatrix.translation(59 * MM_PER_INCH, 5 * MM_PER_INCH, 142 * MM_PER_INCH);
 
-    private static OpenGLMatrix phoneOffset = OpenGLMatrix.translation(-5 * MM_PER_INCH, 9.5f * MM_PER_INCH, 2.25f * MM_PER_INCH);
+    private static OpenGLMatrix phoneOffset = OpenGLMatrix.translation(0 * MM_PER_INCH, 9.5f * MM_PER_INCH, 0 * MM_PER_INCH);
 
     public static void init() {
 
@@ -88,18 +91,59 @@ public class RobotLocator {
         Log.d("Vuforia", "Vuforia Initialized");
     }
 
-    public static VectorF getRobotLocation() {
-        updateLocation();
-        return robotLocation;
+    static BeaconTarget getTarget() {
+        return new BeaconTarget(poseToTarget);
     }
 
-    public static float[] getRobotLocationXZ() {
-        updateLocation();
+    static VectorF getPose() { return getPose(true); }
+    static VectorF getPose(boolean runUpdate) {
+        if(runUpdate)
+            updateLocation();
+
+        return poseToTarget.toVector();
+    }
+
+    static VectorF getRobotLocation() { return getRobotLocation(true); }
+    static VectorF getRobotLocation(boolean runUpdate) {
+        if(runUpdate)
+            updateLocation();
+
+        return new VectorF(robotLocation.getData());
+    }
+
+    static float[] getRobotLocationXZ() { return getRobotLocationXZ(true); }
+    static float[] getRobotLocationXZ(boolean runUpdate) {
+        if(runUpdate)
+            updateLocation();
+
         return new float[] { robotLocation.get(0), robotLocation.get(2) };
     }
 
-    public static boolean isTracking() {
+    static boolean isTracking() {
         return isTracking;
+    }
+
+    static VectorF getEuler(OpenGLMatrix pose) {
+        double heading, pitch, roll;
+
+        // Assuming the angles are in radians.
+        if (pose.get(1, 0) > 0.998) { // singularity at north pole
+            heading = Math.atan2(pose.get(0, 2), pose.get(2, 2));
+            pitch = Math.PI/2;
+            roll = 0;
+        }
+        else if (pose.get(1, 0) < -0.998) { // singularity at south pole
+            heading = Math.atan2(pose.get(0, 2), pose.get(2, 2));
+            pitch = -Math.PI/2;
+            roll = 0;
+        }
+        else {
+            heading = Math.atan2(pose.get(2, 0), pose.get(0, 0));
+            pitch = Math.atan2(-pose.get(1, 2), pose.get(1, 1));
+            roll = Math.asin(pose.get(1, 0));
+        }
+
+        return new VectorF((float) Math.toDegrees(roll), (float) Math.toDegrees(heading), (float) Math.toDegrees(pitch));
     }
 
     private static VuforiaTrackables applyPhoneInformation(VuforiaTrackables trackables) {
@@ -112,7 +156,7 @@ public class RobotLocator {
         return trackables;
     }
 
-    private static void updateLocation() {
+    static void updateLocation() {
 
         try {
             boolean tracking = false;
@@ -127,6 +171,7 @@ public class RobotLocator {
 
                 if (update != null) {
                     robotLocation = update.getTranslation().multiplied(1f / MM_PER_INCH);
+                    poseToTarget = new BeaconTarget(b.getName(), listener.getPose());
                     break;
                 }
             }

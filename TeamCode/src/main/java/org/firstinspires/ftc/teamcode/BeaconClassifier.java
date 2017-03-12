@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
@@ -17,6 +18,7 @@ import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.TermCriteria;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -59,7 +61,7 @@ class BeaconClassifier {
                         Log.i("OpenCV", "OpenCV loaded successfully");
                         mOpenCvInitialized = true;
 
-                        mBeaconMatcher = new BeaconMatcher(mActivity, 480, 360);
+                        //mBeaconMatcher = new BeaconMatcher(mActivity, 480, 360);
                     } break;
                     default:
                     {
@@ -103,6 +105,7 @@ class BeaconClassifier {
             return CLASSIFICATION_ERROR;
 
         Mat frame = FrameExtractor.getFrame();
+
         Alliance lResult, rResult;
 
         //Get frame
@@ -116,28 +119,58 @@ class BeaconClassifier {
             return CLASSIFICATION_ERROR;
         }
 
-        Scalar mean = Core.mean(frame);
-        Log.d("OpenCV", String.format("Scalar mean: R: %3.0f G: %3.0f B: %3.0f", mean.val[0], mean.val[1], mean.val[2]));
-        if (mean.val[0] > mean.val[1]) {
-            lResult = Alliance.RED;
-            rResult = Alliance.RED;
-        }
-        else {
-            lResult = Alliance.BLUE;
-            rResult = Alliance.BLUE;
-        }
+        //FrameExtractor.saveFrame(frame, "frame.png");
 
+        Alliance[] result = meanMethod(frame);
         //Alliance[] result = BeaconMatcher.beaconTypeToArray(mBeaconMatcher.searchForMatch(frame));
 
-        //lResult = result[0];
-        //rResult = result[1];
+        lResult = result[0];
+        rResult = result[1];
 
         return new Alliance[] { lResult , rResult };
     }
 
-    private Scalar meanColor(Mat frame) { return meanColor(frame, new Mat()); }
-    private Scalar meanColor(Mat frame, Mat mask) {
-        return Core.mean(frame, mask);
+    private Alliance[] meanMethod(Mat frame) {
+        Alliance lResult, rResult;
+
+        RobotLocator.updateLocation();
+        BeaconTarget target = RobotLocator.getTarget();
+
+        VectorF roiLeft = target.getRoi(false);
+
+        Point lp1 = new Point(roiLeft.get(0), roiLeft.get(1));
+        Point lp2 = new Point(roiLeft.get(2), roiLeft.get(3));
+
+        VectorF roiRight = target.getRoi(true);
+        Point rp1 = new Point(roiRight.get(0), roiRight.get(1));
+        Point rp2 = new Point(roiRight.get(2), roiRight.get(3));
+
+        Mat leftMask = Mat.zeros(frame.size(), CvType.CV_8U);
+        Mat lROI = leftMask.submat((int)lp1.y, (int)lp2.y, (int)lp1.x, (int)lp2.x);
+        lROI.setTo(Scalar.all(255));
+
+        Mat rightMask = Mat.zeros(frame.size(), CvType.CV_8U);
+        Mat rROI = rightMask.submat((int)rp1.y, (int)rp2.y, (int)rp1.x, (int)rp2.x);
+        rROI.setTo(Scalar.all(255));
+
+        /*Mat lMaskedImage = new Mat();
+        frame.copyTo(lMaskedImage, leftMask);
+        FrameExtractor.saveFrame(lMaskedImage, "leftMask.png");
+
+        Mat rMaskedImage = new Mat();
+        frame.copyTo(rMaskedImage, rightMask);
+        FrameExtractor.saveFrame(rMaskedImage, "rightMask.png");*/
+
+        double[] leftMean = Core.mean(frame, leftMask).val;
+        double[] rightMean = Core.mean(frame, rightMask).val;
+
+        //lResult = leftMean[0] > leftMean[2] ? Alliance.RED : Alliance.BLUE;
+        //rResult = rightMean[0] > rightMean[2] ? Alliance.RED : Alliance.BLUE;
+
+        lResult = leftMean[0] > rightMean[0] ? Alliance.RED : Alliance.BLUE;
+        rResult = lResult == Alliance.RED ? Alliance.BLUE : Alliance.RED;
+
+        return new Alliance[] { lResult, rResult };
     }
 
     private Alliance[] momentMethod(Mat frame) {

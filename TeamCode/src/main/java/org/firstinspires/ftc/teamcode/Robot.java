@@ -115,24 +115,6 @@ public class Robot {
         sleep(200);
     }
 
-    public void testLoop() throws InterruptedException {
-        while(opMode.opModeIsActive()) {
-            opMode.telemetry.addData("Status", RobotLocator.isTracking() ? "Tracking" : "Not Tracking");
-            opMode.telemetry.addData("Robot location", RobotLocator.getRobotLocation().toString());
-
-            opMode.telemetry.update();
-            opMode.idle();
-        }
-    }
-
-    public void launchLocator() {
-        //locator.launch();
-    }
-
-    public void haltLocator() {
-        //locator.halt();
-    }
-
     public void moveToTargetEncoder(int x, int z,int o, double speed) throws InterruptedException {
 
         /*while(!locator.isTracking()) {

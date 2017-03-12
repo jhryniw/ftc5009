@@ -1,7 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.os.Environment;
 import android.util.Log;
 
+import com.vuforia.Frame;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 
@@ -11,6 +16,9 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +31,20 @@ class FrameExtractor {
 
     static void init() {
         frameQueue = VuforiaWrapper.Instance.getFrameQueue();
+    }
+
+    static void saveFrame(Mat input, String filename) {
+        //TODO: Run in a separate thread, clone input
+
+        byte[] buffer = new byte[(int) input.total() * input.channels()];
+        input.get(0, 0, buffer);
+
+        Bitmap bitmap = bufferToBitmap(buffer, input.width(), input.height());
+
+        if(bitmap != null)
+            saveScreenShot(bitmap, filename);
+        else
+            Log.e("Screenshot", "Unable tp decode byte array");
     }
 
     static Mat getFrame() {
@@ -68,7 +90,7 @@ class FrameExtractor {
 
             Mat frame = new Mat(rgbImage.getHeight(), rgbImage.getWidth(), CvType.CV_8UC3);
 
-            byte[] buffer = new byte[rgbImage.getHeight() * rgbImage.getWidth()];
+            byte[] buffer = new byte[rgbImage.getHeight() * rgbImage.getWidth() * 3];
             rgbImage.getPixels().get(buffer);
 
             frame.put(0, 0, buffer);
@@ -82,5 +104,44 @@ class FrameExtractor {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private static void saveScreenShot(Bitmap bmp, String filename) {
+        try {
+            String path = Environment.getExternalStorageDirectory() + "/Pictures/" + filename;
+            Log.d("Screenshot", path);
+
+            File file = new File(path);
+            file.createNewFile();
+
+            FileOutputStream fos = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Bitmap bufferToBitmap(byte[] buffer, int width, int height) {
+        int count = 0, max_count = 0;
+        int nrOfPixels = width * height; // Three bytes per pixel.
+        int pixels[] = new int[nrOfPixels];
+        for(int i = 0; i < nrOfPixels; i++) {
+            int r = buffer[3*i];
+            int g = buffer[3*i + 1];
+            int b = buffer[3*i + 2];
+
+            if(r == 0 && g == 0 && b == 0) {
+                if(++count > max_count)
+                    max_count = count;
+            }
+            else
+                count = 0;
+
+            pixels[i] = Color.rgb(r,g,b);
+        }
+
+        return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
     }
 }
