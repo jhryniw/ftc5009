@@ -47,13 +47,9 @@ public class Autonomous extends LinearOpMode {
         robot = new Robot("proto1", hardwareMap, this);
 
         //Register paths
-        pathList.put("Ball Knocker", new BallKnocker(this, robot, new Coordinate(0, 0)));
         pathList.put("Beacons", new Beacons(this, robot, new Coordinate(0, 0)));
-        pathList.put("Corner Goal", new CornerGoal(this, robot, new Coordinate(0, 0)));
         pathList.put("Ball Shooter", new BallShooter(this, robot, new Coordinate(0, 0)));
         pathList.put("Target Test", new PDTest(this, robot, new Coordinate(0, 0)));
-        pathList.put("Feeder Auto", new FeederAuto(this, robot, new Coordinate(0, 0)));
-        pathList.put("Feeder Auto2", new FeederAuto2(this, robot, new Coordinate(0, 0)));
         pathList.put("Close Corner", new CloseCorner(this, robot, new Coordinate(0, 0)));
         pathList.put("Far Corner", new FarCorner(this, robot, new Coordinate(0, 0)));
 

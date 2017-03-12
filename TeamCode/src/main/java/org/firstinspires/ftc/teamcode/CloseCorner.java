@@ -16,14 +16,7 @@ final class CloseCorner extends PathBase {
         switch (alliance) {
             case BLUE:
                 robot.encoderDrive(-0.4, 6);
-                robot.ballshooter(0.95, 0);
-                robot.feeder(0, 700); //down feed
-                robot.feeder(1, 1000); //up feed
-                robot.feeder(0, 1000); //down feed
-                robot.feeder(1, 1000); //up feed
-                robot.feeder(0 ,200); //down feed
-                robot.feeder(1 , 0); //up feed
-                robot.ballshooter(0, 0);
+                shoot();
                 robot.encoderDrive(-0.5, 40);
                 robot.pivot(90, 1);
                 robot.feeder(1, 2000);
@@ -34,14 +27,7 @@ final class CloseCorner extends PathBase {
 
             case RED:
                 robot.encoderDrive(-0.4, 6);
-                robot.ballshooter(0.95, 0);
-                robot.feeder(0, 700); //down feed
-                robot.feeder(1, 1000); //up feed
-                robot.feeder(0, 1000); //down feed
-                robot.feeder(1, 1000); //up feed
-                robot.feeder(0 ,1000); //down feed
-                robot.feeder(1 , 0); //up feed
-                robot.ballshooter(0, 0);
+                shoot();
                 robot.encoderDrive(-0.5, 40);
                 robot.pivot(-90, 1);
                 robot.feeder(1, 2000);
@@ -49,6 +35,18 @@ final class CloseCorner extends PathBase {
                 robot.encoderDrive(-0.3, 25);
                 robot.pivot(-60, 0.8);
                 break;
+        }
     }
-}
+
+    private void shoot() throws InterruptedException{
+        robot.ballshooter(0.95, 0);
+        robot.feeder(0, 700); //down feed
+        robot.feeder(1, 1000); //up feed
+        robot.feeder(0, 1000); //down feed
+        robot.feeder(1, 1000); //up feed
+        robot.feeder(0 ,200); //down feed
+        robot.feeder(1 , 0); //up feed
+        robot.ballshooter(0, 0);
+
+    }
 }

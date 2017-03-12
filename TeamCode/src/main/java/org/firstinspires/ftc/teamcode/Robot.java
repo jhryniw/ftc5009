@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static java.lang.Thread.sleep;
@@ -111,6 +112,19 @@ public class Robot {
         }
 
         // stop the motors
+        stop();
+        sleep(200);
+    }
+
+    public void touchDrive(double power) throws InterruptedException {
+        resetEncoders();
+
+        Hardware.leftMotor.setPower(power);
+        Hardware.rightMotor.setPower(power);
+
+        //touch sensors
+        while (!Hardware.limit.isPressed()) {sleep(10);}
+
         stop();
         sleep(200);
     }
