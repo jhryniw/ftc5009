@@ -28,6 +28,7 @@ public class Robot {
     private static double MAX_POWER = 0.6;
     private static double P = 0.2;
     private static double D = 8;
+    TouchSensor[] touchSensors = { Hardware.limit };
 
     public Robot(String robotName, HardwareMap hwMap, LinearOpMode om) {
         name = robotName;
@@ -35,7 +36,6 @@ public class Robot {
 
         Hardware.init(hwMap);
         VuforiaWrapper.init(hwMap.appContext);
-
         beaconClassifier = new BeaconClassifier((Activity) hwMap.appContext);
 
         // turn the LED on in the beginning, just so user will know that the sensor is active.
@@ -116,14 +116,14 @@ public class Robot {
         sleep(200);
     }
 
-    public void touchDrive(double power) throws InterruptedException {
+    public void touchDrive(double power, TouchSensor touch) throws InterruptedException {
         resetEncoders();
 
         Hardware.leftMotor.setPower(power);
         Hardware.rightMotor.setPower(power);
 
         //touch sensors
-        while (!Hardware.limit.isPressed()) {sleep(10);}
+        while (!touch.isPressed()) {sleep(10);}
 
         stop();
         sleep(200);
