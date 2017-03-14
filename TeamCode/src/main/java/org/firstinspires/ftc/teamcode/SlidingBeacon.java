@@ -28,6 +28,6 @@ public class SlidingBeacon extends PathBase {
                 robot.encoderDrive(0.5, 10);
                 break;
         }
-        robot.touchDrive(0.5, robot.touchSensors[0]);
+        robot.touchDrive(0.7, robot.touchSensors[0]);
     }
 }

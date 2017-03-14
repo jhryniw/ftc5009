@@ -16,26 +16,26 @@ final class Beacons extends PathBase {
     void run() throws InterruptedException {
         switch (alliance) {
             case BLUE:
-                robot.encoderDrive(-0.4, 5); //backward
+                /*robot.encoderDrive(-0.4, 5); //backward
                 shoot();
                 robot.pivot(45, 0.2); //pivot
                 robot.encoderDrive(-0.9 , 58.2); //diagnol beacon
-                robot.pivot(45, 0.2); // pivot to face beacon
+                robot.pivot(45, 0.2); // pivot to face beacon*/
                 robot.encoderDrive(-0.5 , 5); //inch closer to beacon
                 break;
 
             case RED:
-                robot.encoderDrive(-0.4, 5); //backward
+                /*robot.encoderDrive(-0.4, 5); //backward
                 shoot();
                 robot.pivot(-45, 0.2); //pivot
                 robot.encoderDrive(-0.9, 58.2);
-                robot.pivot(-45, 0.2);
+                robot.pivot(-45, 0.2);*/
                 robot.encoderDrive(-0.5 , 5);
                 break;
         }
 
-        //Alliance[] result = robot.beaconClassifier.classify();
-        Alliance[] result = { Alliance.RED, Alliance.BLUE };
+        Alliance[] result = robot.beaconClassifier.classify();
+        //Alliance[] result = { Alliance.RED, Alliance.BLUE };
 
         if(result == BeaconClassifier.CLASSIFICATION_ERROR) {
             opMode.telemetry.addData("OpenCV", "Error...");
@@ -81,8 +81,8 @@ final class Beacons extends PathBase {
                 break;
         }
 
-        Alliance[] result2 = robot.beaconClassifier.classify();
-        //Alliance[] result2 = { Alliance.RED, Alliance.BLUE };
+        //Alliance[] result2 = robot.beaconClassifier.classify();
+        Alliance[] result2 = { Alliance.RED, Alliance.BLUE };
 
         if(result2 == BeaconClassifier.CLASSIFICATION_ERROR) {
             robot.opMode.telemetry.addData("OpenCV", "Error...");
