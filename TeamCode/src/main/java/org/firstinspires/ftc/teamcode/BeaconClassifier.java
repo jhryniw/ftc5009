@@ -133,11 +133,9 @@ class BeaconClassifier {
     private Alliance[] meanMethod(Mat frame) {
         Alliance lResult, rResult;
 
-        RobotLocator.updateLocation();
         BeaconTarget target = RobotLocator.getTarget();
 
         VectorF roiLeft = target.getRoi(false);
-
         Point lp1 = new Point(roiLeft.get(0), roiLeft.get(1));
         Point lp2 = new Point(roiLeft.get(2), roiLeft.get(3));
 

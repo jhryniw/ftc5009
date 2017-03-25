@@ -31,6 +31,7 @@ public class Autonomous extends LinearOpMode {
 
     private Robot robot;
 
+    private AlertDialog configurationDialog;
     private HashMap<String, PathBase> pathList = new HashMap<>();
     private List<String> pathNames;
     private PathBase selectedPath;
@@ -53,7 +54,6 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Close Corner", new CloseCorner(this, robot, new Coordinate(0, 0)));
         pathList.put("Far Corner", new FarCorner(this, robot, new Coordinate(0, 0)));
 
-
         pathNames = new ArrayList<String>(pathList.keySet());
 
         //Initialize config parameters
@@ -75,13 +75,11 @@ public class Autonomous extends LinearOpMode {
         }
         selectedPath.setAlliance(alliance);
 
-        //robot.haltLocator();
-
         waitForStart();
 
         sleep(delay);
 
-        //robot.launchLocator();
+        RobotLocator.start();
 
         //Run selected path
         try {
@@ -186,12 +184,13 @@ public class Autonomous extends LinearOpMode {
             }
         });
 
+        configurationDialog = builder.create();
+
         // 2. Chain together various setter methods to set the dialog characteristics
         ftcActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                configurationDialog.show();
             }
         });
     }

@@ -34,6 +34,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -52,7 +53,7 @@ class RobotLocator {
 
     private static VuforiaTrackables beacons;
 
-    private static boolean isTracking = false;
+    private static TrackerWorker worker = null;
 
     //TODO: Check that axes match for all images!
     private static OpenGLMatrix wheelsPosition = OpenGLMatrix.translation(142 * MM_PER_INCH, 5 * MM_PER_INCH, 58.5f * MM_PER_INCH)
@@ -91,36 +92,46 @@ class RobotLocator {
         Log.d("Vuforia", "Vuforia Initialized");
     }
 
-    static BeaconTarget getTarget() {
+    static void start() {
+        if(worker != null)
+            worker.interrupt();
+
+        worker = new TrackerWorker();
+        worker.setDaemon(true);
+        worker.setPriority(10);
+        worker.start();
+    }
+
+    static void stop() {
+        worker.interrupt();
+        worker = null;
+    }
+
+    synchronized static BeaconTarget getTarget() {
         return new BeaconTarget(poseToTarget);
     }
 
-    static VectorF getPose() { return getPose(true); }
-    static VectorF getPose(boolean runUpdate) {
-        if(runUpdate)
-            updateLocation();
-
+    synchronized static VectorF getPose() {
         return poseToTarget.toVector();
     }
 
-    static VectorF getRobotLocation() { return getRobotLocation(true); }
-    static VectorF getRobotLocation(boolean runUpdate) {
-        if(runUpdate)
-            updateLocation();
-
+    synchronized static VectorF getRobotLocation() {
         return new VectorF(robotLocation.getData());
     }
 
-    static float[] getRobotLocationXZ() { return getRobotLocationXZ(true); }
-    static float[] getRobotLocationXZ(boolean runUpdate) {
-        if(runUpdate)
-            updateLocation();
-
+    synchronized static float[] getRobotLocationXZ() {
         return new float[] { robotLocation.get(0), robotLocation.get(2) };
     }
 
-    static boolean isTracking() {
-        return isTracking;
+    static boolean isBeaconVisible() {
+        for (VuforiaTrackable b : beacons) {
+            VuforiaTrackableDefaultListener listener = (VuforiaTrackableDefaultListener) b.getListener();
+
+            if (listener.isVisible())
+                return true;
+        }
+
+        return false;
     }
 
     static VectorF getEuler(OpenGLMatrix pose) {
@@ -156,30 +167,57 @@ class RobotLocator {
         return trackables;
     }
 
-    static void updateLocation() {
+    private static class TrackerWorker extends Thread {
 
-        try {
-            boolean tracking = false;
+        String sTrackedBeacon = "";
+        VuforiaTrackableDefaultListener lastListener = null;
+        int noTrackCount = 0;
 
-            for (VuforiaTrackable b : beacons) {
-                VuforiaTrackableDefaultListener listener = ((VuforiaTrackableDefaultListener) b.getListener());
-                OpenGLMatrix update = listener.getUpdatedRobotLocation();
+        @Override
+        public void run() {
+            while(!Thread.interrupted()) {
 
-                if (listener.getPose() != null) {
-                    tracking = true;
+                if(lastListener != null && lastListener.getPose() != null) {
+                    processListener(lastListener);
                 }
+                else {
+                    for (VuforiaTrackable b : beacons) {
+                        VuforiaTrackableDefaultListener l = (VuforiaTrackableDefaultListener) b.getListener();
 
-                if (update != null) {
-                    robotLocation = update.getTranslation().multiplied(1f / MM_PER_INCH);
-                    poseToTarget = new BeaconTarget(b.getName(), listener.getPose());
-                    break;
+                        if (l.isVisible()){
+                            sTrackedBeacon = b.getName();
+                            processListener(lastListener);
+                            lastListener = l;
+                            break;
+                        }
+                    }
+
+                    noTrackCount++;
+
+                    if(noTrackCount > 5) {
+                        synchronized (RobotLocator.class) {
+                            robotLocation = null;
+                            poseToTarget = null;
+                        }
+
+                        noTrackCount = 0;
+                    }
                 }
+                Thread.yield();
+            }
+        }
+
+        private void processListener(VuforiaTrackableDefaultListener listener) {
+
+            if(listener.getPose() == null || listener.getRobotLocation() == null) return;
+
+            synchronized (RobotLocator.class) {
+                //Remapping pose to adjust for landscape orientation
+                robotLocation = listener.getRobotLocation().getTranslation().multiplied(1f / MM_PER_INCH);
+                poseToTarget = new BeaconTarget(sTrackedBeacon, listener.getPose());
             }
 
-            isTracking = tracking;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+            noTrackCount = 0;
         }
     }
 }

@@ -12,17 +12,18 @@ public class LocatorTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         VuforiaWrapper.init(hardwareMap.appContext);
+        RobotLocator.init();
 
         waitForStart();
 
-        while(opModeIsActive()) {
-            RobotLocator.updateLocation();
+        RobotLocator.start();
 
+        while(opModeIsActive()) {
             BeaconTarget target = RobotLocator.getTarget();
 
-            telemetry.addData("Status", RobotLocator.isTracking() ? "Tracking" : "Not Tracking");
-            telemetry.addData("Robot location", RobotLocator.getRobotLocation(false).toString());
-            telemetry.addData("Pose", RobotLocator.getPose(false).toString());
+            telemetry.addData("Status", RobotLocator.getPose() == null ? "Tracking" : "Not Tracking");
+            telemetry.addData("Robot location", RobotLocator.getRobotLocation().toString());
+            telemetry.addData("Pose", RobotLocator.getPose().toString());
             telemetry.addData("ROI Right", target.getRoi(true));
             telemetry.addData("ROI Left", target.getRoi(false));
 
