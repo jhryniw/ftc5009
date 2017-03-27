@@ -2,6 +2,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -29,6 +30,7 @@ public class Hardware {
     public static Servo leftClaw;
     public static Servo rightClaw;
     public static Servo feeder;
+    public static CRServo slider;
 
     //Color Sensor + LED
     public static DeviceInterfaceModule cdim;
@@ -66,6 +68,7 @@ public class Hardware {
             leftClaw = hwMap.servo.get("left_claw");
             rightClaw = hwMap.servo.get("right_claw");
             feeder = hwMap.servo.get("feeder");
+            slider = hwMap.crservo.get("slider");
         }
         catch (NullPointerException e) {
             throw new NullPointerException("Error: a motor did not initialize properly. Check the configuration!");
@@ -97,6 +100,7 @@ public class Hardware {
         leftClaw.setPosition(0);
         rightClaw.setPosition(0);
         feeder.setPosition(1);
+        slider.setPower(0.05);
 
         //ColorSensor setup
         /*cdim = hwMap.deviceInterfaceModule.get("dim");

@@ -14,6 +14,7 @@ import static org.firstinspires.ftc.teamcode.Hardware.leftClaw;
 import static org.firstinspires.ftc.teamcode.Hardware.rightClaw;
 import static org.firstinspires.ftc.teamcode.Hardware.shooterMotorRight;
 import static org.firstinspires.ftc.teamcode.Hardware.shooterMotorLeft;
+import static org.firstinspires.ftc.teamcode.Hardware.slider;
 
 /**
  * Created by James on 2016-09-26.
@@ -153,7 +154,16 @@ public class TeleOp extends LinearOpMode {
                 r_power = 0.1;
             }
 
-            //apply values to motor speed
+            if (gamepad2.left_bumper){
+                slideLeft();
+            } else if (gamepad2.right_bumper) {
+                slideRight();
+            } else {
+                slider.setPower(0.05);
+            }
+
+
+                //apply values to motor speed
             leftMotor.setPower(l_power);
             rightMotor.setPower(r_power);
 
@@ -178,5 +188,11 @@ public class TeleOp extends LinearOpMode {
             if(pos > 0) claw.setPosition(pos);
             else claw.setPosition(0);
         }
+    }
+    private void slideLeft() {
+        slider.setPower(-0.75);
+    }
+    private void slideRight() {
+        slider.setPower(0.75);
     }
 }

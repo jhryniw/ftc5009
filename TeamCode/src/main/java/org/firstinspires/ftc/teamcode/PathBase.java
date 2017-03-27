@@ -27,6 +27,7 @@ public abstract class PathBase {
 
     public void setAlliance(Alliance a) {
         alliance = a;
+
     }
 
     abstract void run() throws InterruptedException;
