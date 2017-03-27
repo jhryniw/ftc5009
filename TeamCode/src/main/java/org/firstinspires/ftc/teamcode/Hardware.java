@@ -32,6 +32,7 @@ public class Hardware {
     public static Servo feeder;
     public static CRServo slider;
 
+
     //Color Sensor + LED
     public static DeviceInterfaceModule cdim;
     public static ColorSensor colorSensor;
@@ -64,7 +65,6 @@ public class Hardware {
             shooterMotorLeft = hwMap.dcMotor.get("shooter_L");
             liftMotor = hwMap.dcMotor.get("lift");
             limit = hwMap.touchSensor.get("limit");
-
             leftClaw = hwMap.servo.get("left_claw");
             rightClaw = hwMap.servo.get("right_claw");
             feeder = hwMap.servo.get("feeder");

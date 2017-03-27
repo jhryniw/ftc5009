@@ -16,20 +16,20 @@ final class Beacons extends PathBase {
     void run() throws InterruptedException {
         switch (alliance) {
             case BLUE:
-                /*robot.encoderDrive(-0.4, 5); //backward
+                robot.encoderDrive(-0.4, 3); //backward
                 shoot();
                 robot.pivot(45, 0.2); //pivot
-                robot.encoderDrive(-0.9 , 58.2); //diagnol beacon
-                robot.pivot(45, 0.2); // pivot to face beacon*/
+                robot.encoderDrive(-0.9 , 60.2); //diagnol beacon
+                robot.pivot(45, 0.2); // pivot to face beacon
                 robot.encoderDrive(-0.5 , 5); //inch closer to beacon
                 break;
 
             case RED:
-                /*robot.encoderDrive(-0.4, 5); //backward
+                robot.encoderDrive(-0.4, 5); //backward
                 shoot();
                 robot.pivot(-45, 0.2); //pivot
                 robot.encoderDrive(-0.9, 58.2);
-                robot.pivot(-45, 0.2);*/
+                robot.pivot(-45, 0.2);
                 robot.encoderDrive(-0.5 , 5);
                 break;
         }
@@ -54,14 +54,14 @@ final class Beacons extends PathBase {
         if (is_left){
             //robot.encoderDrive(-0.3, 5);
             robot.pivot(45, 0.2);
-            robot.encoderDrive(-0.5, 7);
+            robot.encoderDrive(-0.5, 5);
             robot.pivot(-45, 0.2);
-            robot.encoderDrive(-0.5, 10);
+            robot.encoderDrive(-0.5, 12);
         }
         else if (is_right) {
             //robot.encoderDrive(-0.3, 5);
             robot.pivot(-45, 0.2);
-            robot.encoderDrive(-0.5, 7);
+            robot.encoderDrive(-0.5, 5);
             robot.pivot(45, 0.2);
             robot.encoderDrive(-0.5, 10);
         }
@@ -73,11 +73,13 @@ final class Beacons extends PathBase {
                 robot.pivot(-90, 0.2);
                 robot.encoderDrive(-0.8, 52);
                 robot.pivot(90, 0.2);
+                robot.encoderDrive(-0.8, 15);
                 break;
             case RED:
                 robot.pivot(90, 0.2);
                 robot.encoderDrive(0.8, 52);
                 robot.pivot(-90, 0.2);
+                robot.encoderDrive(-0.8, 8);
                 break;
         }
 

@@ -190,9 +190,9 @@ public class TeleOp extends LinearOpMode {
         }
     }
     private void slideLeft() {
-        slider.setPower(-0.75);
+        slider.setPower(0.75);
     }
     private void slideRight() {
-        slider.setPower(0.75);
+        slider.setPower(-0.75);
     }
 }

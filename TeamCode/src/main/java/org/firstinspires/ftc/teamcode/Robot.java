@@ -59,63 +59,98 @@ public class Robot {
             accelerationEnabled = true;
             target -= DECELERATION_DISTANCE;
         }
+        long wait_time = 200;
+        try {
+            //Reset the encoders
+            resetEncoders();
 
-        //Reset the encoders
-        resetEncoders();
+            if (accelerationEnabled)
+                acceleration(0.01, speed, 1000);
 
-        if(accelerationEnabled)
-            acceleration (0.01, speed, 1000);
+            Hardware.leftMotor.setPower(speed);
+            Hardware.rightMotor.setPower(speed);
 
-        Hardware.leftMotor.setPower(speed);
-        Hardware.rightMotor.setPower(speed);
+            int position = Hardware.leftMotor.getCurrentPosition();
+            while (opMode.opModeIsActive() && Math.abs(position) < target) {
 
-        int position = Hardware.leftMotor.getCurrentPosition();
-        while (opMode.opModeIsActive() && Math.abs(position) < target) {
-            position = Hardware.leftMotor.getCurrentPosition();
+                position = Hardware.leftMotor.getCurrentPosition();
 
-            opMode.telemetry.addData("EncoderTarget", "%d", target);
-            opMode.telemetry.addData("EncoderPosition", "%d", position);
-            opMode.telemetry.update();
-            sleep(10);
+                opMode.telemetry.addData("EncoderTarget", "%d", target);
+                opMode.telemetry.addData("EncoderPosition", "%d", position);
+                opMode.telemetry.update();
+                sleep(10);
+            }
         }
+        catch (NullPointerException e) {
+            wait_time = 4000;
+            if(Hardware.rightMotor == null) {
+                opMode.telemetry.addData("RightMotor Null", "%d", Hardware.rightMotor.getCurrentPosition());
+            }
+            else if(Hardware.leftMotor == null) {
+                opMode.telemetry.addData("LeftMotor Null", "%d", Hardware.leftMotor.getCurrentPosition());
+            }
+            else {
+                opMode.telemetry.addData("Encoder Uncaught Exception", "%d", 0);
+            }
+        }
+        finally {
+            if(accelerationEnabled)
+                deceleration(0.01, speed, 500, target);
 
-        if(accelerationEnabled)
-            deceleration(0.01, speed, 500, target);
+            stop();
+            opMode.telemetry.update();
+            sleep(wait_time);
 
-        stop();
+        }
     }
 
     public void pivot (int deg, double power) throws InterruptedException {
         //convert degree into ticks
         int target = (int)((Math.abs(deg) / 360.0) * Math.PI * Hardware.WHEEL_BASE * Hardware.TICKS_PER_INCH);
+        long wait_time = 200;
+        try {
+            resetEncoders();
 
-        resetEncoders();
+            // set the power on the motors in opposite directions
+            if (deg < 0) {
+                power = -power;
+            }
 
-        // set the power on the motors in opposite directions
-        if (deg < 0) {
-            power = -power;
+            Hardware.leftMotor.setPower(power);
+            Hardware.rightMotor.setPower(-power);
+
+            //loop
+            int position = Hardware.leftMotor.getCurrentPosition();
+
+            while (opMode.opModeIsActive() && Math.abs(position) < target) {
+                //TODO: Take the average of both the left and right encoders
+                position = Hardware.leftMotor.getCurrentPosition();
+
+                opMode.telemetry.addData("EncoderTarget", "%d", target);
+                opMode.telemetry.addData("EncoderPosition", "%d", position);
+                opMode.telemetry.update();
+                sleep(10);
+            }
+        } catch (NullPointerException e) {
+            wait_time = 4000;
+            if (Hardware.rightMotor == null) {
+                opMode.telemetry.addData("Pivot RightMotor Null", "%d", Hardware.rightMotor.getCurrentPosition());
+            } else if (Hardware.leftMotor == null) {
+                opMode.telemetry.addData("Pivot LeftMotor Null", "%d", Hardware.leftMotor.getCurrentPosition());
+            } else {
+                opMode.telemetry.addData("Pivot Uncaught Exception", "%d", 0);
+            }
         }
-
-        Hardware.leftMotor.setPower(power);
-        Hardware.rightMotor.setPower(-power);
-
-        //loop
-        int position = Hardware.leftMotor.getCurrentPosition();
-
-        while (opMode.opModeIsActive() && Math.abs(position) < target) {
-            //TODO: Take the average of both the left and right encoders
-            position = Hardware.leftMotor.getCurrentPosition();
-
-            opMode.telemetry.addData("EncoderTarget", "%d", target);
-            opMode.telemetry.addData("EncoderPosition", "%d", position);
+        finally {
+            stop();
             opMode.telemetry.update();
-            sleep(10);
+            sleep(wait_time);
         }
-
-        // stop the motors
-        stop();
-        sleep(200);
+            // stop the motors
+        //stop();
+        //sleep(200);
     }
+
 
     public void touchDrive(double power, TouchSensor touch) throws InterruptedException {
         resetEncoders();
@@ -230,6 +265,11 @@ public class Robot {
         sleep(time);
     }
 
+    public void initSlider () throws InterruptedException {
+        Hardware.slider.setPower(-0.75);
+        while (!Hardware.limit.isPressed()) { sleep(50); }
+        Hardware.slider.setPower(0.05);
+    }
     /**
      * @param linear - desired linear velocity in inches/s
      * @param angular - desired angular velocity in rad/s

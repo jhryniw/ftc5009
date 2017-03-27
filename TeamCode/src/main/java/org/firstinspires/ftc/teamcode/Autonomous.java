@@ -31,7 +31,6 @@ public class Autonomous extends LinearOpMode {
 
     private Robot robot;
 
-    private AlertDialog configurationDialog;
     private HashMap<String, PathBase> pathList = new HashMap<>();
     private List<String> pathNames;
     private PathBase selectedPath;
@@ -49,10 +48,10 @@ public class Autonomous extends LinearOpMode {
 
         //Register paths
         pathList.put("Beacons", new Beacons(this, robot, new Coordinate(0, 0)));
-        pathList.put("Ball Shooter", new BallShooter(this, robot, new Coordinate(0, 0)));
         pathList.put("Target Test", new PDTest(this, robot, new Coordinate(0, 0)));
         pathList.put("Close Corner", new CloseCorner(this, robot, new Coordinate(0, 0)));
         pathList.put("Far Corner", new FarCorner(this, robot, new Coordinate(0, 0)));
+        pathList.put("Test Button", new TestButton(this, robot, new Coordinate(0, 0)));
 
         pathNames = new ArrayList<String>(pathList.keySet());
 
@@ -184,12 +183,12 @@ public class Autonomous extends LinearOpMode {
             }
         });
 
-        configurationDialog = builder.create();
-
         // 2. Chain together various setter methods to set the dialog characteristics
         ftcActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                //DO NOT MOVE THIS LINE, EVEN THOUGH I KNOW YOU WANT TO
+                AlertDialog configurationDialog = builder.create();
                 configurationDialog.show();
             }
         });
