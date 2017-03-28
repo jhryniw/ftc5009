@@ -169,9 +169,9 @@ class RobotLocator {
 
     private static class TrackerWorker extends Thread {
 
-        String sTrackedBeacon = "";
-        VuforiaTrackableDefaultListener lastListener = null;
-        int noTrackCount = 0;
+        static String sTrackedBeacon = "";
+        static VuforiaTrackableDefaultListener lastListener = null;
+        static int noTrackCount = 0;
 
         @Override
         public void run() {
@@ -186,7 +186,7 @@ class RobotLocator {
 
                         if (l.isVisible()){
                             sTrackedBeacon = b.getName();
-                            processListener(lastListener);
+                            processListener(l);
                             lastListener = l;
                             break;
                         }

@@ -15,8 +15,12 @@ final class TestButton extends PathBase {
     void run() throws InterruptedException {
         switch (alliance) {
             case BLUE:
-               robot.initSlider();
+                robot.resetSlider();
+                Thread.sleep(5000);
 
+                Hardware.slider.setPower(-1);
+                while (!Hardware.limit.isPressed()) { Thread.yield(); }
+                robot.moveSlider(1, 1000);
 
                 break;
             case RED:

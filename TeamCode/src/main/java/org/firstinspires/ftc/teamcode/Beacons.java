@@ -18,18 +18,18 @@ final class Beacons extends PathBase {
             case BLUE:
                 robot.encoderDrive(-0.4, 3); //backward
                 shoot();
-                robot.pivot(45, 0.2); //pivot
+                robot.pivot(-45, 0.2); //pivot
                 robot.encoderDrive(-0.9 , 60.2); //diagnol beacon
-                robot.pivot(45, 0.2); // pivot to face beacon
+                robot.pivot(-45, 0.2); // pivot to face beacon
                 robot.encoderDrive(-0.5 , 5); //inch closer to beacon
                 break;
 
             case RED:
                 robot.encoderDrive(-0.4, 5); //backward
                 shoot();
-                robot.pivot(-45, 0.2); //pivot
+                robot.pivot(45, 0.2); //pivot
                 robot.encoderDrive(-0.9, 58.2);
-                robot.pivot(-45, 0.2);
+                robot.pivot(45, 0.2);
                 robot.encoderDrive(-0.5 , 5);
                 break;
         }
@@ -52,6 +52,15 @@ final class Beacons extends PathBase {
         boolean is_right = (alliance == result[1]);
 
         if (is_left){
+            robot.moveSlider(Hardware.SLIDER_TRACK_LENGTH / 4);
+        }
+        else if (is_right) {
+            robot.moveSlider(Hardware.SLIDER_TRACK_LENGTH / 4 * 3);
+        }
+
+        robot.encoderDrive(0.5, 20);
+
+        /*if (is_left){
             //robot.encoderDrive(-0.3, 5);
             robot.pivot(45, 0.2);
             robot.encoderDrive(-0.5, 5);
@@ -117,10 +126,10 @@ final class Beacons extends PathBase {
 
         robot.encoderDrive(0.5, 10);
         robot.pivot(45, -0.3);
-        robot.encoderDrive(0.5, 50);
+        robot.encoderDrive(0.5, 50);*/
     }
 
-    private void shoot() throws InterruptedException{
+    private void shoot() throws InterruptedException {
         robot.ballshooter(0.95, 1);
         robot.feeder(0, 700); //down feed
         robot.feeder(1, 1000); //up feed

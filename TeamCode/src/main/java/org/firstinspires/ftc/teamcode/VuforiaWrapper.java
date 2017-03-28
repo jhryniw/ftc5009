@@ -16,12 +16,7 @@ class VuforiaWrapper {
 
     static VuforiaLocalizer Instance;
 
-    private static boolean isInitialized = false;
-
     public static void init(Context ctx) {
-
-        if (isInitialized)
-            return;
 
         VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
         params.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
@@ -35,6 +30,5 @@ class VuforiaWrapper {
         RobotLocator.init();
 
         Log.d("Vuforia", "Vuforia Initialized");
-        isInitialized = true;
     }
 }

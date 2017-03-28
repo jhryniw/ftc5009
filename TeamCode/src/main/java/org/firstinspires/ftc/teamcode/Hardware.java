@@ -49,6 +49,8 @@ public class Hardware {
     private static double DRIVE_GEAR_RATIO = 1.0;
 
     public static double TICKS_PER_INCH = (TICKS_PER_MOTOR_REV * DRIVE_GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
+    public static double SLIDER_TRACK_LENGTH = 10.5;
+    public static double SLIDER_MAX_SPEED = 2.5; //2 7/16"
 
     public Hardware() throws Exception {
         throw new Exception("do not call this constructor");
@@ -77,7 +79,7 @@ public class Hardware {
 
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         shooterMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);

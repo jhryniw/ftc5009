@@ -265,11 +265,6 @@ public class Robot {
         sleep(time);
     }
 
-    public void initSlider () throws InterruptedException {
-        Hardware.slider.setPower(-0.75);
-        while (!Hardware.limit.isPressed()) { sleep(50); }
-        Hardware.slider.setPower(0.05);
-    }
     /**
      * @param linear - desired linear velocity in inches/s
      * @param angular - desired angular velocity in rad/s
@@ -351,6 +346,43 @@ public class Robot {
     private void stop() {
         Hardware.leftMotor.setPower(0);
         Hardware.rightMotor.setPower(0);
+    }
+
+    /*
+     * Slider Functionality
+     */
+
+    //Positive is left, negative is right
+    void moveSlider(double distance) throws InterruptedException {
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+
+        Hardware.slider.setPower(Math.signum(distance));
+
+        double targetTime = (distance / Hardware.SLIDER_MAX_SPEED * 1000);
+
+        while(!Hardware.limit.isPressed() && timer.milliseconds() < targetTime) {
+            Thread.yield();
+        }
+
+        stopSlider();
+    }
+
+    void moveSlider(double power, long msTime) throws InterruptedException {
+        Hardware.slider.setPower(power);
+        sleep(msTime);
+        stopSlider();
+    }
+
+    void resetSlider () throws InterruptedException {
+        Hardware.slider.setPower(-1);
+        while (!Hardware.limit.isPressed()) { Thread.yield(); }
+        //moveSlider(1, (long) (Hardware.SLIDER_TRACK_LENGTH / Hardware.SLIDER_MAX_SPEED * 1000 / 2));
+        stopSlider();
+    }
+
+    void stopSlider () throws InterruptedException {
+        Hardware.slider.setPower(0.05);
     }
 
     /*

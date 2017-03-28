@@ -23,6 +23,7 @@ public class OpenCVTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         VuforiaWrapper.init(hardwareMap.appContext);
+        RobotLocator.start();
 
         /*
          * Camera ID 0: Back Camera

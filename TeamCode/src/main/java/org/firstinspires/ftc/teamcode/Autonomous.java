@@ -16,6 +16,7 @@ import android.widget.ToggleButton;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,9 +62,11 @@ public class Autonomous extends LinearOpMode {
         alliance = prefs.getString("ALLIANCE_KEY", "BLUE").equals("BLUE") ? Alliance.BLUE : Alliance.RED;
         selectedPath = pathList.get(prefs.getString("PATH_KEY", pathList.keySet().toArray()[0].toString()));
 
+        if(pathList.isEmpty())
+            throw new NullPointerException("There are no registered paths!");
 
         if (selectedPath == null) {
-            selectedPath = pathList.get("Ball Knocker");
+            selectedPath = pathList.get(pathList.keySet().iterator().next());
         }
 
         //Run configuration
@@ -74,18 +77,15 @@ public class Autonomous extends LinearOpMode {
         }
         selectedPath.setAlliance(alliance);
 
-        waitForStart();
+        robot.resetSlider();
 
+        waitForStart();
         sleep(delay);
 
         RobotLocator.start();
 
         //Run selected path
-        try {
-            selectedPath.run();
-        } catch (InterruptedException e) {
-            //robot.haltLocator();
-        }
+        selectedPath.run();
     }
 
     private int getPathPosition(String key) {
