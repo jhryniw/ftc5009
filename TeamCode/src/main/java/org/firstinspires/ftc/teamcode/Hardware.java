@@ -19,38 +19,40 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 public class Hardware {
 
     //Motors
-    public static DcMotor leftMotor;
-    public static DcMotor rightMotor;
-    public static DcMotor chickenMotor;
-    public static DcMotor shooterMotorRight;
-    public static DcMotor shooterMotorLeft;
-    public static DcMotor liftMotor;
+    static DcMotor leftMotor;
+    static DcMotor rightMotor;
+    static DcMotor chickenMotor;
+    static DcMotor shooterMotorRight;
+    static DcMotor shooterMotorLeft;
+    static DcMotor liftMotor;
+
+    private static double baseSpeed = 0;
+    private static double angularSpeed = 0;
 
     //Servos
-    public static Servo leftClaw;
-    public static Servo rightClaw;
-    public static Servo feeder;
-    public static CRServo slider;
+    static Servo leftClaw;
+    static Servo rightClaw;
+    static Servo feeder;
+    static CRServo slider;
 
 
     //Color Sensor + LED
-    public static DeviceInterfaceModule cdim;
-    public static ColorSensor colorSensor;
-    public static boolean bLedOn = true;
-    public static final int LED_CHANNEL = 5; // we assume that the LED pin of the RGB sensor is connected to digital port 5 (zero indexed).
-    public static TouchSensor limit;
-
+    static DeviceInterfaceModule cdim;
+    static ColorSensor colorSensor;
+    static boolean bLedOn = true;
+    static final int LED_CHANNEL = 5; // we assume that the LED pin of the RGB sensor is connected to digital port 5 (zero indexed).
+    static TouchSensor limit;
 
     private static HardwareMap hwMap;
-    public static double WHEEL_BASE = 16;
-    public static double WHEEL_DIAMETER = 4.0;
-    public static int ROUNDS_PER_MINUTE = 160;
+    static double WHEEL_BASE = 16;
+    static double WHEEL_DIAMETER = 4.0;
+    static int ROUNDS_PER_MINUTE = 160;
     private static double TICKS_PER_MOTOR_REV = 1120;
     private static double DRIVE_GEAR_RATIO = 1.0;
 
-    public static double TICKS_PER_INCH = (TICKS_PER_MOTOR_REV * DRIVE_GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
-    public static double SLIDER_TRACK_LENGTH = 10.5;
-    public static double SLIDER_MAX_SPEED = 2.5; //2 7/16"
+    static double TICKS_PER_INCH = (TICKS_PER_MOTOR_REV * DRIVE_GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
+    static double SLIDER_TRACK_LENGTH = 10.5;
+    static double SLIDER_MAX_SPEED = 2.5; //2 7/16"
 
     public Hardware() throws Exception {
         throw new Exception("do not call this constructor");
@@ -108,5 +110,49 @@ public class Hardware {
         /*cdim = hwMap.deviceInterfaceModule.get("dim");
         cdim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
         colorSensor = hwMap.colorSensor.get("color");*/
+    }
+
+    //Use baseSpeed and angular speed
+    static void setPower() {
+        double lPower = baseSpeed + angularSpeed;
+        double rPower = baseSpeed - angularSpeed;
+
+        setPower(lPower, rPower);
+    }
+    static void setPower(double lpower, double rpower) {
+
+        setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftMotor.setPower(bound(lpower, -1, 1));
+        rightMotor.setPower(bound(rpower, -1, 1));
+    }
+
+    static void setBaseSpeed(double speed) {
+        baseSpeed = speed;
+    }
+
+    static void setAngularSpeed(double angular) {
+        angularSpeed = angular;
+    }
+
+    static void stop() {
+        setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    private static void setMotorMode(DcMotor.RunMode targetMode) {
+        if(leftMotor.getMode() != targetMode)
+            leftMotor.setMode(targetMode);
+
+        if(rightMotor.getMode() != targetMode)
+            rightMotor.setMode(targetMode);
+    }
+
+    static double bound(double value, double lower, double upper) {
+        if(value < lower)
+            return lower;
+        else if (value > upper)
+            return upper;
+        else
+            return value;
     }
 }

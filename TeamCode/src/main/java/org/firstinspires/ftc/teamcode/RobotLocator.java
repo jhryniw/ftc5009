@@ -28,6 +28,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.robotcore.internal.VuforiaTrackablesImpl;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -111,9 +112,7 @@ class RobotLocator {
         return new BeaconTarget(poseToTarget);
     }
 
-    synchronized static VectorF getPose() {
-        return poseToTarget.toVector();
-    }
+    synchronized static VectorF getPose() { return poseToTarget.isNone() ? null : poseToTarget.toVector(); }
 
     synchronized static VectorF getRobotLocation() {
         return new VectorF(robotLocation.getData());
@@ -175,6 +174,7 @@ class RobotLocator {
 
         @Override
         public void run() {
+
             while(!Thread.interrupted()) {
 
                 if(lastListener != null && lastListener.getPose() != null) {
@@ -184,7 +184,7 @@ class RobotLocator {
                     for (VuforiaTrackable b : beacons) {
                         VuforiaTrackableDefaultListener l = (VuforiaTrackableDefaultListener) b.getListener();
 
-                        if (l.isVisible()){
+                        if (l.getPose() != null){
                             sTrackedBeacon = b.getName();
                             processListener(l);
                             lastListener = l;
@@ -197,7 +197,7 @@ class RobotLocator {
                     if(noTrackCount > 5) {
                         synchronized (RobotLocator.class) {
                             robotLocation = null;
-                            poseToTarget = null;
+                            poseToTarget = new BeaconTarget();
                         }
 
                         noTrackCount = 0;

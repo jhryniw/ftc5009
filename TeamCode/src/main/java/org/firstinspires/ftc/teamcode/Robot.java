@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+
 import static java.lang.Thread.sleep;
 
 /**
@@ -21,7 +23,7 @@ public class Robot {
     private ElapsedTime runtime = new ElapsedTime();
     public LinearOpMode opMode;
 
-    public BeaconClassifier beaconClassifier;
+    BeaconClassifier beaconClassifier;
 
     public static String name;
 
@@ -30,7 +32,7 @@ public class Robot {
     private static double D = 8;
     TouchSensor[] touchSensors = { Hardware.limit };
 
-    public Robot(String robotName, HardwareMap hwMap, LinearOpMode om) {
+    Robot(String robotName, HardwareMap hwMap, LinearOpMode om) {
         name = robotName;
         opMode = om;
 
@@ -104,7 +106,7 @@ public class Robot {
         }
     }
 
-    public void pivot (int deg, double power) throws InterruptedException {
+    void pivot (int deg, double power) throws InterruptedException {
         //convert degree into ticks
         int target = (int)((Math.abs(deg) / 360.0) * Math.PI * Hardware.WHEEL_BASE * Hardware.TICKS_PER_INCH);
         long wait_time = 200;
@@ -152,7 +154,7 @@ public class Robot {
     }
 
 
-    public void touchDrive(double power, TouchSensor touch) throws InterruptedException {
+    void touchDrive(double power, TouchSensor touch) throws InterruptedException {
         resetEncoders();
 
         Hardware.leftMotor.setPower(power);
@@ -165,7 +167,7 @@ public class Robot {
         sleep(200);
     }
 
-    public void moveToTargetEncoder(int x, int z,int o, double speed) throws InterruptedException {
+    void moveToTargetEncoder(int x, int z,int o, double speed) throws InterruptedException {
 
         /*while(!locator.isTracking()) {
             locator.getRobotLocation();
@@ -192,60 +194,29 @@ public class Robot {
         */
     }
 
-    public void moveToTarget(int x, int z, double speed) throws InterruptedException {
+    //Uses PID Controller
+    void moveToTarget() throws InterruptedException {
+        //TODO: Add timeout
+        VectorF pose = null;
 
-        /*float[] start = locator.getRobotLocationXZ();
-        float[] goal = { x, z };
+        while(opMode.opModeIsActive() && (pose == null || pose.get(2) > Controller.TARGET_Z)) {
+            pose = RobotLocator.getPose();
 
-        double u = 0;
-        double dx = goal[0] - start[0];
-        double dz = goal[1] - start[1];
-        double e = Math.sqrt(dx * dx + dz + dz);
-        double last_error = 0;
-        double error = 0;
-        double diff_error = 0;
-
-        while (e > 1 && opMode.opModeIsActive()) {
-            float[] location = locator.getRobotLocationXZ();
-
-            double rx = location[0] - start[0];
-            double rz = location[1] - start[1];
-
-            if(rx == 0) {
-                rx = 0.01;
-            }
-            if(rz == 0) {
-                rz = 0.01;
+            if(pose == null) {
+                Hardware.setPower(0, 0);
+                opMode.telemetry.addData("Status", "Not tracking");
+                opMode.telemetry.update();
+                continue;
             }
 
-            double ex = goal[0] - location[0];
-            double ez = goal[1] - location[1];
+            setError(pose);
 
-            e = Math.sqrt(ex * ex + ez * ez);
-
-            //u  = (rx * dx + rz * dz) / (dx * dx + dz * dz);
-            error = (rz * dx - rx * dz) / Math.sqrt(dx * dx + dz * dz);
-            //double blah = (rx * dx + rz * dz) / (Math.sqrt(rx * rx + rz * rz) * Math.sqrt(dx * dx + dz * dz));
-            //error = Math.toDegrees(Math.acos(blah));
-
-            diff_error = error - last_error;
-            last_error = error;
-
-            double steer = error * P - diff_error * D;
-
-            setSpeed(-speed, steer);
-
-            opMode.telemetry.addData("Status:", "%s", locator.isTracking() ? "Tracking" : "Not Tracking");
-            opMode.telemetry.addData("Robot location", locator.getRobotLocation().toString());
-            opMode.telemetry.addData("Errors", "{ %.2f, %.2f, %.2f }", e, error, diff_error);
-            opMode.telemetry.addData("Position:", "{ %.2f, %.2f }", location[0], location[1]);
-            opMode.telemetry.addData("Speed:", "{ %.2f, %.2f }", speed, steer);
-            opMode.telemetry.addData("Goal:", "%.2f { %.2f, %.2f }", u, goal[0], goal[1]);
-            opMode.telemetry.addData("Rate", Integer.toString(locator.getFps()));
+            opMode.telemetry.addData("Pose", pose.toString());
+            opMode.telemetry.addData("Motor Power", "Left: %d%% Right: %d%%", (int) (Hardware.leftMotor.getPower() * 100), (int) (Hardware.rightMotor.getPower() * 100));
             opMode.telemetry.update();
 
-            opMode.idle();
-        }*/
+            Thread.yield();
+        }
 
         stop();
     }
@@ -263,39 +234,6 @@ public class Robot {
     public void feeder (float position, long time) throws InterruptedException {
         Hardware.feeder.setPosition(position);
         sleep(time);
-    }
-
-    /**
-     * @param linear - desired linear velocity in inches/s
-     * @param angular - desired angular velocity in rad/s
-     */
-    private void setSpeed(double linear, double angular) {
-        double left_speed = (linear - (Hardware.WHEEL_BASE / 2) * angular) / Hardware.WHEEL_DIAMETER; //rounds per second
-        double right_speed = (linear + (Hardware.WHEEL_BASE / 2) * angular) / Hardware.WHEEL_DIAMETER; //rounds per second
-
-        double left_power = left_speed * 60 / Hardware.ROUNDS_PER_MINUTE;
-        double right_power = right_speed * 60 / Hardware.ROUNDS_PER_MINUTE;
-
-        //Scale the power to our range if it is exceeded
-        if (Math.abs(left_power) > MAX_POWER) {
-            right_power = right_power / Math.abs(left_power) * MAX_POWER;
-            left_power = Math.signum(left_power) * MAX_POWER;
-        }
-
-        if (Math.abs(right_power) > MAX_POWER) {
-            left_power = left_power / Math.abs(right_power) * MAX_POWER;
-            right_power = Math.signum(right_power) * MAX_POWER;
-        }
-
-        opMode.telemetry.addData("Power:", "{ %.2f, %.2f }", left_power, right_power);
-
-        try {
-            Hardware.leftMotor.setPower(left_power);
-            Hardware.rightMotor.setPower(right_power);
-        }
-        catch (IllegalArgumentException e) {
-            return;
-        }
     }
 
     private int acceleration (double increment, double max_speed, int ms_time) throws InterruptedException {
@@ -331,6 +269,29 @@ public class Robot {
         }
 
         stop();
+    }
+
+    void setError(VectorF error) {
+        double[] speeds = poseToSpeed(error);
+
+        Hardware.setBaseSpeed(speeds[0]);
+        Hardware.setAngularSpeed(speeds[1]);
+        Hardware.setPower();
+    }
+
+    double[] poseToSpeed(VectorF pose) {
+        //Set angular to correct x
+        float x = pose.get(0);
+        float z = pose.get(2);
+
+        double angular = Math.signum(x) * (Math.abs(x) / Math.abs(z) * Controller.P_A);
+        angular = Hardware.bound(angular, -0.2, 0.2);
+
+        //Set basespeed to correct z
+        double base = (Math.abs(z / Controller.TARGET_Z) - 1) * Controller.P_Z;
+        base = Hardware.bound(base, -0.2, 0.4);
+
+        return new double[] { base, angular };
     }
 
     private void resetEncoders() {

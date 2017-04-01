@@ -21,14 +21,19 @@ public class LocatorTest extends LinearOpMode {
         while(opModeIsActive()) {
             BeaconTarget target = RobotLocator.getTarget();
 
-            telemetry.addData("Status", RobotLocator.getPose() == null ? "Tracking" : "Not Tracking");
-            telemetry.addData("Robot location", RobotLocator.getRobotLocation().toString());
-            telemetry.addData("Pose", RobotLocator.getPose().toString());
-            telemetry.addData("ROI Right", target.getRoi(true));
-            telemetry.addData("ROI Left", target.getRoi(false));
+            telemetry.addData("Status", !target.isNone() ? "Tracking" : "Not Tracking");
+
+            if(!target.isNone()) {
+                telemetry.addData("Robot location", RobotLocator.getRobotLocation().toString());
+                telemetry.addData("Pose", target.toVector().toString());
+                //telemetry.addData("ROI Right", target.getRoi(true));
+                //telemetry.addData("ROI Left", target.getRoi(false));
+            }
 
             telemetry.update();
             idle();
         }
+
+        RobotLocator.stop();
     }
 }

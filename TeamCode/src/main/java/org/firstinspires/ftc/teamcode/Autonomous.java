@@ -49,7 +49,6 @@ public class Autonomous extends LinearOpMode {
 
         //Register paths
         pathList.put("Beacons", new Beacons(this, robot, new Coordinate(0, 0)));
-        pathList.put("Target Test", new PDTest(this, robot, new Coordinate(0, 0)));
         pathList.put("Close Corner", new CloseCorner(this, robot, new Coordinate(0, 0)));
         pathList.put("Far Corner", new FarCorner(this, robot, new Coordinate(0, 0)));
         pathList.put("Test Button", new TestButton(this, robot, new Coordinate(0, 0)));

@@ -47,6 +47,10 @@ class BeaconTarget {
         this.angle = target.angle;
     }
 
+    boolean isNone() {
+        return translation.get(0) == 0 && translation.get(1) == 0 && translation.get(2) == 0;
+    }
+
     VectorF toVector() {
         return new VectorF(translation.get(0), translation.get(1), translation.get(2), angle);
     }
