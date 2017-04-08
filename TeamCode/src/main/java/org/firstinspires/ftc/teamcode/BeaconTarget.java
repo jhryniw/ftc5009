@@ -16,11 +16,11 @@ import static android.R.attr.max;
 class BeaconTarget {
 
     private static float BEACON_COLORED_WIDTH = 3f;
-    private static float BEACON_COLORED_HEIGHT = 6f;
+    private static float BEACON_COLORED_HEIGHT = 5f;
     static float IMAGE_WIDTH = 10f;
 
-    private static VectorF R_RIGHT = new VectorF(-11f, -4.125f, 0);
-    private static VectorF R_LEFT = new VectorF(-11f, 1.125f, 0);
+    private static VectorF R_RIGHT = new VectorF(-10.5f, -4f, 0);
+    private static VectorF R_LEFT = new VectorF(-10.5f, 1.125f, 0);
 
     private String type;
     private VectorF translation;
