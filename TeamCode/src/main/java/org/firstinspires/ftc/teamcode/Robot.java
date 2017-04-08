@@ -62,6 +62,15 @@ public class Robot {
             target -= DECELERATION_DISTANCE;
         }
 
+        //reset Encoders
+        resetEncoders();
+
+        if(accelerationEnabled)
+            acceleration (0.01, speed, 1000);
+
+        Hardware.leftMotor.setPower(speed);
+        Hardware.rightMotor.setPower(speed);
+
         int position = Hardware.leftMotor.getCurrentPosition();
         while (opMode.opModeIsActive() && Math.abs(position) < target) {
             position = Hardware.leftMotor.getCurrentPosition();
@@ -71,12 +80,19 @@ public class Robot {
                 opMode.telemetry.update();
                 sleep(10);
             }
+
+        if(accelerationEnabled)
+            deceleration(0.01, speed, 500, target);
+
+        stop();
         }
 
 
     void pivot (int deg, double power) throws InterruptedException {
         //convert degree into ticks
         int target = (int)((Math.abs(deg) / 360.0) * Math.PI * Hardware.WHEEL_BASE * Hardware.TICKS_PER_INCH);
+
+        resetEncoders();
 
             // set the power on the motors in opposite directions
             if (deg < 0) {
@@ -93,11 +109,16 @@ public class Robot {
                 //TODO: Take the average of both the left and right encoders
                 position = Hardware.leftMotor.getCurrentPosition();
 
-                // stop the motors
+                opMode.telemetry.addData("EncoderTarget", "%d", target);
+                opMode.telemetry.addData("EncoderPosition", "%d", position);
+                opMode.telemetry.update();
+                sleep(10);
+            }
+        // stop the motors
         stop();
         sleep(200);
     }
-    }
+
 
 
     void touchDrive(double power, TouchSensor touch) throws InterruptedException {
@@ -130,6 +151,7 @@ public class Robot {
         opMode.telemetry.addData("Distance", Double.toString(d));
         opMode.telemetry.addData("Theta", Double.toString(theta));
         opMode.telemetry.update();
+
 
         encoderDrive(speed, d);
         pivot(theta, speed);
