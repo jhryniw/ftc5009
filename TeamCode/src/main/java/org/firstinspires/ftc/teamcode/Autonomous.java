@@ -82,7 +82,7 @@ public class Autonomous extends LinearOpMode {
         waitForStart();
         sleep(delay);
 
-        RobotLocator.start();
+        //RobotLocator.start();
 
         //Run selected path
         selectedPath.run();

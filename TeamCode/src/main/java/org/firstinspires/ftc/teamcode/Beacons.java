@@ -12,16 +12,22 @@ final class Beacons extends PathBase {
         super(opMode, r, startLoc, "Beacons");
     }
 
+
+    // - counterclockwise, + clockwise
+
     @Override
     void run() throws InterruptedException {
         switch (alliance) {
             case BLUE:
-                robot.encoderDrive(-0.4, 3); //backward
+
+                robot.encoderDrive(-0.4, 5); //backward
                 shoot();
-                robot.pivot(-45, 0.2); //pivot
+                robot.pivot(45, 0.2); //pivot
                 robot.encoderDrive(-0.9 , 60.2); //diagonal beacon
-                robot.pivot(-45, 0.2); // pivot to face beacon
-                robot.encoderDrive(-0.5 , 5); //inch closer to beacon
+                robot.pivot(45, 0.2); // pivot to face beacon
+                //robot.encoderDrive(-0.5 , 6); //inch closer to beacon
+
+
                 break;
 
             case RED:
@@ -30,12 +36,15 @@ final class Beacons extends PathBase {
                 robot.pivot(45, 0.2); //pivot
                 robot.encoderDrive(-0.9, 58.2);
                 robot.pivot(45, 0.2);
-                robot.encoderDrive(-0.5 , 5);
+                //robot.encoderDrive(-0.5 , 6);
                 break;
         }
 
-        Alliance[] result = robot.beaconClassifier.classify();
+        RobotLocator.start();
+        Thread.sleep(1000);
+
         //Alliance[] result = { Alliance.RED, Alliance.BLUE };
+        Alliance[] result = robot.beaconClassifier.classify();
 
         if(result == BeaconClassifier.CLASSIFICATION_ERROR) {
             opMode.telemetry.addData("OpenCV", "Error...");
@@ -45,7 +54,6 @@ final class Beacons extends PathBase {
             opMode.telemetry.addData("OpenCV", "Classification succeeded!");
             opMode.telemetry.addData("OpenCV", "Result { %s, %s }", result[0].toString(), result[1].toString());
         }
-
         opMode.telemetry.update();
 
         boolean is_left = (alliance == result[0]);
@@ -57,8 +65,8 @@ final class Beacons extends PathBase {
         else if (is_right) {
             robot.moveSlider(Hardware.SLIDER_TRACK_LENGTH / 4 * 3);
         }
-
-        robot.encoderDrive(0.5, 20);
+        //backup
+        //robot.encoderDrive(0.5, 20);
 
         /*if (is_left){
             //robot.encoderDrive(-0.3, 5);

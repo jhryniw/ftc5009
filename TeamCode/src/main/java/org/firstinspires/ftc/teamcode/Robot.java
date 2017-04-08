@@ -39,7 +39,6 @@ public class Robot {
         Hardware.init(hwMap);
         VuforiaWrapper.init(hwMap.appContext);
         beaconClassifier = new BeaconClassifier((Activity) hwMap.appContext);
-        RobotLocator.init();
 
         // turn the LED on in the beginning, just so user will know that the sensor is active.
         enableLed();
