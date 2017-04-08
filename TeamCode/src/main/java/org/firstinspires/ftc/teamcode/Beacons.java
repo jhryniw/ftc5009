@@ -19,7 +19,7 @@ final class Beacons extends PathBase {
                 robot.encoderDrive(-0.4, 3); //backward
                 shoot();
                 robot.pivot(-45, 0.2); //pivot
-                robot.encoderDrive(-0.9 , 60.2); //diagnol beacon
+                robot.encoderDrive(-0.9 , 60.2); //diagonal beacon
                 robot.pivot(-45, 0.2); // pivot to face beacon
                 robot.encoderDrive(-0.5 , 5); //inch closer to beacon
                 break;

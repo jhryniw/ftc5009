@@ -81,7 +81,7 @@ public class Hardware {
 
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         shooterMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);

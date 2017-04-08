@@ -154,9 +154,9 @@ public class TeleOp extends LinearOpMode {
                 r_power = 0.1;
             }
 
-            if (gamepad2.left_bumper){
+            if (gamepad1.left_bumper || gamepad2.left_bumper){
                 slideLeft();
-            } else if (gamepad2.right_bumper) {
+            } else if (gamepad1.right_bumper || gamepad2.right_bumper) {
                 slideRight();
             } else {
                 slider.setPower(0.05);
@@ -190,9 +190,9 @@ public class TeleOp extends LinearOpMode {
         }
     }
     private void slideLeft() {
-        slider.setPower(0.75);
+        slider.setPower(-1);
     }
     private void slideRight() {
-        slider.setPower(-0.75);
+        slider.setPower(1);
     }
 }
