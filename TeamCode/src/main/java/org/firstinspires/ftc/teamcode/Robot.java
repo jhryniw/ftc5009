@@ -281,7 +281,7 @@ public class Robot {
      */
 
     //Positive is left, negative is right
-    void moveSlider(double distance) throws InterruptedException {
+    void moveSlider(double distance, boolean right) throws InterruptedException {
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
 
@@ -289,7 +289,7 @@ public class Robot {
 
         double targetTime = (distance / Hardware.SLIDER_MAX_SPEED * 1000);
 
-        while(!Hardware.limit.isPressed() && timer.milliseconds() < targetTime) {
+        while((!Hardware.limit.isPressed() || right) && timer.milliseconds() < targetTime) {
             Thread.yield();
         }
 

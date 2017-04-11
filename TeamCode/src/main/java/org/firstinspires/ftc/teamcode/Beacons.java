@@ -60,11 +60,29 @@ final class Beacons extends PathBase {
         boolean is_right = (alliance == result[1]);
 
         if (is_left){
-            robot.moveSlider(Hardware.SLIDER_TRACK_LENGTH / 4);
+            robot.moveSlider(Hardware.SLIDER_TRACK_LENGTH / 4 , true);
         }
         else if (is_right) {
-            robot.moveSlider(Hardware.SLIDER_TRACK_LENGTH / 4 * 3);
+            robot.moveSlider((Hardware.SLIDER_TRACK_LENGTH / 4) * 3.6 , true);
         }
+
+        robot.encoderDrive(-0.5, 23);
+
+       switch (alliance) {
+            case BLUE:
+                robot.encoderDrive(0.9, 6);
+                robot.pivot(-90, 0.2);
+                robot.encoderDrive(-0.8, 52);
+                robot.pivot(90, 0.2);
+                break;
+            case RED:
+                robot.pivot(90, 0.2);
+                robot.encoderDrive(0.8, 52);
+                robot.pivot(-90, 0.2);
+                robot.encoderDrive(-0.8, 8);
+                break;
+        }
+
         //backup
         //robot.encoderDrive(0.5, 20);
 
@@ -85,20 +103,7 @@ final class Beacons extends PathBase {
 
         robot.encoderDrive(0.5, 20);
 
-        switch (alliance) {
-            case BLUE:
-                robot.pivot(-90, 0.2);
-                robot.encoderDrive(-0.8, 52);
-                robot.pivot(90, 0.2);
-                robot.encoderDrive(-0.8, 15);
-                break;
-            case RED:
-                robot.pivot(90, 0.2);
-                robot.encoderDrive(0.8, 52);
-                robot.pivot(-90, 0.2);
-                robot.encoderDrive(-0.8, 8);
-                break;
-        }
+
 
         //Alliance[] result2 = robot.beaconClassifier.classify();
         Alliance[] result2 = { Alliance.RED, Alliance.BLUE };
