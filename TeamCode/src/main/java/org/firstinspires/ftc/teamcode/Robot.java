@@ -84,7 +84,7 @@ public class Robot {
             deceleration(0.01, speed, 500, target);
 
         stop();
-        }
+    }
 
 
     void pivot (int deg, double power) throws InterruptedException {
@@ -93,26 +93,27 @@ public class Robot {
 
         resetEncoders();
 
-            // set the power on the motors in opposite directions
-            if (deg < 0) {
-                power = -power;
-            }
+        // set the power on the motors in opposite directions
+        if (deg < 0) {
+            power = -power;
+        }
 
-            Hardware.leftMotor.setPower(power);
-            Hardware.rightMotor.setPower(-power);
+        Hardware.leftMotor.setPower(power);
+        Hardware.rightMotor.setPower(-power);
 
-            //loop
-            int position = Hardware.leftMotor.getCurrentPosition();
+        //loop
+        int position = Hardware.leftMotor.getCurrentPosition();
 
-            while (opMode.opModeIsActive() && Math.abs(position) < target) {
-                //TODO: Take the average of both the left and right encoders
-                position = Hardware.leftMotor.getCurrentPosition();
+        while (opMode.opModeIsActive() && Math.abs(position) < target) {
+            //TODO: Take the average of both the left and right encoders
+            position = Hardware.leftMotor.getCurrentPosition();
 
-                opMode.telemetry.addData("EncoderTarget", "%d", target);
-                opMode.telemetry.addData("EncoderPosition", "%d", position);
-                opMode.telemetry.update();
-                sleep(10);
-            }
+            opMode.telemetry.addData("EncoderTarget", "%d", target);
+            opMode.telemetry.addData("EncoderPosition", "%d", position);
+            opMode.telemetry.update();
+            sleep(10);
+        }
+
         // stop the motors
         stop();
         sleep(200);
@@ -298,7 +299,7 @@ public class Robot {
 
     void moveSlider(double power, long msTime) throws InterruptedException {
         Hardware.slider.setPower(power);
-        sleep(msTime);
+        Thread.sleep(msTime);
         stopSlider();
     }
 
