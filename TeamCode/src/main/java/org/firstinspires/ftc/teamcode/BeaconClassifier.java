@@ -16,6 +16,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
+import org.opencv.core.CvException;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -119,9 +120,21 @@ class BeaconClassifier {
             return CLASSIFICATION_ERROR;
         }
 
-        //FrameExtractor.saveFrame(frame, "frame.png");
+        BeaconTarget target = RobotLocator.getTarget();
+        if(target.isNone()) {
+            Log.e("BeaconClassifier", "No BeaconTarget detected");
+            return CLASSIFICATION_ERROR;
+        }
 
-        Alliance[] result = meanMethod(frame);
+        //FrameExtractor.saveFrame(frame, "frame.png");
+        Alliance[] result;
+        try {
+            result = meanMethod(frame, target);
+        }
+        catch (CvException e) {
+            Log.e("OpenCV", "OpenCVException");
+            return CLASSIFICATION_ERROR;
+        }
         //Alliance[] result = BeaconMatcher.beaconTypeToArray(mBeaconMatcher.searchForMatch(frame));
 
         lResult = result[0];
@@ -130,10 +143,8 @@ class BeaconClassifier {
         return new Alliance[] { lResult , rResult };
     }
 
-    private Alliance[] meanMethod(Mat frame) {
+    private Alliance[] meanMethod(Mat frame, BeaconTarget target) throws CvException {
         Alliance lResult, rResult;
-
-        BeaconTarget target = RobotLocator.getTarget();
 
         VectorF roiLeft = target.getRoi(false);
         Point lp1 = new Point(roiLeft.get(0), roiLeft.get(1));

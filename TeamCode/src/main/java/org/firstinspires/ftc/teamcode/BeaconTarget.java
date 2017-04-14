@@ -8,6 +8,7 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 
 import static android.R.attr.max;
+import static android.R.attr.translationZ;
 
 /**
  * Created by James on 2017-03-11.
@@ -15,8 +16,9 @@ import static android.R.attr.max;
 
 class BeaconTarget {
 
-    private static float BEACON_COLORED_WIDTH = 3f;
-    private static float BEACON_COLORED_HEIGHT = 5f;
+    static float BEACON_COLORED_WIDTH = 3f;
+    static float BEACON_COLORED_HEIGHT = 5f;
+    static float BUTTON_OFFSET = 2.625f;
     static float IMAGE_WIDTH = 10f;
 
     private static VectorF R_RIGHT = new VectorF(-10.5f, -4f, 0);
@@ -38,7 +40,7 @@ class BeaconTarget {
         translation = pose.getTranslation().multiplied(1f / RobotLocator.MM_PER_INCH);
         translation.put(2, -translation.get(2)); //flip z
 
-        angle = RobotLocator.getEuler(pose).get(1); //heading
+        //angle = RobotLocator.getEuler(pose).get(1); //heading
     }
 
     BeaconTarget(BeaconTarget target) {
@@ -54,6 +56,10 @@ class BeaconTarget {
     VectorF toVector() {
         return new VectorF(translation.get(0), translation.get(1), translation.get(2), angle);
     }
+
+    float getX() { return translation.get(0); }
+    float getY() { return translation.get(1); }
+    float getZ() { return translation.get(2); }
 
     VectorF getRoi(boolean right) {
         float x1, y1, x2, y2;
