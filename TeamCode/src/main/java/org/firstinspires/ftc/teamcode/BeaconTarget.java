@@ -18,7 +18,8 @@ class BeaconTarget {
 
     static float BEACON_COLORED_WIDTH = 3f;
     static float BEACON_COLORED_HEIGHT = 5f;
-    static float BUTTON_OFFSET = 2.625f;
+    static float BUTTON_X_OFFSET = 2.625f;
+    static float BUTTON_Z_OFFSET = -1f;
     static float IMAGE_WIDTH = 10f;
 
     private static VectorF R_RIGHT = new VectorF(-10.5f, -4f, 0);

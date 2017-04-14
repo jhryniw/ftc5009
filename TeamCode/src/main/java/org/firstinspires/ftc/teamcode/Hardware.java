@@ -56,6 +56,7 @@ public class Hardware {
     static double TICKS_PER_INCH = (TICKS_PER_MOTOR_REV * DRIVE_GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
     static double SLIDER_TRACK_LENGTH = 10.5;
     static double SLIDER_MAX_SPEED = 2.5; //2 7/16"
+    static double SLIDER_Z = 7.5; //Distance ahead of camera
 
     private Thread sliderResetThread = new Thread(new Runnable() {
         @Override

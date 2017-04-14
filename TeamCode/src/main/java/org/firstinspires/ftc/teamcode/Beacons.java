@@ -43,20 +43,20 @@ final class Beacons extends PathBase {
         RobotLocator.start();
         Thread.sleep(1000);
 
-        moveSliderToBeacon();
+        pushBeacon();
 
-        //Hits the button
-        robot.encoderDrive(-0.5, 23);
+        RobotLocator.stop();
 
-        robot.resetSlider(true);
         switch (alliance) {
             case BLUE:
-                robot.encoderDrive(0.9, 9);
+                robot.encoderDrive(0.9, 11);
                 robot.pivot(-90, 0.2);
-                robot.encoderDrive(-0.8, 53);
+                robot.resetSlider(true);
+                robot.encoderDrive(-0.8, 56);
                 robot.pivot(90, 0.2);
                 break;
             case RED:
+                robot.encoderDrive(0.9, 11);
                 robot.pivot(90, 0.2);
                 robot.encoderDrive(0.8, 52);
                 robot.pivot(-90, 0.2);
@@ -67,68 +67,27 @@ final class Beacons extends PathBase {
         RobotLocator.start();
         Thread.sleep(1000);
 
-        moveSliderToBeacon();
-        robot.encoderDrive(-0.5, 23);
+        pushBeacon();
 
-        //backup
-        //robot.encoderDrive(0.5, 20);
+        switch (alliance) {
+            case BLUE:
+                robot.encoderDrive(0.3, 5);
+                robot.pivot(-45, 0.2);
+                robot.encoderDrive(0.5, 55);
+                robot.pivot(-45, 0.2);
 
-        /*if (is_left){
-            //robot.encoderDrive(-0.3, 5);
-            robot.pivot(45, 0.2);
-            robot.encoderDrive(-0.5, 5);
-            robot.pivot(-45, 0.2);
-            robot.encoderDrive(-0.5, 12);
+                break;
+            case RED:
+                robot.encoderDrive(0.3, 5);
+                robot.pivot(45, 0.2);
+                robot.encoderDrive(0.5, 50);
+                robot.pivot(45, 0.2);
+                robot.encoderDrive(-0.5, 10);
+                break;
         }
-        else if (is_right) {
-            //robot.encoderDrive(-0.3, 5);
-            robot.pivot(-45, 0.2);
-            robot.encoderDrive(-0.5, 5);
-            robot.pivot(45, 0.2);
-            robot.encoderDrive(-0.5, 10);
-        }
-
-        robot.encoderDrive(0.5, 20);
-
-
-        //Alliance[] result2 = robot.beaconClassifier.classify();
-        Alliance[] result2 = { Alliance.RED, Alliance.BLUE };
-
-        if(result2 == BeaconClassifier.CLASSIFICATION_ERROR) {
-            robot.opMode.telemetry.addData("OpenCV", "Error...");
-            return;
-        }
-        else {
-            robot.opMode.telemetry.addData("OpenCV", "Classification succeeded!");
-            robot.opMode.telemetry.addData("OpenCV", "Result { %s, %s }", result2[0].toString(), result2[1].toString());
-        }
-
-        robot.opMode.telemetry.update();
-
-        boolean is_left2 = (alliance == result2[0]);
-        boolean is_right2 = (alliance == result2[1]);
-
-        if (is_left2) {
-            robot.encoderDrive(-0.2, 20);
-            robot.pivot(45, 0.2);
-            robot.encoderDrive(-0.5, 7);
-            robot.pivot(-45, 0.2);
-            robot.encoderDrive(0.5, 10);
-        }
-        else if (is_right2) {
-            robot.encoderDrive(-0.2, 20);
-            robot.pivot(-45, 0.2);
-            robot.encoderDrive(-0.5, 7);
-            robot.pivot(45, 0.2);
-            robot.encoderDrive(-0.5, 10);
-        }
-
-        robot.encoderDrive(0.5, 10);
-        robot.pivot(45, -0.3);
-        robot.encoderDrive(0.5, 50);*/
     }
 
-    private void moveSliderToBeacon() throws InterruptedException {
+    private void pushBeacon() throws InterruptedException {
         //Alliance[] result = { Alliance.RED, Alliance.BLUE };
         BeaconTarget target = RobotLocator.getTarget();
 
@@ -160,12 +119,18 @@ final class Beacons extends PathBase {
         double xDist = target.getX() + Hardware.SLIDER_TRACK_LENGTH / 2;
 
         if (is_left)
-            xDist -= BeaconTarget.BUTTON_OFFSET;
+            xDist -= BeaconTarget.BUTTON_X_OFFSET;
         else if (is_right)
-            xDist += BeaconTarget.BUTTON_OFFSET;
+            xDist += BeaconTarget.BUTTON_X_OFFSET;
 
         xDist = Hardware.bound(xDist, 0, Hardware.SLIDER_TRACK_LENGTH);
         robot.moveSlider(xDist);
+
+        double zDist = target.getZ() + BeaconTarget.BUTTON_Z_OFFSET;
+        //opMode.telemetry.addData("ButtonPusher", "Z Distance: %.2f", zDist);
+        //opMode.telemetry.update();
+        //Thread.sleep(1000);
+        robot.encoderDrive(-0.5, zDist);
     }
 
     private void classificationErrorProtocol() throws InterruptedException {
@@ -173,21 +138,20 @@ final class Beacons extends PathBase {
             case 1:
                 //Simply trying again
                 opMode.telemetry.addData("BeaconClassifier", "Recovery Mode %d: Trying Again", classificationFailures);
-                moveSliderToBeacon();
+                pushBeacon();
                 break;
             case 2:
                 //Try restarting the locator
                 opMode.telemetry.addData("BeaconClassifier", "Recovery Mode %d: Restarting RobotLocator", classificationFailures);
                 RobotLocator.start();
                 Thread.sleep(500);
-                moveSliderToBeacon();
+                pushBeacon();
                 break;
             case 3:
                 //Move backward 5 inches and try again
                 opMode.telemetry.addData("BeaconClassifier", "Recovery Mode %d: Attempting to close on beacon", classificationFailures);
                 robot.encoderDrive(-0.3, 6);
-                moveSliderToBeacon();
-                //robot.encoderDrive(0.3, 6);
+                pushBeacon();
                 break;
             default:
                 opMode.telemetry.addData("BeaconClassifier", "Failure recovery modes exhausted, exiting...");

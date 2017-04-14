@@ -45,11 +45,11 @@ public class Robot extends Hardware {
      * Robot Driving Functionality
      */
 
-    private double DECELERATION_DISTANCE = 6 * TICKS_PER_INCH;
-    private double ACCELERATION_DISTANCE = 2 * TICKS_PER_INCH;
+    private double DECELERATION_DISTANCE = 10 * TICKS_PER_INCH;
+    private double ACCELERATION_DISTANCE = 6 * TICKS_PER_INCH;
     private double MIN_SPEED = 0.2;
 
-    public void encoderDrive (double speed, double distance) throws InterruptedException {
+    void encoderDrive (double speed, double distance) throws InterruptedException {
         boolean accelerationEnabled = false;
         int target = (int)Math.abs(distance * TICKS_PER_INCH);
 
@@ -67,22 +67,13 @@ public class Robot extends Hardware {
         leftMotor.setPower(speed);
         rightMotor.setPower(speed);
 
-        int position = leftMotor.getCurrentPosition();
-        while (opMode.opModeIsActive() && Math.abs(position) < target) {
-            position = leftMotor.getCurrentPosition();
-
-                opMode.telemetry.addData("EncoderTarget", "%d", target);
-                opMode.telemetry.addData("EncoderPosition", "%d", position);
-                opMode.telemetry.update();
-                sleep(10);
-            }
+        goToEncoderTarget(target, speed, speed);
 
         if(accelerationEnabled)
             deceleration(0.01, speed, 500, target);
 
         stop();
     }
-
 
     void pivot (int deg, double power) throws InterruptedException {
         //convert degree into ticks
@@ -98,25 +89,38 @@ public class Robot extends Hardware {
         leftMotor.setPower(power);
         rightMotor.setPower(-power);
 
-        //loop
-        int position = leftMotor.getCurrentPosition();
-
-        while (opMode.opModeIsActive() && Math.abs(position) < target) {
-            //TODO: Take the average of both the left and right encoders
-            position = leftMotor.getCurrentPosition();
-
-            opMode.telemetry.addData("EncoderTarget", "%d", target);
-            opMode.telemetry.addData("EncoderPosition", "%d", position);
-            opMode.telemetry.update();
-            sleep(10);
-        }
+        goToEncoderTarget(target, power, -power);
 
         // stop the motors
         stop();
         sleep(200);
     }
 
+    private void goToEncoderTarget(int target, double leftSpeed, double rightSpeed) {
+        int lastLeftPosition = 0, lastRightPosition = 0;
 
+        int leftPosition = leftMotor.getCurrentPosition();
+        int rightPosition;
+
+        while (opMode.opModeIsActive() && Math.abs(leftPosition) < target) {
+            leftPosition = leftMotor.getCurrentPosition();
+            rightPosition = rightMotor.getCurrentPosition();
+
+            if(rightPosition == lastRightPosition)
+                rightMotor.setPower(rightSpeed);
+            if(leftPosition == lastLeftPosition)
+                leftMotor.setPower(leftSpeed);
+
+            opMode.telemetry.addData("EncoderTarget", "%d", target);
+            opMode.telemetry.addData("Encoders", "Left: %d Right: %d", leftPosition, rightPosition);
+            opMode.telemetry.update();
+
+            lastLeftPosition = leftPosition;
+            lastRightPosition = rightPosition;
+
+            Thread.yield();
+        }
+    }
 
     void touchDrive(double power, TouchSensor touch) throws InterruptedException {
         resetEncoders();
@@ -246,11 +250,13 @@ public class Robot extends Hardware {
 
     private void resetEncoders() {
         //Reset the encoders
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Return mode back to run with encoders
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        Thread.yield();
     }
 }
