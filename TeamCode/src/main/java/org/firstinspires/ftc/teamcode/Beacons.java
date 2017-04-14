@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 final class Beacons extends PathBase {
 
+
     Beacons(LinearOpMode opMode, Robot r, Coordinate startLoc) {
         super(opMode, r, startLoc, "Beacons");
     }
