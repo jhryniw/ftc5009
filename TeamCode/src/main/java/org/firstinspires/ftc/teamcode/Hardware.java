@@ -2,6 +2,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +13,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import static java.lang.Thread.sleep;
+
 /**
  * Created by James on 2016-09-26.
  * Stores Basic K9 Hardware Mapping
@@ -19,31 +23,30 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 public class Hardware {
 
     //Motors
-    static DcMotor leftMotor;
-    static DcMotor rightMotor;
-    static DcMotor chickenMotor;
-    static DcMotor shooterMotorRight;
-    static DcMotor shooterMotorLeft;
-    static DcMotor liftMotor;
+    DcMotor leftMotor;
+    DcMotor rightMotor;
+    DcMotor chickenMotor;
+    DcMotor shooterMotorRight;
+    DcMotor shooterMotorLeft;
+    DcMotor liftMotor;
 
-    private static double baseSpeed = 0;
-    private static double angularSpeed = 0;
+    private double baseSpeed = 0;
+    private double angularSpeed = 0;
 
     //Servos
-    static Servo leftClaw;
-    static Servo rightClaw;
-    static Servo feeder;
-    static CRServo slider;
-
+    Servo leftClaw;
+    Servo rightClaw;
+    Servo feeder;
+    CRServo slider;
 
     //Color Sensor + LED
-    static DeviceInterfaceModule cdim;
-    static ColorSensor colorSensor;
-    static boolean bLedOn = true;
-    static final int LED_CHANNEL = 5; // we assume that the LED pin of the RGB sensor is connected to digital port 5 (zero indexed).
-    static TouchSensor limit;
+    DeviceInterfaceModule cdim;
+    ColorSensor colorSensor;
+    boolean bLedOn = true;
+    final int LED_CHANNEL = 5; // we assume that the LED pin of the RGB sensor is connected to digital port 5 (zero indexed).
+    TouchSensor limit;
 
-    private static HardwareMap hwMap;
+    private HardwareMap hwMap;
     static double WHEEL_BASE = 16;
     static double WHEEL_DIAMETER = 4.0;
     static int ROUNDS_PER_MINUTE = 160;
@@ -54,11 +57,7 @@ public class Hardware {
     static double SLIDER_TRACK_LENGTH = 10.5;
     static double SLIDER_MAX_SPEED = 2.5; //2 7/16"
 
-    public Hardware() throws Exception {
-        throw new Exception("do not call this constructor");
-    }
-
-    public static void init (HardwareMap hwm) {
+    public Hardware(HardwareMap hwm) {
         hwMap = hwm;
 
         try {
@@ -113,13 +112,13 @@ public class Hardware {
     }
 
     //Use baseSpeed and angular speed
-    static void setPower() {
+    void setPower() {
         double lPower = baseSpeed + angularSpeed;
         double rPower = baseSpeed - angularSpeed;
 
         setPower(lPower, rPower);
     }
-    static void setPower(double lpower, double rpower) {
+    void setPower(double lpower, double rpower) {
 
         setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -127,19 +126,20 @@ public class Hardware {
         rightMotor.setPower(bound(rpower, -1, 1));
     }
 
-    static void setBaseSpeed(double speed) {
+    void setBaseSpeed(double speed) {
         baseSpeed = speed;
     }
 
-    static void setAngularSpeed(double angular) {
+    void setAngularSpeed(double angular) {
         angularSpeed = angular;
     }
 
-    static void stop() {
-        setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    void stop() {
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
     }
 
-    private static void setMotorMode(DcMotor.RunMode targetMode) {
+    private void setMotorMode(DcMotor.RunMode targetMode) {
         if(leftMotor.getMode() != targetMode)
             leftMotor.setMode(targetMode);
 
@@ -147,6 +147,83 @@ public class Hardware {
             rightMotor.setMode(targetMode);
     }
 
+        /*
+     * Slider Functionality
+     */
+
+    //Positive is left, negative is right
+    void moveSlider(double distance) throws InterruptedException {
+        long targetTime = (long) (distance / SLIDER_MAX_SPEED * 1000);
+
+        moveSlider(Math.signum(distance), targetTime);
+    }
+
+    void moveSlider(double power, long msTime) throws InterruptedException {
+        slider.setPower(power);
+        Thread.sleep(msTime);
+        stopSlider();
+    }
+
+    void resetSlider () throws InterruptedException {
+        slider.setPower(-1);
+        while (!limit.isPressed()) { Thread.yield(); }
+        //moveSlider(1, (long) (SLIDER_TRACK_LENGTH / SLIDER_MAX_SPEED * 1000 / 2));
+        stopSlider();
+    }
+
+    void stopSlider () throws InterruptedException {
+        slider.setPower(0.05);
+    }
+
+    void ballgrabber ( double speed, long time ) throws InterruptedException {
+        chickenMotor.setPower(speed);
+        sleep(time);
+    }
+
+    void ballshooter ( double speed, long time ) throws InterruptedException {
+        shooterMotorRight.setPower(speed);
+        shooterMotorLeft.setPower(speed);
+        sleep(time);
+    }
+    void feeder (float position, long time) throws InterruptedException {
+        feeder.setPosition(position);
+        sleep(time);
+    }
+
+    /*
+     * Color Sensor Functionality
+     */
+    public float[] getRgb() {
+        return new float[] {colorSensor.red(), colorSensor.green(), colorSensor.green()};
+    }
+
+    public float[] getHsv() {
+        float[] hsvValues = {0f, 0f, 0f};
+        Color.RGBToHSV((colorSensor.red() * 255) / 800, (colorSensor.green() * 255) / 800, (colorSensor.blue() * 255) / 800, hsvValues);
+        return hsvValues;
+    }
+
+    /*
+     * LED Functionality
+     */
+    void enableLed() {
+        if(!bLedOn)
+            toggleLed();
+    }
+
+    void disableLed() {
+        if(bLedOn)
+            toggleLed();
+    }
+
+    void toggleLed() {
+        bLedOn = !bLedOn;
+        cdim.setDigitalChannelState(LED_CHANNEL, bLedOn);
+    }
+
+    /*
+     * Utility
+     */
     static double bound(double value, double lower, double upper) {
         if(value < lower)
             return lower;
