@@ -35,7 +35,7 @@ final class Beacons extends PathBase {
                 robot.encoderDrive(-0.4, 5); //backward
                 shoot();
                 robot.pivot(45, 0.2); //pivot
-                robot.encoderDrive(-0.9, 58.2);
+                robot.encoderDrive(-0.9, 60.2);
                 robot.pivot(45, 0.2);
                 //robot.encoderDrive(-0.5 , 6);
                 break;
