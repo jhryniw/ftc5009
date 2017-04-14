@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -18,7 +17,7 @@ import static java.lang.Thread.sleep;
  * Created by s on 09/10/2016.
  */
 
-public class Robot {
+public class Robot extends Hardware {
 
     private ElapsedTime runtime = new ElapsedTime();
     public LinearOpMode opMode;
@@ -30,13 +29,13 @@ public class Robot {
     private static double MAX_POWER = 0.6;
     private static double P = 0.2;
     private static double D = 8;
-    TouchSensor[] touchSensors = { Hardware.limit };
+    TouchSensor[] touchSensors = { limit };
 
     Robot(String robotName, HardwareMap hwMap, LinearOpMode om) {
+        super(hwMap);
         name = robotName;
         opMode = om;
 
-        Hardware.init(hwMap);
         VuforiaWrapper.init(hwMap.appContext);
         beaconClassifier = new BeaconClassifier((Activity) hwMap.appContext);
 
@@ -48,13 +47,13 @@ public class Robot {
      * Robot Driving Functionality
      */
 
-    private double DECELERATION_DISTANCE = 6 * Hardware.TICKS_PER_INCH;
-    private double ACCELERATION_DISTANCE = 2 * Hardware.TICKS_PER_INCH;
+    private double DECELERATION_DISTANCE = 6 * TICKS_PER_INCH;
+    private double ACCELERATION_DISTANCE = 2 * TICKS_PER_INCH;
     private double MIN_SPEED = 0.2;
 
     public void encoderDrive (double speed, double distance) throws InterruptedException {
         boolean accelerationEnabled = false;
-        int target = (int)Math.abs(distance * Hardware.TICKS_PER_INCH);
+        int target = (int)Math.abs(distance * TICKS_PER_INCH);
 
         if(target > ACCELERATION_DISTANCE + DECELERATION_DISTANCE) {
             accelerationEnabled = true;
@@ -67,12 +66,12 @@ public class Robot {
         if(accelerationEnabled)
             acceleration (0.01, speed, 1000);
 
-        Hardware.leftMotor.setPower(speed);
-        Hardware.rightMotor.setPower(speed);
+        leftMotor.setPower(speed);
+        rightMotor.setPower(speed);
 
-        int position = Hardware.leftMotor.getCurrentPosition();
+        int position = leftMotor.getCurrentPosition();
         while (opMode.opModeIsActive() && Math.abs(position) < target) {
-            position = Hardware.leftMotor.getCurrentPosition();
+            position = leftMotor.getCurrentPosition();
 
                 opMode.telemetry.addData("EncoderTarget", "%d", target);
                 opMode.telemetry.addData("EncoderPosition", "%d", position);
@@ -89,7 +88,7 @@ public class Robot {
 
     void pivot (int deg, double power) throws InterruptedException {
         //convert degree into ticks
-        int target = (int)((Math.abs(deg) / 360.0) * Math.PI * Hardware.WHEEL_BASE * Hardware.TICKS_PER_INCH);
+        int target = (int)((Math.abs(deg) / 360.0) * Math.PI * WHEEL_BASE * TICKS_PER_INCH);
 
         resetEncoders();
 
@@ -98,15 +97,15 @@ public class Robot {
             power = -power;
         }
 
-        Hardware.leftMotor.setPower(power);
-        Hardware.rightMotor.setPower(-power);
+        leftMotor.setPower(power);
+        rightMotor.setPower(-power);
 
         //loop
-        int position = Hardware.leftMotor.getCurrentPosition();
+        int position = leftMotor.getCurrentPosition();
 
         while (opMode.opModeIsActive() && Math.abs(position) < target) {
             //TODO: Take the average of both the left and right encoders
-            position = Hardware.leftMotor.getCurrentPosition();
+            position = leftMotor.getCurrentPosition();
 
             opMode.telemetry.addData("EncoderTarget", "%d", target);
             opMode.telemetry.addData("EncoderPosition", "%d", position);
@@ -124,8 +123,8 @@ public class Robot {
     void touchDrive(double power, TouchSensor touch) throws InterruptedException {
         resetEncoders();
 
-        Hardware.leftMotor.setPower(power);
-        Hardware.rightMotor.setPower(power);
+        leftMotor.setPower(power);
+        rightMotor.setPower(power);
 
         //touch sensors
         while (!touch.isPressed()) {sleep(10);}
@@ -171,7 +170,7 @@ public class Robot {
             pose = RobotLocator.getPose();
 
             if(pose == null) {
-                Hardware.setPower(0, 0);
+                setPower(0, 0);
                 opMode.telemetry.addData("Status", "Not tracking");
                 opMode.telemetry.update();
                 continue;
@@ -180,7 +179,7 @@ public class Robot {
             setError(pose);
 
             opMode.telemetry.addData("Pose", pose.toString());
-            opMode.telemetry.addData("Motor Power", "Left: %d%% Right: %d%%", (int) (Hardware.leftMotor.getPower() * 100), (int) (Hardware.rightMotor.getPower() * 100));
+            opMode.telemetry.addData("Motor Power", "Left: %d%% Right: %d%%", (int) (leftMotor.getPower() * 100), (int) (rightMotor.getPower() * 100));
             opMode.telemetry.update();
 
             Thread.yield();
@@ -190,17 +189,17 @@ public class Robot {
     }
 
     public void ballgrabber ( double speed, long time ) throws InterruptedException {
-        Hardware.chickenMotor.setPower(speed);
+        chickenMotor.setPower(speed);
         sleep(time);
     }
 
     public void ballshooter ( double speed, long time ) throws InterruptedException {
-        Hardware.shooterMotorRight.setPower(speed);
-        Hardware.shooterMotorLeft.setPower(speed);
+        shooterMotorRight.setPower(speed);
+        shooterMotorLeft.setPower(speed);
         sleep(time);
     }
     public void feeder (float position, long time) throws InterruptedException {
-        Hardware.feeder.setPosition(position);
+        feeder.setPosition(position);
         sleep(time);
     }
 
@@ -214,15 +213,15 @@ public class Robot {
         long increment_time = (long) (ms_time / ((Math.abs(max_speed) - MIN_SPEED)/increment));
 
         for (double i = MIN_SPEED; i <= Math.abs(max_speed); i += increment) {
-            Hardware.leftMotor.setPower(i * dir);
-            Hardware.rightMotor.setPower(i * dir);
+            leftMotor.setPower(i * dir);
+            rightMotor.setPower(i * dir);
             sleep(increment_time);
         }
 
-        Hardware.leftMotor.setPower(max_speed);
-        Hardware.rightMotor.setPower(max_speed);
+        leftMotor.setPower(max_speed);
+        rightMotor.setPower(max_speed);
 
-        return Hardware.leftMotor.getCurrentPosition();
+        return leftMotor.getCurrentPosition();
     }
 
     private void deceleration (double decrement, double cur_speed, int ms_time, int target) throws InterruptedException {
@@ -230,9 +229,9 @@ public class Robot {
         double dir = cur_speed/Math.abs(cur_speed);
         long decrement_time = (long) (ms_time / ((Math.abs(cur_speed) - MIN_SPEED) / decrement));
 
-        for (double i = Math.abs(cur_speed); i >= MIN_SPEED && Math.abs(Hardware.leftMotor.getCurrentPosition()) < target; i -= decrement) {
-            Hardware.leftMotor.setPower(i * dir);
-            Hardware.rightMotor.setPower(i * dir);
+        for (double i = Math.abs(cur_speed); i >= MIN_SPEED && Math.abs(leftMotor.getCurrentPosition()) < target; i -= decrement) {
+            leftMotor.setPower(i * dir);
+            rightMotor.setPower(i * dir);
             sleep(decrement_time);
         }
 
@@ -242,9 +241,9 @@ public class Robot {
     void setError(VectorF error) {
         double[] speeds = poseToSpeed(error);
 
-        Hardware.setBaseSpeed(speeds[0]);
-        Hardware.setAngularSpeed(speeds[1]);
-        Hardware.setPower();
+        setBaseSpeed(speeds[0]);
+        setAngularSpeed(speeds[1]);
+        setPower();
     }
 
     double[] poseToSpeed(VectorF pose) {
@@ -253,28 +252,23 @@ public class Robot {
         float z = pose.get(2);
 
         double angular = Math.signum(x) * (Math.abs(x) / Math.abs(z) * Controller.P_A);
-        angular = Hardware.bound(angular, -0.2, 0.2);
+        angular = bound(angular, -0.2, 0.2);
 
         //Set basespeed to correct z
         double base = (Math.abs(z / Controller.TARGET_Z) - 1) * Controller.P_Z;
-        base = Hardware.bound(base, -0.2, 0.4);
+        base = bound(base, -0.2, 0.4);
 
         return new double[] { base, angular };
     }
 
     private void resetEncoders() {
         //Reset the encoders
-        Hardware.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Hardware.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Return mode back to run with encoders
-        Hardware.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Hardware.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    private void stop() {
-        Hardware.leftMotor.setPower(0);
-        Hardware.rightMotor.setPower(0);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /*
@@ -283,39 +277,36 @@ public class Robot {
 
     //Positive is left, negative is right
     void moveSlider(double distance) throws InterruptedException {
-        long targetTime = (long) (distance / Hardware.SLIDER_MAX_SPEED * 1000);
+        long targetTime = (long) (distance / SLIDER_MAX_SPEED * 1000);
 
         moveSlider(Math.signum(distance), targetTime);
     }
 
     void moveSlider(double power, long msTime) throws InterruptedException {
-        Hardware.slider.setPower(power);
+        slider.setPower(power);
         Thread.sleep(msTime);
         stopSlider();
     }
 
     void resetSlider () throws InterruptedException {
-        Hardware.slider.setPower(-1);
-        while (!Hardware.limit.isPressed()) { Thread.yield(); }
-        //moveSlider(1, (long) (Hardware.SLIDER_TRACK_LENGTH / Hardware.SLIDER_MAX_SPEED * 1000 / 2));
+        slider.setPower(-1);
+        while (!limit.isPressed()) { Thread.yield(); }
+        //moveSlider(1, (long) (SLIDER_TRACK_LENGTH / SLIDER_MAX_SPEED * 1000 / 2));
         stopSlider();
     }
 
     void stopSlider () throws InterruptedException {
-        Hardware.slider.setPower(0.05);
+        slider.setPower(0.05);
     }
 
     /*
      * Color Sensor Functionality
      */
     public float[] getRgb() {
-        ColorSensor colorSensor = Hardware.colorSensor;
-        float[] rgb = {colorSensor.red(), colorSensor.green(), colorSensor.green()};
-        return rgb;
+        return new float[] {colorSensor.red(), colorSensor.green(), colorSensor.green()};
     }
 
     public float[] getHsv() {
-        ColorSensor colorSensor = Hardware.colorSensor;
         float[] hsvValues = {0f, 0f, 0f};
         Color.RGBToHSV((colorSensor.red() * 255) / 800, (colorSensor.green() * 255) / 800, (colorSensor.blue() * 255) / 800, hsvValues);
         return hsvValues;
@@ -324,18 +315,18 @@ public class Robot {
     /*
      * LED Functionality
      */
-    public void enableLed() {
-        if(!Hardware.bLedOn)
+    void enableLed() {
+        if(!bLedOn)
             toggleLed();
     }
 
-    public void disableLed() {
-        if(Hardware.bLedOn)
+    void disableLed() {
+        if(bLedOn)
             toggleLed();
     }
 
-    public void toggleLed() {
-        Hardware.bLedOn = !Hardware.bLedOn;
-        Hardware.cdim.setDigitalChannelState(Hardware.LED_CHANNEL, Hardware.bLedOn);
+    void toggleLed() {
+        bLedOn = !bLedOn;
+        cdim.setDigitalChannelState(LED_CHANNEL, bLedOn);
     }
 }

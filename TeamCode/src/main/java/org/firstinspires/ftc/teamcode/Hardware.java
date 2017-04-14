@@ -19,31 +19,31 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 public class Hardware {
 
     //Motors
-    static DcMotor leftMotor;
-    static DcMotor rightMotor;
-    static DcMotor chickenMotor;
-    static DcMotor shooterMotorRight;
-    static DcMotor shooterMotorLeft;
-    static DcMotor liftMotor;
+    DcMotor leftMotor;
+    DcMotor rightMotor;
+    DcMotor chickenMotor;
+    DcMotor shooterMotorRight;
+    DcMotor shooterMotorLeft;
+    DcMotor liftMotor;
 
-    private static double baseSpeed = 0;
-    private static double angularSpeed = 0;
+    private double baseSpeed = 0;
+    private double angularSpeed = 0;
 
     //Servos
-    static Servo leftClaw;
-    static Servo rightClaw;
-    static Servo feeder;
-    static CRServo slider;
+    Servo leftClaw;
+    Servo rightClaw;
+    Servo feeder;
+    CRServo slider;
 
 
     //Color Sensor + LED
-    static DeviceInterfaceModule cdim;
-    static ColorSensor colorSensor;
-    static boolean bLedOn = true;
-    static final int LED_CHANNEL = 5; // we assume that the LED pin of the RGB sensor is connected to digital port 5 (zero indexed).
-    static TouchSensor limit;
+    DeviceInterfaceModule cdim;
+    ColorSensor colorSensor;
+    boolean bLedOn = true;
+    final int LED_CHANNEL = 5; // we assume that the LED pin of the RGB sensor is connected to digital port 5 (zero indexed).
+    TouchSensor limit;
 
-    private static HardwareMap hwMap;
+    private HardwareMap hwMap;
     static double WHEEL_BASE = 16;
     static double WHEEL_DIAMETER = 4.0;
     static int ROUNDS_PER_MINUTE = 160;
@@ -54,11 +54,7 @@ public class Hardware {
     static double SLIDER_TRACK_LENGTH = 10.5;
     static double SLIDER_MAX_SPEED = 2.5; //2 7/16"
 
-    public Hardware() throws Exception {
-        throw new Exception("do not call this constructor");
-    }
-
-    public static void init (HardwareMap hwm) {
+    public Hardware(HardwareMap hwm) {
         hwMap = hwm;
 
         try {
@@ -113,13 +109,13 @@ public class Hardware {
     }
 
     //Use baseSpeed and angular speed
-    static void setPower() {
+    void setPower() {
         double lPower = baseSpeed + angularSpeed;
         double rPower = baseSpeed - angularSpeed;
 
         setPower(lPower, rPower);
     }
-    static void setPower(double lpower, double rpower) {
+    void setPower(double lpower, double rpower) {
 
         setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -127,19 +123,20 @@ public class Hardware {
         rightMotor.setPower(bound(rpower, -1, 1));
     }
 
-    static void setBaseSpeed(double speed) {
+    void setBaseSpeed(double speed) {
         baseSpeed = speed;
     }
 
-    static void setAngularSpeed(double angular) {
+    void setAngularSpeed(double angular) {
         angularSpeed = angular;
     }
 
-    static void stop() {
-        setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    void stop() {
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
     }
 
-    private static void setMotorMode(DcMotor.RunMode targetMode) {
+    private void setMotorMode(DcMotor.RunMode targetMode) {
         if(leftMotor.getMode() != targetMode)
             leftMotor.setMode(targetMode);
 
