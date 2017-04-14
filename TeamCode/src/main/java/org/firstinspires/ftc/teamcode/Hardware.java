@@ -57,8 +57,19 @@ public class Hardware {
     static double SLIDER_TRACK_LENGTH = 10.5;
     static double SLIDER_MAX_SPEED = 2.5; //2 7/16"
 
+    private Thread sliderResetThread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            try {
+                resetSliderUtil();
+            } catch (InterruptedException e) {}
+        }
+    });
+
     public Hardware(HardwareMap hwm) {
         hwMap = hwm;
+
+        sliderResetThread.setDaemon(true);
 
         try {
             leftMotor = hwMap.dcMotor.get("drive_left");
@@ -147,7 +158,7 @@ public class Hardware {
             rightMotor.setMode(targetMode);
     }
 
-        /*
+    /*
      * Slider Functionality
      */
 
@@ -164,10 +175,22 @@ public class Hardware {
         stopSlider();
     }
 
-    void resetSlider () throws InterruptedException {
+    void resetSlider() throws InterruptedException {
+        resetSlider(false);
+    }
+
+    void resetSlider(boolean async) throws InterruptedException {
+        if(async) {
+            if(!sliderResetThread.isAlive())
+                sliderResetThread.start();
+        }
+        else
+            resetSliderUtil();
+    }
+
+   private void resetSliderUtil () throws InterruptedException {
         slider.setPower(-1);
         while (!limit.isPressed()) { Thread.yield(); }
-        //moveSlider(1, (long) (SLIDER_TRACK_LENGTH / SLIDER_MAX_SPEED * 1000 / 2));
         stopSlider();
     }
 

@@ -45,8 +45,10 @@ final class Beacons extends PathBase {
 
         moveSliderToBeacon();
 
+        //Hits the button
         robot.encoderDrive(-0.5, 23);
 
+        robot.resetSlider(true);
         switch (alliance) {
             case BLUE:
                 robot.encoderDrive(0.9, 9);
@@ -66,7 +68,7 @@ final class Beacons extends PathBase {
         Thread.sleep(1000);
 
         moveSliderToBeacon();
-
+        robot.encoderDrive(-0.5, 23);
 
         //backup
         //robot.encoderDrive(0.5, 20);

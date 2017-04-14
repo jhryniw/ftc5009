@@ -53,6 +53,7 @@ public class Autonomous extends LinearOpMode {
         pathList.put("Far Corner", new FarCorner(this, robot, new Coordinate(0, 0)));
         pathList.put("Test Button", new TestButton(this, robot, new Coordinate(0, 0)));
         pathList.put("TestPivot", new TestPivot(this, robot, new Coordinate(0, 0)));
+        pathList.put("Sliding Beacon", new SlidingBeacon(this, robot, new Coordinate(0, 0)));
 
         pathNames = new ArrayList<String>(pathList.keySet());
 

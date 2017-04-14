@@ -21,12 +21,12 @@ public class TeleOp extends LinearOpMode {
     private boolean chicken_is_clicked = false;
     private boolean r2_is_clicked = false;
 
-    Robot robot;
+    Hardware robot;
 
     @Override
     public void runOpMode() throws InterruptedException {
         // Setup the motors using K9Hardware
-        robot = new Robot("proto1", hardwareMap, this);
+        robot = new Hardware(hardwareMap);
 
         waitForStart();
 

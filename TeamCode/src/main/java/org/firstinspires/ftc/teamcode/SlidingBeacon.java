@@ -8,26 +8,15 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
  * Created by szost on 2017-03-11.
  */
 
-public class SlidingBeacon extends PathBase {
+final class SlidingBeacon extends PathBase {
 
     SlidingBeacon(LinearOpMode opMode, Robot r, Coordinate startLoc) {
         super(opMode, r, startLoc, "SlidingBeacon");
     }
     @Override
     void run() throws InterruptedException {
-        switch (alliance) {
-            case BLUE:
-                robot.encoderDrive(0.5, 10);
-                robot.pivot(-45, 0.2);
-                robot.encoderDrive(0.5, 20);
-                break;
-
-            case RED:
-                robot.encoderDrive(0.5, 10);
-                robot.pivot(-45, 0.2);
-                robot.encoderDrive(0.5, 10);
-                break;
-        }
-        robot.touchDrive(0.7, robot.limit);
+        robot.moveSlider(Hardware.SLIDER_TRACK_LENGTH / 2);
+        robot.resetSlider(true);
+        robot.encoderDrive(-0.3, 20);
     }
 }
