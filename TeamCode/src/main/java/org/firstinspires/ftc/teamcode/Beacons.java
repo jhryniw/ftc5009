@@ -61,10 +61,10 @@ final class Beacons extends PathBase {
         boolean is_right = (alliance == result[1]);
 
         if (is_left){
-            robot.moveSlider(Hardware.SLIDER_TRACK_LENGTH / 4 , true);
+            robot.moveSlider(Hardware.SLIDER_TRACK_LENGTH / 4);
         }
         else if (is_right) {
-            robot.moveSlider((Hardware.SLIDER_TRACK_LENGTH / 4) * 3.6 , true);
+            robot.moveSlider((Hardware.SLIDER_TRACK_LENGTH / 4) * 3.6);
         }
 
         robot.encoderDrive(-0.5, 23);
