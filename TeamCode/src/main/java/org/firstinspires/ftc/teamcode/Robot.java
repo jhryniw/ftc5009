@@ -20,16 +20,14 @@ import static java.lang.Thread.sleep;
 public class Robot extends Hardware {
 
     private ElapsedTime runtime = new ElapsedTime();
-    public LinearOpMode opMode;
-
+    LinearOpMode opMode;
     BeaconClassifier beaconClassifier;
 
-    public static String name;
+    String name;
 
     private static double MAX_POWER = 0.6;
     private static double P = 0.2;
     private static double D = 8;
-    TouchSensor[] touchSensors = { limit };
 
     Robot(String robotName, HardwareMap hwMap, LinearOpMode om) {
         super(hwMap);
@@ -188,21 +186,6 @@ public class Robot extends Hardware {
         stop();
     }
 
-    public void ballgrabber ( double speed, long time ) throws InterruptedException {
-        chickenMotor.setPower(speed);
-        sleep(time);
-    }
-
-    public void ballshooter ( double speed, long time ) throws InterruptedException {
-        shooterMotorRight.setPower(speed);
-        shooterMotorLeft.setPower(speed);
-        sleep(time);
-    }
-    public void feeder (float position, long time) throws InterruptedException {
-        feeder.setPosition(position);
-        sleep(time);
-    }
-
     private int acceleration (double increment, double max_speed, int ms_time) throws InterruptedException {
 
         if (max_speed < MIN_SPEED) {
@@ -269,64 +252,5 @@ public class Robot extends Hardware {
         //Return mode back to run with encoders
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    /*
-     * Slider Functionality
-     */
-
-    //Positive is left, negative is right
-    void moveSlider(double distance) throws InterruptedException {
-        long targetTime = (long) (distance / SLIDER_MAX_SPEED * 1000);
-
-        moveSlider(Math.signum(distance), targetTime);
-    }
-
-    void moveSlider(double power, long msTime) throws InterruptedException {
-        slider.setPower(power);
-        Thread.sleep(msTime);
-        stopSlider();
-    }
-
-    void resetSlider () throws InterruptedException {
-        slider.setPower(-1);
-        while (!limit.isPressed()) { Thread.yield(); }
-        //moveSlider(1, (long) (SLIDER_TRACK_LENGTH / SLIDER_MAX_SPEED * 1000 / 2));
-        stopSlider();
-    }
-
-    void stopSlider () throws InterruptedException {
-        slider.setPower(0.05);
-    }
-
-    /*
-     * Color Sensor Functionality
-     */
-    public float[] getRgb() {
-        return new float[] {colorSensor.red(), colorSensor.green(), colorSensor.green()};
-    }
-
-    public float[] getHsv() {
-        float[] hsvValues = {0f, 0f, 0f};
-        Color.RGBToHSV((colorSensor.red() * 255) / 800, (colorSensor.green() * 255) / 800, (colorSensor.blue() * 255) / 800, hsvValues);
-        return hsvValues;
-    }
-
-    /*
-     * LED Functionality
-     */
-    void enableLed() {
-        if(!bLedOn)
-            toggleLed();
-    }
-
-    void disableLed() {
-        if(bLedOn)
-            toggleLed();
-    }
-
-    void toggleLed() {
-        bLedOn = !bLedOn;
-        cdim.setDigitalChannelState(LED_CHANNEL, bLedOn);
     }
 }

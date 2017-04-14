@@ -2,6 +2,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +12,8 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+
+import static java.lang.Thread.sleep;
 
 /**
  * Created by James on 2016-09-26.
@@ -34,7 +38,6 @@ public class Hardware {
     Servo rightClaw;
     Servo feeder;
     CRServo slider;
-
 
     //Color Sensor + LED
     DeviceInterfaceModule cdim;
@@ -144,6 +147,83 @@ public class Hardware {
             rightMotor.setMode(targetMode);
     }
 
+        /*
+     * Slider Functionality
+     */
+
+    //Positive is left, negative is right
+    void moveSlider(double distance) throws InterruptedException {
+        long targetTime = (long) (distance / SLIDER_MAX_SPEED * 1000);
+
+        moveSlider(Math.signum(distance), targetTime);
+    }
+
+    void moveSlider(double power, long msTime) throws InterruptedException {
+        slider.setPower(power);
+        Thread.sleep(msTime);
+        stopSlider();
+    }
+
+    void resetSlider () throws InterruptedException {
+        slider.setPower(-1);
+        while (!limit.isPressed()) { Thread.yield(); }
+        //moveSlider(1, (long) (SLIDER_TRACK_LENGTH / SLIDER_MAX_SPEED * 1000 / 2));
+        stopSlider();
+    }
+
+    void stopSlider () throws InterruptedException {
+        slider.setPower(0.05);
+    }
+
+    void ballgrabber ( double speed, long time ) throws InterruptedException {
+        chickenMotor.setPower(speed);
+        sleep(time);
+    }
+
+    void ballshooter ( double speed, long time ) throws InterruptedException {
+        shooterMotorRight.setPower(speed);
+        shooterMotorLeft.setPower(speed);
+        sleep(time);
+    }
+    void feeder (float position, long time) throws InterruptedException {
+        feeder.setPosition(position);
+        sleep(time);
+    }
+
+    /*
+     * Color Sensor Functionality
+     */
+    public float[] getRgb() {
+        return new float[] {colorSensor.red(), colorSensor.green(), colorSensor.green()};
+    }
+
+    public float[] getHsv() {
+        float[] hsvValues = {0f, 0f, 0f};
+        Color.RGBToHSV((colorSensor.red() * 255) / 800, (colorSensor.green() * 255) / 800, (colorSensor.blue() * 255) / 800, hsvValues);
+        return hsvValues;
+    }
+
+    /*
+     * LED Functionality
+     */
+    void enableLed() {
+        if(!bLedOn)
+            toggleLed();
+    }
+
+    void disableLed() {
+        if(bLedOn)
+            toggleLed();
+    }
+
+    void toggleLed() {
+        bLedOn = !bLedOn;
+        cdim.setDigitalChannelState(LED_CHANNEL, bLedOn);
+    }
+
+    /*
+     * Utility
+     */
     static double bound(double value, double lower, double upper) {
         if(value < lower)
             return lower;
