@@ -11,7 +11,7 @@ final class TestPivot extends PathBase {
         super(opMode, r, startLoc, "TestPivot");
     }
     @Override
-    void run() throws InterruptedException {
+    protected void run() throws InterruptedException {
         switch (alliance) {
             case BLUE:
                 robot.encoderDrive(-0.5 , 14);

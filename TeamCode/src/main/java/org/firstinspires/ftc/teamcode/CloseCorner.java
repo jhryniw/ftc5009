@@ -12,7 +12,7 @@ final class CloseCorner extends PathBase {
         super(opMode, r, startLoc, "Close Corner");
     }
     @Override
-    void run() throws InterruptedException {
+    protected void run() throws InterruptedException {
         switch (alliance) {
             case BLUE:
                 robot.encoderDrive(-0.4, 6);

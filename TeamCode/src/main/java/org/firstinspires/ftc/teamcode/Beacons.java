@@ -18,24 +18,24 @@ final class Beacons extends PathBase {
     // - counterclockwise, + clockwise
 
     @Override
-    void run() throws InterruptedException {
+    protected void run() throws InterruptedException {
         switch (alliance) {
             case BLUE:
 
-                robot.encoderDrive(-0.4, 5); //backward
+                robot.encoderDrive(-0.3, 5); //backward
                 shoot();
-                robot.pivot(45, 0.2); //pivot
-                robot.encoderDrive(-0.9 , 60.2); //diagonal beacon
-                robot.pivot(45, 0.2); // pivot to face beacon
+                robot.pivot(45, 0.3); //pivot
+                robot.encoderDrive(-0.9 , 66); //diagonal beacon
+                robot.pivot(45, 0.3); // pivot to face beacon
                 //robot.encoderDrive(-0.5 , 6); //inch closer to beacon
                 break;
 
             case RED:
-                robot.encoderDrive(-0.4, 5); //backward
+                robot.encoderDrive(-0.3, 5); //backward
                 shoot();
-                robot.pivot(45, 0.2); //pivot
-                robot.encoderDrive(-0.9, 60.2);
-                robot.pivot(45, 0.2);
+                robot.pivot(45, 0.3); //pivot
+                robot.encoderDrive(-0.9, 66);
+                robot.pivot(45, 0.3);
                 //robot.encoderDrive(-0.5 , 6);
                 break;
         }
@@ -50,17 +50,18 @@ final class Beacons extends PathBase {
         switch (alliance) {
             case BLUE:
                 robot.encoderDrive(0.9, 11);
-                robot.pivot(-90, 0.2);
                 robot.resetSlider(true);
-                robot.encoderDrive(-0.8, 56);
+                robot.pivot(-90, 0.2);
+                robot.encoderDrive(-0.8, 59);
                 robot.pivot(90, 0.2);
                 break;
             case RED:
                 robot.encoderDrive(0.9, 11);
+                robot.resetSlider(true);
                 robot.pivot(90, 0.2);
-                robot.encoderDrive(0.8, 52);
+                robot.encoderDrive(0.8, 59);
                 robot.pivot(-90, 0.2);
-                robot.encoderDrive(-0.8, 8);
+                //robot.encoderDrive(-0.8, 8);
                 break;
         }
 
@@ -71,18 +72,19 @@ final class Beacons extends PathBase {
 
         switch (alliance) {
             case BLUE:
-                robot.encoderDrive(0.3, 5);
-                robot.pivot(-45, 0.2);
-                robot.encoderDrive(0.5, 55);
-                robot.pivot(-45, 0.2);
-
+                robot.encoderDrive(0.6, 10);
+                robot.pivot(-40, 0.2);
+                robot.encoderDrive(0.9, 35);
+                //robot.pivot(-45, 0.2);
+                robot.encoderDrive(0, 0);
                 break;
             case RED:
-                robot.encoderDrive(0.3, 5);
-                robot.pivot(45, 0.2);
-                robot.encoderDrive(0.5, 50);
-                robot.pivot(45, 0.2);
-                robot.encoderDrive(-0.5, 10);
+                robot.encoderDrive(0.6, 10);
+                robot.pivot(40, 0.2);
+                robot.encoderDrive(0.9, 35);
+                //robot.pivot(45, 0.2);
+                //robot.encoderDrive(-0.5, 10);
+
                 break;
         }
     }
@@ -131,6 +133,7 @@ final class Beacons extends PathBase {
         //opMode.telemetry.update();
         //Thread.sleep(1000);
         robot.encoderDrive(-0.5, zDist);
+        robot.encoderDrive(-0.3, 5);
     }
 
     private void classificationErrorProtocol() throws InterruptedException {

@@ -12,7 +12,7 @@ final class FarCorner extends PathBase {
         super(opMode, r, startLoc, "Far Corner");
     }
     @Override
-    void run() throws InterruptedException {
+    protected void run() throws InterruptedException {
         switch (alliance) {
             case BLUE:
                 robot.encoderDrive(-0.4, 3); //forward a bit

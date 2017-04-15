@@ -30,5 +30,5 @@ public abstract class PathBase {
 
     }
 
-    abstract void run() throws InterruptedException;
+    protected abstract void run() throws InterruptedException;
 }

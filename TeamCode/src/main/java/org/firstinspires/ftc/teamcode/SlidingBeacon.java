@@ -14,7 +14,7 @@ final class SlidingBeacon extends PathBase {
         super(opMode, r, startLoc, "SlidingBeacon");
     }
     @Override
-    void run() throws InterruptedException {
+     protected void run() throws InterruptedException {
         robot.moveSlider(Hardware.SLIDER_TRACK_LENGTH / 2);
         robot.resetSlider(true);
         robot.encoderDrive(-0.3, 20);
