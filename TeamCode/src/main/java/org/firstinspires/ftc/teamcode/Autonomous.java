@@ -76,8 +76,8 @@ public class Autonomous extends LinearOpMode {
         while (!configured) {
             idle();
         }
-        selectedPath.setAlliance(alliance);
 
+        selectedPath.setAlliance(alliance);
         robot.resetSlider();
 
         waitForStart();

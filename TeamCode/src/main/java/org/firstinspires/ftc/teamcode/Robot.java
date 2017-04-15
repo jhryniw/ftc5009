@@ -96,7 +96,7 @@ public class Robot extends Hardware {
         sleep(200);
     }
 
-    private void goToEncoderTarget(int target, double leftSpeed, double rightSpeed) {
+    void goToEncoderTarget(int target, double leftSpeed, double rightSpeed) {
         int lastLeftPosition = 0, lastRightPosition = 0;
 
         int leftPosition = leftMotor.getCurrentPosition();
@@ -120,19 +120,6 @@ public class Robot extends Hardware {
 
             Thread.yield();
         }
-    }
-
-    void touchDrive(double power, TouchSensor touch) throws InterruptedException {
-        resetEncoders();
-
-        leftMotor.setPower(power);
-        rightMotor.setPower(power);
-
-        //touch sensors
-        while (!touch.isPressed()) {sleep(10);}
-
-        stop();
-        sleep(200);
     }
 
     void moveToTargetEncoder(int x, int z,int o, double speed) throws InterruptedException {
@@ -192,14 +179,15 @@ public class Robot extends Hardware {
 
     private int acceleration (double increment, double max_speed, int ms_time) throws InterruptedException {
 
-        if (max_speed < MIN_SPEED) {
+        double minSpeed = leftMotor.getPower() > MIN_SPEED ? leftMotor.getPower() : MIN_SPEED;
+        if (max_speed < minSpeed) {
             return -1;
         }
 
         double dir = max_speed/Math.abs(max_speed);
-        long increment_time = (long) (ms_time / ((Math.abs(max_speed) - MIN_SPEED)/increment));
+        long increment_time = (long) (ms_time / ((Math.abs(max_speed) - minSpeed)/increment));
 
-        for (double i = MIN_SPEED; i <= Math.abs(max_speed); i += increment) {
+        for (double i = minSpeed; i <= Math.abs(max_speed); i += increment) {
             leftMotor.setPower(i * dir);
             rightMotor.setPower(i * dir);
             sleep(increment_time);
@@ -248,7 +236,7 @@ public class Robot extends Hardware {
         return new double[] { base, angular };
     }
 
-    private void resetEncoders() {
+    void resetEncoders() {
         //Reset the encoders
         //rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

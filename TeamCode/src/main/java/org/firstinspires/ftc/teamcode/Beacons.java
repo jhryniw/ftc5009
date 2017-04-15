@@ -8,12 +8,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 final class Beacons extends PathBase {
 
+    static double BEACON_X_DIFF = 56.0;
+    double xOffset = 0;
     int classificationFailures = 0;
 
     Beacons(LinearOpMode opMode, Robot r, Coordinate startLoc) {
         super(opMode, r, startLoc, "Beacons");
     }
-
 
     // - counterclockwise, + clockwise
 
@@ -33,10 +34,9 @@ final class Beacons extends PathBase {
             case RED:
                 robot.encoderDrive(-0.3, 5); //backward
                 shoot();
-                robot.pivot(-45, 0.3); //pivot
-                robot.encoderDrive(-0.9, 61);
-                robot.pivot(-45, 0.3);
-                //robot.encoderDrive(-0.5 , 6);
+                robot.pivot(-40, 0.3); //pivot
+                robot.encoderDrive(-0.9, 62);
+                robot.pivot(-40, 0.3);
                 break;
         }
 
@@ -47,21 +47,18 @@ final class Beacons extends PathBase {
 
         RobotLocator.stop();
 
+        robot.resetSlider(true);
+
         switch (alliance) {
             case BLUE:
-                robot.encoderDrive(0.9, 11);
-                robot.resetSlider(true);
                 robot.pivot(-90, 0.2);
-                robot.encoderDrive(-0.8, 59);
+                robot.encoderDrive(-0.8, BEACON_X_DIFF + xOffset);
                 robot.pivot(90, 0.2);
                 break;
             case RED:
-                robot.encoderDrive(0.9, 11);
-                robot.resetSlider(true);
                 robot.pivot(90, 0.2);
-                robot.encoderDrive(0.8, 59);
+                robot.encoderDrive(-0.8, BEACON_X_DIFF + xOffset);
                 robot.pivot(-90, 0.2);
-                //robot.encoderDrive(-0.8, 8);
                 break;
         }
 
@@ -72,19 +69,16 @@ final class Beacons extends PathBase {
 
         switch (alliance) {
             case BLUE:
-                robot.encoderDrive(0.6, 10);
                 robot.pivot(-40, 0.2);
                 robot.encoderDrive(0.9, 35);
                 //robot.pivot(-45, 0.2);
                 robot.encoderDrive(0, 0);
                 break;
             case RED:
-                robot.encoderDrive(0.6, 10);
                 robot.pivot(40, 0.2);
                 robot.encoderDrive(0.9, 35);
                 //robot.pivot(45, 0.2);
                 //robot.encoderDrive(-0.5, 10);
-
                 break;
         }
     }
@@ -119,21 +113,36 @@ final class Beacons extends PathBase {
         boolean is_left = (alliance == result[0]);
         boolean is_right = (alliance == result[1]);
         double xDist = target.getX() + Hardware.SLIDER_TRACK_LENGTH / 2;
+        xOffset = target.getX();
 
         if (is_left)
             xDist -= BeaconTarget.BUTTON_X_OFFSET;
         else if (is_right)
             xDist += BeaconTarget.BUTTON_X_OFFSET;
 
+        if(xDist > (Hardware.SLIDER_TRACK_LENGTH + Hardware.BUTTON_PUSHER_WIDTH / 2) || xDist < -(Hardware.BUTTON_PUSHER_WIDTH / 2)) {
+            return;
+        }
+
         xDist = Hardware.bound(xDist, 0, Hardware.SLIDER_TRACK_LENGTH);
         robot.moveSlider(xDist);
 
         double zDist = target.getZ() + BeaconTarget.BUTTON_Z_OFFSET;
+
         //opMode.telemetry.addData("ButtonPusher", "Z Distance: %.2f", zDist);
         //opMode.telemetry.update();
         //Thread.sleep(1000);
-        robot.encoderDrive(-0.5, zDist);
-        robot.encoderDrive(-0.3, 5);
+
+        //Push button
+        robot.resetEncoders();
+        int target1 = (int)Math.abs(zDist * Hardware.TICKS_PER_INCH);
+        int target2 = (int)Math.abs(5 * Hardware.TICKS_PER_INCH);
+        robot.goToEncoderTarget(target1, -0.5, -0.5);
+        robot.goToEncoderTarget(target1 + target2, -0.3, -0.3);
+        robot.stop();
+
+        //Back up
+        robot.encoderDrive(0.9, 11);
     }
 
     private void classificationErrorProtocol() throws InterruptedException {
