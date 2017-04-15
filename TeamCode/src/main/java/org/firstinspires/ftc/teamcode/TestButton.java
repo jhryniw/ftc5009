@@ -13,7 +13,7 @@ final class TestButton extends PathBase {
     }
 
     @Override
-    protected void run() throws InterruptedException {
+    void run() throws InterruptedException {
         switch (alliance) {
             case BLUE:
                 robot.moveSlider(Hardware.SLIDER_TRACK_LENGTH / 4);

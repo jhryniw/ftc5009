@@ -13,7 +13,7 @@ public class BallShooter extends PathBase {
     }
 
     @Override
-    protected void run() throws InterruptedException {
+    public void run() throws InterruptedException {
         robot.ballshooter(1.0, 10000);
         robot.ballshooter(0, 0);
     }

@@ -11,10 +11,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 public abstract class PathBase {
 
     public String name;
-    protected Alliance alliance;
-    protected Coordinate startLocation;
-    protected Robot robot;
-    protected LinearOpMode opMode;
+    Alliance alliance;
+    Coordinate startLocation;
+    Robot robot;
+    LinearOpMode opMode;
 
     public PathBase(LinearOpMode om, Robot r, Coordinate startLoc, String name) {
         opMode = om;
@@ -30,5 +30,5 @@ public abstract class PathBase {
 
     }
 
-    protected abstract void run() throws InterruptedException;
+    abstract void run() throws InterruptedException;
 }

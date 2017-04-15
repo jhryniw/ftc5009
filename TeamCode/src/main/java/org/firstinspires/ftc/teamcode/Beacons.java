@@ -18,7 +18,7 @@ final class Beacons extends PathBase {
     // - counterclockwise, + clockwise
 
     @Override
-    protected void run() throws InterruptedException {
+    public void run() throws InterruptedException {
         switch (alliance) {
             case BLUE:
 
@@ -33,9 +33,9 @@ final class Beacons extends PathBase {
             case RED:
                 robot.encoderDrive(-0.3, 5); //backward
                 shoot();
-                robot.pivot(45, 0.3); //pivot
+                robot.pivot(-45, 0.3); //pivot
                 robot.encoderDrive(-0.9, 61);
-                robot.pivot(45, 0.3);
+                robot.pivot(-45, 0.3);
                 //robot.encoderDrive(-0.5 , 6);
                 break;
         }
