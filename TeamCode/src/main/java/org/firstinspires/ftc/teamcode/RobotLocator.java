@@ -99,7 +99,7 @@ class RobotLocator {
 
         worker = new TrackerWorker();
         worker.setDaemon(true);
-        worker.setPriority(10);
+        worker.setPriority(9);
         worker.start();
     }
 

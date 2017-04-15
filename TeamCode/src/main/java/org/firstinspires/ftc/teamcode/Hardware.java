@@ -71,6 +71,7 @@ public class Hardware {
         hwMap = hwm;
 
         sliderResetThread.setDaemon(true);
+        sliderResetThread.setPriority(3);
 
         try {
             leftMotor = hwMap.dcMotor.get("drive_left");
@@ -171,6 +172,7 @@ public class Hardware {
     }
 
     void moveSlider(double power, long msTime) throws InterruptedException {
+        sliderResetThread.join();
         slider.setPower(power);
         Thread.sleep(msTime);
         stopSlider();
