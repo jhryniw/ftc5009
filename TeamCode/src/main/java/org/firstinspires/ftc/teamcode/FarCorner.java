@@ -17,17 +17,18 @@ final class FarCorner extends PathBase {
             case BLUE:
                 robot.encoderDrive(-0.4, 3); //forward a bit
                 robot.pivot(45, 0.3); //face the center vortex
-                robot.encoderDrive(-0.6, 25); //get closer center vortex
+                robot.encoderDrive(-0.6, 27); //get closer center vortex
                 shoot();
+                robot.moveSlider(1, 2700);
                 robot.encoderDrive(-0.6, 45); //knock capball
-                robot.pivot(50, 0.4);
+                robot.pivot(120, 0.4);
                 break;
             case RED:
                 robot.encoderDrive(-0.4, 3);
-                robot.pivot(-45, 0.3);
+                robot.pivot(-40, 0.3);
                 robot.encoderDrive(-0.6, 25);
                 shoot();
-                robot.encoderDrive(-0.6, 45);
+                robot.encoderDrive(-0.6, 47);
                 robot.pivot(-35, 0.4);
                 break;
         }

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 final class Beacons extends PathBase {
 
-    static double BEACON_X_DIFF = 56.0;
+    static double BEACON_X_DIFF = 52.0;
     double xOffset = 0;
     int classificationFailures = 0;
 
@@ -25,18 +25,19 @@ final class Beacons extends PathBase {
 
                 robot.encoderDrive(-0.3, 5); //backward
                 shoot();
-                robot.pivot(45, 0.3); //pivot
-                robot.encoderDrive(-0.9 , 66); //diagonal beacon
-                robot.pivot(45, 0.3); // pivot to face beacon
-                //robot.encoderDrive(-0.5 , 6); //inch closer to beacon
+                robot.pivot(43, 0.3); //pivot
+                robot.encoderDrive(-0.9 , 64); //diagonal beacon
+                robot.pivot(48, 0.3); // pivot to face beacon
+                robot.encoderDrive(-0.5 , 5); //inch closer to beacon
                 break;
 
             case RED:
                 robot.encoderDrive(-0.3, 5); //backward
                 shoot();
-                robot.pivot(-40, 0.3); //pivot
-                robot.encoderDrive(-0.9, 62);
-                robot.pivot(-40, 0.3);
+                robot.pivot(-30, 0.3); //pivot
+                robot.encoderDrive(-0.9, 60);
+                robot.pivot(-45, 0.3);
+                robot.encoderDrive(-0.5, 5);
                 break;
         }
 
@@ -51,11 +52,13 @@ final class Beacons extends PathBase {
 
         switch (alliance) {
             case BLUE:
-                robot.pivot(-90, 0.2);
+                robot.encoderDrive(0.5, 5);
+                robot.pivot(-94, 0.2);
                 robot.encoderDrive(-0.8, BEACON_X_DIFF + xOffset);
                 robot.pivot(90, 0.2);
                 break;
             case RED:
+                robot.encoderDrive(0.5, 5);
                 robot.pivot(90, 0.2);
                 robot.encoderDrive(-0.8, BEACON_X_DIFF + xOffset);
                 robot.pivot(-90, 0.2);

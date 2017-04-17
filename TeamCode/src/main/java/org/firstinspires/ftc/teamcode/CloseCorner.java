@@ -18,10 +18,9 @@ final class CloseCorner extends PathBase {
                 robot.encoderDrive(-0.4, 6);
                 shoot();
                 robot.encoderDrive(-0.5, 40);
-                robot.pivot(90, 1);
+                robot.pivot(360, 1);
                 robot.feeder(1, 2000);
                 robot.pivot(-90, 0.4);
-                robot.encoderDrive(-0.3, 25);
                 break;
 
 
@@ -29,11 +28,9 @@ final class CloseCorner extends PathBase {
                 robot.encoderDrive(-0.4, 6);
                 shoot();
                 robot.encoderDrive(-0.5, 40);
-                robot.pivot(-90, 1);
+                robot.pivot(-360, 1);
                 robot.feeder(1, 2000);
                 robot.pivot(90, 0.4);
-                robot.encoderDrive(-0.3, 25);
-                robot.pivot(-60, 0.8);
                 break;
         }
     }
